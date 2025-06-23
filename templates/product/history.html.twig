@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique des Produits{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-4">Historique des Produits</h1>
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <thead>
+                <tr class="bg-base-300">
+                    <th>Date</th>
+                    <th>Utilisateur</th>
+                    <th>Produit</th>
+                    <th>Changements</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for log in logs %}
+                    <tr class="hover">
+                        <td>{{ log.loggedAt|date('d/m/Y H:i') }}</td>
+                        <td>{{ log.username ?: 'Système' }}</td>
+                        <td>
+                            <div class="flex items-center gap-4">
+                                <span class="text-sm text-gray-500">
+                                    Produit ID <span class="font-semibold">{{ log.objectId }}</span>
+                                </span>
+                                <a href="{{ path('product_history_show', {id: log.objectId}) }}" class="text-primary underline">
+                                    Voir produit
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <ul class="mt-2 list-disc list-inside text-sm">
+                                {% for field, change in log.data %}
+                                    <li>
+                                        <strong>{{ field }}</strong>:
+                                        {{ change.old }}
+                                        <span class="mx-1">→</span>
+                                        {{ change.new }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">Aucune modification trouvée.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base_error.html.twig' %}
+{% block title %}Erreur 403 - Accès refusé{% endblock %}
+{% block body %}
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-red-100 to-red-400">
+    <div class="bg-white shadow-xl rounded-lg p-10 text-center max-w-lg">
+        <h1 class="text-7xl font-black text-red-500 mb-4">403</h1>
+        <p class="text-xl font-semibold mb-2 text-red-700">Accès refusé !</p>
+        <p class="mb-6 text-red-800">Tu n'as pas la permission d'accéder ici.<br>Essaie un autre chemin ou contacte un admin&nbsp;!</p>
+        <a href="/" class="btn btn-error">Retour à l'accueil</a>
+    </div>
+    <p class="mt-8 text-red-900 opacity-75">Même les robots n'ont pas tous les droits.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base_error.html.twig' %}
+{% block title %}Erreur 500 - Oups !{% endblock %}
+{% block body %}
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-700 to-gray-400">
+  <div class="bg-white shadow-xl rounded-lg p-10 text-center max-w-lg">
+    <h1 class="text-7xl font-black text-gray-800 mb-4">500</h1>
+    <p class="text-xl font-semibold mb-2">Erreur interne du serveur</p>
+    <p class="mb-6">Quelque chose a explosé dans les coulisses...<br>Pas de panique, nos chats ingénieurs sont sur le coup !</p>
+    <a href="/" class="btn btn-neutral">Retour à l'accueil</a>
+  </div>
+  <p class="mt-8 text-white opacity-75">La machine à croquettes est peut-être tombée en panne 😺</p>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+<form method="post" action="{{ path('app_user_delete', {id: user.id}) }}"
+      onsubmit="return confirm('Attention, cette opération est irréversible. Êtes vous sur ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+
+    <button class="btn btn-error btn-outline hover:btn-error hover:text-white">
+        🗑 Delete
+    </button>
+</form>

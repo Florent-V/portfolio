@@ -1,0 +1,13 @@
+{% extends 'base_error.html.twig' %}
+{% block title %}Erreur 400 - Mauvaise requête{% endblock %}
+{% block body %}
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-200 to-yellow-400">
+    <div class="bg-white shadow-xl rounded-lg p-10 text-center max-w-lg">
+        <h1 class="text-7xl font-black text-yellow-500 mb-4">400</h1>
+        <p class="text-xl font-semibold mb-2 text-yellow-700">Oups ! Mauvaise requête</p>
+        <p class="mb-6 text-yellow-800">On dirait que ta requête n'a pas été comprise.<br>Essaie encore&nbsp;!</p>
+        <a href="/" class="btn btn-warning">Retour à l'accueil</a>
+    </div>
+    <p class="mt-8 text-yellow-900 opacity-75">Même les robots font des fautes de frappe.</p>
+</div>
+{% endblock %}

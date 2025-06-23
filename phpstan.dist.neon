@@ -1,0 +1,16 @@
+parameters:
+    level: 6
+    paths:
+        - bin/
+        - config/
+        - public/
+        - src/
+    excludePaths:
+        - tests/
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    ignoreErrors:
+            - '#Use invokable controller with __invoke\(\) method instead of named action method#'
+
+includes:
+    - vendor/symplify/phpstan-rules/config/symfony-rules.neon

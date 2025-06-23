@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon profil{% endblock %}
+
+{% block body %}
+    <div class="max-w-2xl mx-auto p-6 bg-base-100 mt-10">
+        <h2 class="text-2xl font-bold mb-4">Modifier mon profil</h2>
+
+        <div class="container card bg-base-100 shadow-xl p-6">
+            {{ form_start(form, {attr: {class: 'space-y-4'}}) }}
+
+            <div class="form-control">
+                {{ form_label(form.firstName, 'Prénom', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+                {{ form_widget(form.firstName, {attr: {class: 'input input-bordered w-full'}}) }}
+                {{ form_errors(form.firstName) }}
+            </div>
+
+            <div class="form-control">
+                {{ form_label(form.lastName, 'Nom', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+                {{ form_widget(form.lastName, {attr: {class: 'input input-bordered w-full'}}) }}
+                {{ form_errors(form.lastName) }}
+            </div>
+
+            <div class="form-control">
+                {{ form_label(form.userName, 'Pseudo', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+                {{ form_widget(form.userName, {attr: {class: 'input input-bordered w-full'}}) }}
+                {{ form_errors(form.userName) }}
+            </div>
+
+            <div class="form-control">
+                {{ form_label(form.email, 'Email', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+                {{ form_widget(form.email, {attr: {class: 'input input-bordered w-full'}}) }}
+                {{ form_errors(form.email) }}
+            </div>
+
+            <div class="form-control">
+                {{ form_label(form.phone, 'Numéro de téléphone', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+                {{ form_widget(form.phone, {attr: {class: 'input input-bordered w-full'}}) }}
+                {{ form_errors(form.phone) }}
+            </div>
+
+            <div class="form-control">
+                {{ form_label(form.pictureFile, 'Photo de profil', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+                {{ form_widget(form.pictureFile, {attr: {class: 'file-input file-input-bordered w-full'}}) }}
+                {{ form_errors(form.pictureFile) }}
+            </div>
+
+            <div class="flex gap-4 mt-4">
+                <button type="submit" class="btn btn-primary">Sauvegarder les modifications</button>
+                <a href="{{ path('app_user_account') }}" class="btn btn-outline btn-secondary">Annuler</a>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+
+    </div>
+{% endblock %}

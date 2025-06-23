@@ -1,0 +1,13 @@
+{% extends 'base_error.html.twig' %}
+{% block title %}Erreur 503 - Service indisponible{% endblock %}
+{% block body %}
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-yellow-600 to-red-400">
+  <div class="bg-white shadow-xl rounded-lg p-10 text-center max-w-lg">
+    <h1 class="text-7xl font-black text-yellow-700 mb-4">503</h1>
+    <p class="text-xl font-semibold mb-2">Service indisponible !</p>
+    <p class="mb-6">Le service fait une sieste.<br>Revenez plus tard, ou offrez-lui un café !</p>
+    <a href="/" class="btn btn-warning">Retour à l'accueil</a>
+  </div>
+  <p class="mt-8 text-white opacity-75">Les chats serveurs dorment profondément 😴</p>
+</div>
+{% endblock %}

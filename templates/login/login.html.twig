@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="w-full max-w-md p-6 rounded-lg shadow-lg">
+            <form method="post">
+                {% if error %}
+                    <div class="alert alert-danger text-red-600 mb-4">
+                        {% if error.message == 'The presented password is invalid.' or error.message == 'Bad credentials.' %}
+                            <p>&#9785;&#65039; Les identifiants sont incorrects. Veuillez les vérifier et réessayer.</p>
+                        {% elseif error.code == 2000 %}
+                            <p>&#9785;&#65039;  {{ error.messageKey|trans(error.messageData, 'security')|raw }}</p>
+                        {% else %}
+                            <p>{{ error.messageKey|trans(error.messageData, 'security')|raw }} </p>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if app.user %}
+                    <div class="mb-3 text-gray-700">
+                        You are logged in as <span class="font-semibold">{{ app.user.userIdentifier }}</span>,
+                        <a href="{{ path('app_logout') }}" class="text-blue-500 hover:underline">Logout</a>
+                    </div>
+                {% endif %}
+
+                <h1 class="text-2xl font-bold text-center mb-5">Please sign in</h1>
+
+                <label for="username" class="block font-medium">Email</label>
+                <input type="email" value="{{ last_username }}" name="_username" id="username"
+                       class="input input-bordered w-full mb-4" autocomplete="email" required autofocus>
+
+                <label for="password" class="block font-medium">Password</label>
+                <input type="password" name="_password" id="password"
+                       class="input input-bordered w-full mb-4" autocomplete="current-password" required>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                {# Activation du Remember Me (facultatif) #}
+
+                <div class="flex items-center mb-4">
+                    <input type="checkbox" name="_remember_me" id="_remember_me" class="checkbox">
+                    <label for="_remember_me" class="ml-2">Remember me</label>
+                </div>
+
+                <div class="flex justify-between items-center mb-4">
+                    <a href="{{ path('app_forgot_password_request') }}" class="link link-primary text-sm">Mot de passe oublié&nbsp;?</a>
+                </div>
+
+                <button class="btn btn-primary w-full">Sign in</button>
+            </form>
+            <p class="text-center text-sm mt-2">Pas encore de compte ? <a href="{{ path('app_register') }}" class="link link-primary hover:underline">Inscrivez-vous</a></p>
+            <div class="space-y-2 my-4">
+                <a href="{{ path('connect_facebook_start') }}" data-turbo="false" class="btn btn-outline btn-info w-full flex items-center justify-center space-x-2 p-1">
+                    <twig:ux:icon name="bi:facebook" class="max-h-full" />
+                    <span>Continuer avec Facebook</span>
+                </a>
+                <a href="{{ path('connect_google_start') }}" data-turbo="false" class="btn btn-outline btn-info w-full flex items-center justify-center space-x-2 p-1">
+                    <twig:ux:icon name="bi:google" class="max-h-full" />
+                    <span>Continuer avec Google</span>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

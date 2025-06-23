@@ -1,0 +1,13 @@
+{% extends 'base_error.html.twig' %}
+{% block title %}Erreur 401 - Non autorisé{% endblock %}
+{% block body %}
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-100 to-purple-400">
+    <div class="bg-white shadow-xl rounded-lg p-10 text-center max-w-lg">
+        <h1 class="text-7xl font-black text-purple-500 mb-4">401</h1>
+        <p class="text-xl font-semibold mb-2 text-purple-700">Non autorisé !</p>
+        <p class="mb-6 text-purple-800">Tu n'as pas le droit d'accéder à cette ressource.<br>Il faut montrer patte blanche&nbsp;!</p>
+        <a href="/" class="btn btn-secondary">Retour à l'accueil</a>
+    </div>
+    <p class="mt-8 text-purple-900 opacity-75">Même les chats ont parfois besoin d'une invitation.</p>
+</div>
+{% endblock %}

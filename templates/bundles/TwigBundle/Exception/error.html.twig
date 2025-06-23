@@ -1,0 +1,20 @@
+{% extends 'base_error.html.twig' %}
+{% block title %}Oups, une erreur{% endblock %}
+{% block body %}
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-gray-600">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="w-40 h-40 mb-8 animate-bounce">
+        <circle cx="100" cy="100" r="90" fill="#f87171"/>
+        <ellipse cx="100" cy="130" rx="40" ry="18" fill="#fff"/>
+        <ellipse cx="70" cy="90" rx="8" ry="12" fill="#fff"/>
+        <ellipse cx="130" cy="90" rx="8" ry="12" fill="#fff"/>
+        <ellipse cx="70" cy="90" rx="4" ry="6" fill="#1f2937"/>
+        <ellipse cx="130" cy="90" rx="4" ry="6" fill="#1f2937"/>
+        <rect x="80" y="120" width="40" height="8" rx="4" fill="#1f2937"/>
+        <ellipse cx="100" cy="145" rx="10" ry="4" fill="#1f2937" opacity="0.1"/>
+        <text x="100" y="115" text-anchor="middle" fill="#fff" font-size="28" font-family="Arial" dy=".3em">?</text>
+    </svg>
+    <h1 class="text-5xl font-bold text-white mb-4">Oups, une erreur est survenue</h1>
+    <p class="text-lg text-white/80 mb-8">On dirait que quelque chose ne s'est pas passé comme prévu.<br>Pas de panique, nos robots sont sur le coup&nbsp;!</p>
+    <a href="/" class="btn btn-primary btn-wide">Retour à l'accueil</a>
+</div>
+{% endblock %}

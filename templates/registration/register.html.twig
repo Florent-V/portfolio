@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center min-h-screen bg-base-200">
+    <div class="card w-full max-w-md shadow-xl bg-base-100">
+        <div class="card-body">
+            <h2 class="text-2xl font-bold text-center">Créez votre compte</h2>
+
+            {{ form_start(registrationForm, {attr: {class: 'space-y-4'}}) }}
+
+            <div class="form-control">
+                {{ form_label(registrationForm.userName, 'Nom d\'utilisateur', {label_attr: {class: 'label-text'}}) }}
+                {{ form_widget(registrationForm.userName, {attr: {class: 'input input-bordered w-full'}}) }}
+                {{ form_errors(registrationForm.userName) }}
+            </div>
+
+            <div class="form-control">
+                {{ form_label(registrationForm.email, 'Email', {label_attr: {class: 'label-text'}}) }}
+                {{ form_widget(registrationForm.email, {attr: {class: 'input input-bordered w-full'}}) }}
+                {{ form_errors(registrationForm.email) }}
+            </div>
+
+            <div class="form-control">
+                {{ form_label(registrationForm.plainPassword.first, 'Mot de passe', {label_attr: {class: 'label-text'}}) }}
+                {{ form_widget(registrationForm.plainPassword.first, {attr: {class: 'input input-bordered w-full'}}) }}
+                {{ form_errors(registrationForm.plainPassword.first) }}
+            </div>
+
+            <div class="form-control">
+                {{ form_label(registrationForm.plainPassword.second, 'Répéter le mot de passe', {label_attr: {class: 'label-text'}}) }}
+                {{ form_widget(registrationForm.plainPassword.second, {attr: {class: 'input input-bordered w-full'}}) }}
+                {{ form_errors(registrationForm.plainPassword.second) }}
+            </div>
+
+            <div class="form-control">
+                <label class="cursor-pointer flex items-center">
+                    {{ form_widget(registrationForm.agreeTerms, {attr: {class: 'checkbox checkbox-primary'}}) }}
+                    <span class="ml-2 text-sm">J'accepte les <a href="#" class="text-primary hover:underline">termes et conditions</a></span>
+                </label>
+                {{ form_errors(registrationForm.agreeTerms) }}
+            </div>
+
+            <div class="form-control mt-6">
+                <button type="submit" class="btn btn-primary w-full">S'inscrire</button>
+            </div>
+
+            <p class="text-center text-sm">
+                Déjà un compte ? <a href="{{ path('app_login') }}" class="text-primary hover:underline">Connectez-vous</a>
+            </p>
+
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

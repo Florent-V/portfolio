@@ -1,0 +1,47 @@
+grumphp:
+    tasks:
+        composer:
+            file: ./composer.json
+        phpversion:
+            project: '8.2'
+        phpcs:
+            standard: ['PSR12']
+            ignore_patterns:
+                - '*/migrations/*'
+                - '*/var/*'
+            whitelist_patterns:
+                - '/src/'
+        phpcsfixer2:
+            config: .php-cs-fixer.dist.php
+            config_contains_finder: true
+            verbose: true
+            diff: false
+        phpstan:
+            configuration: ./phpstan.dist.neon
+            level: 6
+        phpmd:
+            whitelist_patterns:
+                - 'src'
+            exclude:
+                - 'src/Kernel.php'
+                - 'migrations'
+                - 'var'
+            ruleset:
+                - 'phpmd.xml'
+        twigcsfixer:
+            paths: []
+            level: ~
+            config: ~
+            report: 'text'
+            no-cache: false
+            verbose: false
+            triggered_by: ['twig']
+        eslint:
+            bin: node_modules/.bin/eslint
+            triggered_by: [ js, vue ]
+            whitelist_patterns:
+                - /^assets\/(.*)/
+            config: eslint.config.mjs
+    fixer:
+        enabled: true
+        fix_by_default: true

@@ -1,0 +1,43 @@
+html,
+body {
+    box-sizing: border-box;
+}
+
+/* Définition de la classe container avec @utility */
+@utility container {
+    margin-inline: auto;
+    padding: 1rem; /* Padding de base pour les petits écrans */
+    width: 100%;
+
+    @variant sm {
+        padding-inline: 1.5rem;
+        max-width: 640px;
+    }
+
+    @variant md {
+        padding-inline: 2rem;
+        max-width: 768px;
+    }
+
+    @variant lg {
+        padding-inline: 2.5rem;
+        max-width: 1024px;
+    }
+
+    @variant xl {
+        padding-inline: 3rem;
+        max-width: 1280px;
+    }
+
+    @variant 2xl {
+        padding-inline: 4rem;
+        max-width: 1536px;
+    }
+}
+
+
+.fade-out {
+    opacity: 0;
+    transform: translateY(5rem);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}

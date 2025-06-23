@@ -1,0 +1,40 @@
+<div class="container card bg-base-100 shadow-xl p-6">
+    {{ form_start(form, {attr: {class: 'space-y-4'}}) }}
+
+    <div class="form-control">
+        {{ form_label(form.name, 'Name', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+        {{ form_widget(form.name, {attr: {class: 'input input-bordered w-full'}}) }}
+        {{ form_errors(form.name) }}
+    </div>
+
+    <div class="form-control">
+        {{ form_label(form.description, 'Description', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+        {{ form_widget(form.description, {attr: {class: 'textarea textarea-bordered w-full'}}) }}
+        {{ form_errors(form.description) }}
+    </div>
+
+    <div class="form-control">
+        {{ form_label(form.price, 'Price (€)', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+        {{ form_widget(form.price, {attr: {class: 'input input-bordered w-full'}}) }}
+        {{ form_errors(form.price) }}
+    </div>
+
+    <div class="form-control">
+        {{ form_label(form.stock, 'Stock', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+        {{ form_widget(form.stock, {attr: {class: 'input input-bordered w-full'}}) }}
+        {{ form_errors(form.stock) }}
+    </div>
+
+    <div class="form-control">
+        {{ form_label(form.pictureFile, 'Product Image', {label_attr: {class: 'label text-lg font-semibold'}}) }}
+        {{ form_widget(form.pictureFile, {attr: {class: 'file-input file-input-bordered w-full'}}) }}
+        {{ form_errors(form.pictureFile) }}
+    </div>
+
+    <div class="flex gap-4 mt-4">
+        <button type="submit" class="btn btn-primary">{{ product.id ? 'Update' : 'Create' }}</button>
+        <a href="{{ path('app_product_index') }}" class="btn btn-outline btn-secondary">Cancel</a>
+    </div>
+
+    {{ form_end(form) }}
+</div>

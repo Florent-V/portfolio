@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {# Meta tags pour PWA #}
+    <meta name="theme-color" content="#4285f4">
+    <meta name="description" content="Description de votre application PWA">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-status-bar-style" content="black">
+    <meta name="mobile-web-app-title" content="SymfonyApp">
+
+    {# Manifest PWA #}
+    <link rel="manifest" href="{{ asset('/manifest.json') }}">
+
+    {# Icônes Apple #}
+    <link rel="apple-touch-icon" href="{{ asset('build/pwa/icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('build/pwa/icons/icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('build/pwa/icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" sizes="167x167" href="{{ asset('build/pwa/icons/icon-152x152.png') }}">
+
+    {# CSS pour les écrans de chargement pour iOS #}
+    <style>
+        body {
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+    </style>
+
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ asset('build/images/icons/favicon.ico') }}"/>
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
+    <script>
+        console.log('localStorage.getItem(\'theme\')', localStorage.getItem('theme'));
+        document.documentElement.setAttribute(
+            'data-theme', localStorage.getItem('theme') || 'dark'
+        );
+    </script>
+</head>
+
+<body
+        class="min-h-screen flex flex-col"
+        {{ stimulus_controller(' deleteAlert') }}
+>
+    {# Section pour le menu de navigation #}
+    {{ include('_include/_navbar.html.twig') }}
+
+    {# Contenu principal de la page #}
+    <div class="flex-grow flex flex-col">
+        {% block body %}{% endblock %}
+    </div>
+
+    {# Section pour les messages flash #}
+    {{ include('_include/_flash_message.html.twig') }}
+
+</body>
+</html>

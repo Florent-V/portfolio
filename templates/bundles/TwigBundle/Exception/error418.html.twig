@@ -1,0 +1,20 @@
+{% extends 'base_error.html.twig' %}
+{% block title %}418 - I'm a teapot{% endblock %}
+{% block body %}
+<div class="min-h-screen flex flex-col justify-center items-center bg-base-200">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" class="w-40 h-40 mb-8 animate-bounce">
+        <!-- Teapot SVG -->
+        <ellipse cx="100" cy="120" rx="60" ry="40" fill="#f59e42"/>
+        <rect x="60" y="110" width="80" height="30" rx="15" fill="#fff7ed"/>
+        <ellipse cx="100" cy="110" rx="25" ry="12" fill="#fff"/>
+        <ellipse cx="120" cy="120" rx="5" ry="8" fill="#92400e"/>
+        <ellipse cx="80" cy="120" rx="5" ry="8" fill="#92400e"/>
+        <rect x="90" y="135" width="20" height="8" rx="4" fill="#92400e"/>
+        <path d="M150 120 Q170 110 150 100" stroke="#92400e" stroke-width="5" fill="none"/>
+        <text x="100" y="100" text-anchor="middle" fill="#fff" font-size="28" font-family="Arial" dy=".3em">418</text>
+    </svg>
+    <h1 class="text-4xl font-bold text-orange-700 mb-4">Je suis une théière</h1>
+    <p class="text-lg text-orange-800 mb-8">Tu as tenté de me faire faire du café&nbsp;?<br>Erreur&nbsp;: je ne suis qu'une humble théière ☕🫖</p>
+    <a href="/" class="btn btn-accent btn-wide">Retour à l'accueil</a>
+</div>
+{% endblock %}

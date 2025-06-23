@@ -1,0 +1,10 @@
+@import 'tailwindcss' source(none);
+@source "../vue";
+@source "../../templates/";
+@source inline("alert-{danger,success,error,warning,info}");
+@source inline("bg-red-600 bg-white/10 backdrop-blur-sm");
+@plugin "@tailwindcss/typography";
+
+@plugin "daisyui" {
+    themes: all;
+}

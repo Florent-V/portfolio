@@ -1,0 +1,13 @@
+{% extends 'base_error.html.twig' %}
+{% block title %}Erreur 504 - Délai dépassé{% endblock %}
+{% block body %}
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-green-600 to-blue-400">
+  <div class="bg-white shadow-xl rounded-lg p-10 text-center max-w-lg">
+    <h1 class="text-7xl font-black text-green-700 mb-4">504</h1>
+    <p class="text-xl font-semibold mb-2">Délai dépassé !</p>
+    <p class="mb-6">Le serveur a mis trop de temps à répondre.<br>Peut-être qu'il s'est arrêté pour jouer avec une pelote de laine.</p>
+    <a href="/" class="btn btn-success">Retour à l'accueil</a>
+  </div>
+  <p class="mt-8 text-white opacity-75">Patience... Ou pas 😸</p>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base_error.html.twig' %}
+{% block title %}Erreur 502 - Mauvaise passerelle{% endblock %}
+{% block body %}
+<div class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-pink-600 to-yellow-400">
+  <div class="bg-white shadow-xl rounded-lg p-10 text-center max-w-lg">
+    <h1 class="text-7xl font-black text-pink-700 mb-4">502</h1>
+    <p class="text-xl font-semibold mb-2">Mauvaise passerelle !</p>
+    <p class="mb-6">On dirait que la passerelle a pris ses vacances...<br>Essayez de recharger ou de revenir plus tard.</p>
+    <a href="/" class="btn btn-warning">Retour à l'accueil</a>
+  </div>
+  <p class="mt-8 text-white opacity-75">Le chat responsable du réseau est introuvable.</p>
+</div>
+{% endblock %}
