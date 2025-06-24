@@ -1,7 +1,12 @@
 framework:
-    default_locale: en
+    default_locale: fr # Changed to French as default
     translator:
         default_path: '%kernel.project_dir%/translations'
         fallbacks:
-            - en
-        providers:
+            - fr # Fallback to French if a specific translation is missing in another locale
+        providers: # Example for multiple loaders if needed, not strictly necessary for basic setup
+        # you can also configure multiple loaders with different paths
+        # local_translations:
+        #    locales: ['fr', 'en']
+        #    domains: ['messages'] # you can also restrict the domains for this provider
+        #    paths:

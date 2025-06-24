@@ -116,6 +116,7 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.1",
         "friendsofphp/php-cs-fixer": "^3.73",
         "phpmd/phpmd": "^2.15",
         "phpro/grumphp": "^2.12",

@@ -33,16 +33,20 @@
     <link rel="icon" type="image/png" href="{{ asset('build/images/icons/favicon.ico') }}"/>
     {% block stylesheets %}
         {{ encore_entry_link_tags('app') }}
+        <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" rel="stylesheet">
     {% endblock %}
 
     {% block javascripts %}
         {{ encore_entry_script_tags('app') }}
+        <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     {% endblock %}
     <script>
-        console.log('localStorage.getItem(\'theme\')', localStorage.getItem('theme'));
-        document.documentElement.setAttribute(
-            'data-theme', localStorage.getItem('theme') || 'dark'
-        );
+      // Theme switcher logic (keep as is)
+      // console.log('localStorage.getItem(\'theme\')', localStorage.getItem('theme'));
+      document.documentElement.setAttribute(
+        'data-theme', localStorage.getItem('theme') || 'dark' // Default theme can be 'light', 'dark', or any DaisyUI theme
+      );
     </script>
 </head>
 
@@ -61,5 +65,11 @@
     {# Section pour les messages flash #}
     {{ include('_include/_flash_message.html.twig') }}
 
+    <script>
+      AOS.init({
+        duration: 800, // values from 0 to 3000, with step 50ms
+        once: true, // whether animation should happen only once - while scrolling down
+      });
+    </script>
 </body>
 </html>

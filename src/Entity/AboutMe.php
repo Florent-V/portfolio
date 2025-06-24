@@ -58,7 +58,7 @@ class AboutMe
     private ?File $profilePictureFile = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $pictureFileName = null;
+    private ?string $profilePictureName = null;
 
     public function __construct()
     {
@@ -139,14 +139,14 @@ class AboutMe
         return $this;
     }
 
-    public function getPictureFileName(): ?string
+    public function getProfilePictureName(): ?string
     {
-        return $this->pictureFileName;
+        return $this->profilePictureName;
     }
 
-    public function setPictureFileName(?string $pictureFileName): static
+    public function setProfilePictureName(?string $profilePictureName): static
     {
-        $this->pictureFileName = $pictureFileName;
+        $this->profilePictureName = $profilePictureName;
 
         return $this;
     }

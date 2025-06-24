@@ -1,0 +1,25 @@
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
+{% if field.value is not empty %}
+    <div class="badges-list">
+        {% for technology in field.value %}
+            <span class="badge badge-secondary mr-1">
+                {% if technology.imageName %}
+                    <img src="{{ asset('/uploads/images/technologies/' ~ technology.imageName) }}" alt="{{ technology.name }}" class="ea-assoc-image" style="height: 1.2em; margin-right: 0.3em; vertical-align: middle;">
+                {% endif %}
+                {{ technology.name }}
+            </span>
+        {% endfor %}
+    </div>
+{% else %}
+    <span class="badge badge-danger">None</span>
+{% endif %}
+
+<style>
+    .ea-assoc-image {
+        max-width: 20px; /* Adjust as needed */
+        max-height: 20px; /* Adjust as needed */
+        border-radius: 3px;
+    }
+</style>

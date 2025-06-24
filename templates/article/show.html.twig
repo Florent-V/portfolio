@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.title }} - {{ parent() }}{% endblock %} {# article.title from DB #}
+
+{% block body %}
+    <div class="bg-base-200 py-12 md:py-20 min-h-screen">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <article class="max-w-3xl mx-auto bg-base-100 shadow-xl rounded-lg overflow-hidden" data-aos="fade-up">
+
+                {% if article.mainImageName %}
+                    <figure class="h-64 md:h-80 lg:h-96 w-full" data-aos="zoom-in">
+                        <img src="{{ asset('uploads/images/articles/' ~ article.mainImageName) }}"
+                             alt="{{ 'common.main_article_image_alt'|trans({'%title%': article.title}) }}"
+                             class="object-cover w-full h-full">
+                    </figure>
+                {% endif %}
+
+                <div class="p-6 md:p-8 lg:p-10">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-2" data-aos="fade-left" data-aos-delay="100">{{ article.title }}</h1> {# From DB #}
+
+                    <div class="text-sm text-base-content opacity-70 mb-6" data-aos="fade-left" data-aos-delay="200">
+                        <span>{{ 'article.published_on'|trans }} {{ article.publishedAt|date('d F Y à H:i') }}</span>
+                        {% if article.author %}
+                            <span>{{ 'article.by_author'|trans }} <a href="#" class="link link-hover">{{ article.author.userName|default(article.author.firstName ~ ' ' ~ article.author.lastName) }}</a></span> {# Author from DB #}
+                        {% endif %}
+                    </div>
+
+                    <div class="prose lg:prose-lg xl:prose-xl max-w-none mb-8 text-base-content" data-aos="fade-up" data-aos-delay="300">
+                        {{ article.content|raw }} {# From DB, assuming content comes from a WYSIWYG editor #}
+                    </div>
+
+                    {% if article.technologies is not empty %}
+                        <div class="mb-8" data-aos="fade-up" data-aos-delay="400">
+                            <h3 class="text-lg md:text-xl font-semibold text-secondary mb-3">{{ 'article.tech_covered'|trans }}</h3>
+                            <div class="flex flex-wrap gap-2">
+                                {% for tech in article.technologies %}
+                                    <span class="badge badge-md lg:badge-lg badge-outline" data-aos="zoom-in" data-aos-delay="{{ 500 + loop.index0 * 50 }}">
+                                    {% if tech.imageName %}
+                                        <img src="{{ asset('uploads/images/technologies/' ~ tech.imageName) }}" alt="{{ tech.name }}" class="h-4 w-4 mr-1.5 object-contain">
+                                    {% endif %}
+                                        {{ tech.name }} {# From DB #}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Placeholder for future comments section #}
+                    {#
+                    <div id="comments" class="mt-12 pt-8 border-t border-base-300">
+                        <h3 class="text-2xl font-semibold text-secondary mb-6">Commentaires</h3>
+                        <p class="text-base-content opacity-70">Les commentaires seront bientôt disponibles.</p>
+                    </div>
+                    #}
+
+                    <div class="text-center border-t pt-8 mt-8" data-aos="fade-up" data-aos-delay="600">
+                        <a href="{{ path('app_article_index') }}" class="btn btn-ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" /></svg>
+                            {{ 'article.back_to_articles'|trans }}
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+{% endblock %}
