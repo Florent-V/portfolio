@@ -26,7 +26,7 @@ services:
 
   database:
     image: mysql:8.0.33
-    container_name: omega-db-local
+    container_name: portfolio-db-local
     restart: unless-stopped
     ports:
       - '${DB_PORT}:3306'
