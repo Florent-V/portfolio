@@ -12,6 +12,48 @@ vich_uploader:
             uri_prefix: /uploads/images/profiles
             upload_destination: '%kernel.project_dir%/public/uploads/images/profiles'
             namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+        cv_file:
+            uri_prefix: /uploads/files/cv
+            upload_destination: '%kernel.project_dir%/public/uploads/files/cv'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
+        article_image:
+            uri_prefix: /uploads/images/articles
+            upload_destination: '%kernel.project_dir%/public/uploads/images/articles'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
+        project_gallery_image:
+            uri_prefix: /uploads/images/projects/gallery
+            upload_destination: '%kernel.project_dir%/public/uploads/images/projects/gallery'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
+        profile_image: # This is for AboutMe entity
+            uri_prefix: /uploads/images/about_me
+            upload_destination: '%kernel.project_dir%/public/uploads/images/about_me'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
+        technology_image:
+            uri_prefix: /uploads/images/technologies
+            upload_destination: '%kernel.project_dir%/public/uploads/images/technologies'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
+        project_image:
+            uri_prefix: /uploads/images/projects
+            upload_destination: '%kernel.project_dir%/public/uploads/images/projects'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            inject_on_load: false
+            delete_on_update: true
+            delete_on_remove: true
 
     #mappings:
     #    products:

@@ -51,6 +51,7 @@ class Product
     #[Assert\File(
         maxSize: '5M',
         mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        mimeTypesMessage: 'Please upload a valid image file : {{ type }}',
     )]
     private ?File $pictureFile = null;
 
