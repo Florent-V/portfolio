@@ -9,11 +9,11 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
 
-class MailerService
+readonly class MailerService
 {
     public function __construct(
-        private readonly MailerInterface $mailer,
-        private readonly Environment $twig,
+        private MailerInterface $mailer,
+        private Environment $twig,
     ) {
     }
 

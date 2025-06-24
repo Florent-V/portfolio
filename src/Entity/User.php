@@ -58,12 +58,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
-    /**
-     * @var Collection<int, OAuthAccount>
-     */
-    #[ORM\OneToMany(targetEntity: OAuthAccount::class, mappedBy: 'user', orphanRemoval: true)]
-    private Collection $oAuthAccounts;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
 
@@ -87,7 +81,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct()
     {
-        $this->oAuthAccounts = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
         $this->articles = new ArrayCollection();
@@ -212,36 +205,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, OAuthAccount>
-     */
-    public function getOAuthAccounts(): Collection
-    {
-        return $this->oAuthAccounts;
-    }
-
-    public function addOAuthAccount(OAuthAccount $oAuthAccount): static
-    {
-        if (!$this->oAuthAccounts->contains($oAuthAccount)) {
-            $this->oAuthAccounts->add($oAuthAccount);
-            $oAuthAccount->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOAuthAccount(OAuthAccount $oAuthAccount): static
-    {
-        if ($this->oAuthAccounts->removeElement($oAuthAccount)) {
-            // set the owning side to null (unless already changed)
-            if ($oAuthAccount->getUser() === $this) {
-                $oAuthAccount->setUser(null);
-            }
-        }
 
         return $this;
     }

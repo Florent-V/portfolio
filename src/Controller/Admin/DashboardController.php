@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\Product;
 use App\Entity\User;
 use App\Enum\Role;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
@@ -20,9 +19,9 @@ class DashboardController extends AbstractDashboardController
 {
     public function index(): Response
     {
-        // return parent::index();
+        return parent::index();
 
-        return $this->redirectToRoute('admin_product_index');
+        // return $this->redirectToRoute('admin_product_index');
 
         // Option 1. You can make your dashboard redirect to some common page of your backend
         //
@@ -61,10 +60,10 @@ class DashboardController extends AbstractDashboardController
             ]);
         }
 
-        if ($this->isGranted('ROLE_ADMIN')) {
-            yield MenuItem::subMenu('Data Settings', 'fa fa-cogs')->setSubItems([
-                MenuItem::linkToCrud('Products', 'fa fa-box', Product::class),
-            ]);
-        }
+        //        if ($this->isGranted('ROLE_ADMIN')) {
+        //            yield MenuItem::subMenu('Data Settings', 'fa fa-cogs')->setSubItems([
+        //                MenuItem::linkToCrud('Products', 'fa fa-box', Product::class),
+        //            ]);
+        //        }
     }
 }
