@@ -16,7 +16,7 @@
             <div class="p-8 md:p-12 rounded-lg text-center max-w-3xl mx-auto">
                 <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-base-content mb-6" data-aos="zoom-in-down">
                     {% if aboutMe.title is defined and aboutMe.title is not empty %}
-{#                        {{ aboutMe.title|split(' - ')|first }}#}
+                        {# {{ aboutMe.title|split(' - ')|first }} #}
                         {{ aboutMe.title }}
                     {% else %}
                         {{ 'hero.welcome_default'|trans }}
@@ -126,9 +126,6 @@
                                         <span class="text-3xl text-accent mb-2"><i class="{{ softSkill.icon }}"></i></span>
                                     {% endif %}
                                     <h3 class="card-title text-lg">{{ softSkill.name }}</h3> {# From DB #}
-                                    {% if softSkill.description %}
-                                        <p class="text-sm text-base-content opacity-70">{{ softSkill.description }}</p> {# From DB #}
-                                    {% endif %}
                                 </div>
                             </div>
                         {% endfor %}
