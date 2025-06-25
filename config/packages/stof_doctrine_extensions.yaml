@@ -8,6 +8,7 @@ stof_doctrine_extensions:
             blameable: true
             loggable: true
             softdeleteable: true
+            sluggable: true
     class:
         blameable: Gedmo\Blameable\BlameableListener
         loggable: Gedmo\Loggable\LoggableListener

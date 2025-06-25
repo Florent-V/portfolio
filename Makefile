@@ -232,10 +232,10 @@ prod-deploy:
 
 ## MySQL
 db-root: ## Ouvre une session MySQL en root dans le conteneur kopeck-db-local
-	docker exec -it omega-db-local mysql -u root -p
+	docker exec -it portfolio-db-local mysql -u root -p
 
 db-secure: ## Supprime root et donne tous les droits à db_user (⚠️ danger en prod)
-	docker exec -i kopeck-db-local mysql -u root -p$$(grep MYSQL_ROOT_PASSWORD .env | cut -d '=' -f2) -e "\
+	docker exec -i portfolio-db-local mysql -u root -p$$(grep MYSQL_ROOT_PASSWORD .env | cut -d '=' -f2) -e "\
 	DROP USER IF EXISTS 'root'@'%'; \
 	DROP USER IF EXISTS 'root'@'localhost'; \
 	CREATE USER IF NOT EXISTS 'db_user'@'%' IDENTIFIED BY 'db_password'; \

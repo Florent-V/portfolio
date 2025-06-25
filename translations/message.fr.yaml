@@ -1,0 +1,349 @@
+# translations/messages.fr.yaml
+navbar:
+  home: Mon Portfolio
+  about: À Propos
+  skills: Compétences
+  projects: Projets
+  articles: Articles
+  experience: Parcours
+  contact: Contact
+
+hero:
+  welcome_default: Bienvenue sur Mon Portfolio
+  learn_more: En savoir plus
+  download_cv: Télécharger CV
+  passionate_developer: Développeur Web Passionné | Créateur de Solutions Innovantes
+
+sections:
+  about_me: À Propos de Moi
+  skills: Compétences Techniques
+  recent_projects: Mes Projets Récents
+  view_all_projects: Voir tous les projets
+  journey: Mon Parcours
+  professional_experiences: Expériences Professionnelles
+  education: Formations
+  soft_skills: Compétences Humaines # Added
+  hobbies: Loisirs & Intérêts
+  contact_me: Contactez-moi
+  contact_prompt: N'hésitez pas à me laisser un message.
+
+project:
+  all_projects: Tous Mes Projets
+  discover_realizations: Découvrez une sélection de mes réalisations.
+  details: Détails
+  live_site: Site Live
+  source_code: Code Source (GitHub)
+  back_to_projects: Retour à tous les projets
+  start_date: "Début:"
+  end_date: "Fin:"
+  tech_used: Technologies Utilisées
+
+article:
+  all_articles: Articles & Actualités
+  discover_posts: Retrouvez ici mes analyses, tutoriels et réflexions techniques.
+  read_more: Lire la suite
+  published_on: Publié le
+  by_author: par
+  tech_covered: "Technologies abordées :"
+  back_to_articles: Retour à la liste des articles
+  no_articles: Aucun article publié pour le moment.
+  come_back_soon_articles: Revenez bientôt pour découvrir mes publications !
+
+form:
+  contact:
+    name: Votre Nom
+    email: Votre Email
+    subject: Sujet
+    message: Votre Message
+    send: Envoyer le Message
+    note_demo: "Note: Ce formulaire est une démo et n'envoie pas de messages actuellement." # This will be removed after contact form implementation
+  flash:
+    contact_success: Votre message a bien été envoyé ! Je vous répondrai dès que possible.
+    contact_error_generic: Une erreur est survenue lors de l'envoi du message. Veuillez réessayer plus tard.
+
+footer:
+  copyright_by: "Tous droits réservés par"
+  powered_by: "Theme DaisyUI & Tailwind CSS. Propulsé par Symfony."
+  your_name_here: Votre Nom Ici # Fallback if user name not set
+
+common:
+  present: Présent
+  ongoing: En cours
+  none: Aucun
+  no_items_default: "Les informations seront bientôt disponibles."
+  no_items_category: "Aucune technologie listée pour cette catégorie."
+  no_projects_default: "Mes projets seront bientôt présentés ici."
+  no_experiences_default: "Mes expériences professionnelles seront bientôt détaillées ici."
+  no_educations_default: "Mes formations seront bientôt détaillées ici."
+  plus_more: "+ %count% de plus"
+  profile_picture: Photo de profil
+  main_project_image_alt: "Image principale du projet %title%"
+  main_article_image_alt: "Image principale de l'article %title%"
+  project_gallery_image_alt: "%project_title% - Image %index%"
+  admin_dashboard: Tableau de bord Admin
+  my_profile: Mon Profil
+  change_password: Changer le mot de passe
+  logout: Déconnexion
+  theme_toggle:
+    light: Mode Clair
+    dark: Mode Sombre
+    toggle: Basculer le thème
+  open_main_menu: Ouvrir le menu principal
+  default_portfolio_title: Mon Portfolio
+  view_cv: Voir mon CV
+  no_file_uploaded: Aucun fichier uploadé.
+  download: "(Télécharger)"
+  see_more: Voir Plus
+  no_projects_yet: Aucun projet à afficher pour le moment.
+  come_back_soon_projects: Revenez bientôt pour découvrir mes réalisations !
+  back_to_home: Retour à l'accueil
+  published: Publié
+  draft: Brouillon
+  yes: Oui
+  no: Non
+  created_at: Créé le
+  updated_at: Mis à jour le
+  image_upload_help: "Uploadez une image (JPEG, PNG, WEBP, SVG). Max %size%."
+  file_upload_help: "Uploadez un fichier (%type%). Max %size%."
+  image_main: Image Principale
+  image_gallery: Galerie d'images
+  image_gallery_help: Ajoutez des images supplémentaires pour la galerie du projet.
+  alt_text_label: Texte alternatif (pour l'accessibilité)
+  display_order_label: Ordre d'affichage
+  slug_label: Slug (URL)
+  slug_help: Laissez vide pour générer automatiquement à partir du titre, ou personnalisez.
+  author_label: Auteur
+  author_help: Auteur de l'article.
+  related_tech_label: Technologies Associées
+  related_tech_help: Liez cet %entity% à des technologies spécifiques.
+  published_label: Publié ?
+  publication_date_label: Date de Publication
+  publication_date_help: Si l'article est publié, la date de publication sera mise à jour automatiquement si vide. Peut être post-daté.
+  content_label: Contenu
+  main_image_upload_label: Uploader l'Image Principale
+  main_image_article_help: Image d'illustration pour l'article (optionnelle).
+  main_project_image_help: Uploadez l'image principale du projet (JPEG, PNG, WEBP). Max 5MB.
+  cv_upload_help: Upload your CV in PDF format. Max 5MB.
+  profile_picture_upload_help: Upload your profile picture (JPEG, PNG, WEBP). Max 2MB.
+  level_help: Proficiency level (1-5), optional.
+  display_order_help: Order in which categories are displayed (lower numbers first).
+  icon_help: Enter a FontAwesome class (e.g., "fas fa-code") or an SVG path/filename.
+  project_url_label: Project URL
+  repository_url_label: Repository URL
+  start_date_label: Date de début
+  end_date_label: Date de fin
+  end_date_education_help: Leave empty if it is your current or ongoing education.
+  end_date_experience_help: Leave empty if this is your current position.
+  current_position_label: Current Position
+  current_position_help: Check if this is your current ongoing position. End date will be ignored if checked.
+  degree_label: Diplôme
+  institution_label: Institution
+  job_title_label: Titre du poste
+  company_label: Entreprise
+  description_label: Description
+  title_label: Titre
+  name_label: Nom
+  image_label: Image
+  category_label: Catégorie
+  level_label: Niveau
+  cv_file_label: CV (PDF)
+  profile_picture_label: Photo de Profil
+  cv_filename_label: CV Filename
+
+# EasyAdmin specific (example, can be expanded)
+ea:
+  action:
+    new: Créer %entity_label_singular%
+    edit: Modifier
+    detail: Voir
+    delete: Supprimer
+    save: Enregistrer les modifications
+    saveAndContinue: Enregistrer et continuer l'édition
+    saveAndReturn: Enregistrer et retourner à la liste
+  page_title:
+    dashboard: Tableau de bord
+    index: Liste des %entity_label_plural%
+    detail: "%entity_label_singular% <small>(#%entity_id%)</small>"
+    new: Créer un nouveau %entity_label_singular%
+    edit: Modifier %entity_label_singular% <small>(#%entity_id%)</small>
+  field:
+    id: ID
+  confirm_delete_message: Êtes-vous sûr de vouloir supprimer cet élément ? Cette action est irréversible.
+  flash:
+    entity_created: "%entity_label_singular% créé(e) avec succès."
+    entity_updated: "%entity_label_singular% mis(e) à jour avec succès."
+    entity_deleted: "%entity_label_singular% supprimé(e) avec succès."
+    entity_persist_error: "Une erreur est survenue lors de la sauvegarde de %entity_label_singular%."
+    entity_delete_error: "Une erreur est survenue lors de la suppression de %entity_label_singular%."
+  paginator:
+    first: Début
+    previous: Précédent
+    next: Suivant
+    last: Fin
+    counter: "<strong>%start%</strong> - <strong>%end%</strong> sur <strong>%results%</strong>"
+    counter_is_empty: Aucun résultat
+  no_results_found: Aucun résultat trouvé.
+  filter: Filtrer
+  boolean:
+    true: Oui
+    false: Non
+    null: Non défini
+  entity:
+    AboutMe: "Information 'À Propos'"
+    User: Utilisateur
+    Project: Projet
+    Article: Article
+    SkillCategory: "Catégorie de Compétence"
+    Technology: Technologie
+    Education: Formation
+    Experience: Expérience
+    Hobby: Loisir
+    ProjectImage: "Image de Projet"
+    SoftSkill: "Compétence Humaine" # Added
+  crud:
+    help:
+      AboutMe: Configurez votre information "À Propos". Une seule entrée est supportée.
+      Project: Gérez vos projets ici.
+      SoftSkill: Gérez vos compétences humaines (soft skills) ici. # Added
+      # Add more help messages for other entities if needed
+  action_about_me_edit_or_new: "Configurer 'À Propos'" # Custom for dashboard link
+  section:
+    portfolio_content: Contenu du Portfolio
+    skills_technologies: Compétences & Technologies
+    administration: Administration
+  label:
+    dashboard: Tableau de bord
+    about_me: À Propos
+    projects: Projets
+    articles: Articles
+    skill_categories: Catégories de Compétences
+    technologies: Technologies
+    soft_skills: Compétences Humaines # Added
+    education: Formations
+    experience: Expériences
+    hobbies: Loisirs
+    users: Utilisateurs
+    main_image: Image Principale
+    upload_main_image: Uploader l'Image Principale
+    gallery_images: "Galerie d'images"
+    published: Publié ?
+    title: Titre
+    slug: Slug (URL)
+    content: Contenu
+    author: Auteur
+    related_technologies: Technologies Associées
+    publication_date: Date de Publication
+    created_at: Créé le
+    updated_at: Mis à jour le
+    cv_file: CV (PDF)
+    profile_picture: Photo de Profil
+    cv_filename: Nom du fichier CV
+    description: Description
+    start_date: Date de début
+    end_date: Date de fin
+    project_url: URL du Projet
+    repository_url: URL du Dépôt
+    degree: Diplôme
+    institution: Institution
+    job_title: Titre du poste
+    company: Entreprise
+    is_current: Poste Actuel ?
+    name: Nom
+    icon: Icône
+    image: Image
+    category: Catégorie
+    level: Niveau (1-5)
+    display_order: Ordre d'affichage
+    alt_text: Texte alternatif
+    email: Email
+    roles: Rôles
+    first_name: Prénom
+    last_name: Nom
+    user_name: Nom d'utilisateur
+    is_verified: Vérifié ?
+    phone: Téléphone
+    picture: Photo
+    password: Mot de passe
+    new_password: Nouveau mot de passe
+    confirm_password: Confirmer le mot de passe
+    current_password: Mot de passe actuel
+
+# Specific to VichUploaderBundle or forms if needed
+vich_uploader:
+  form_label:
+    delete: Supprimer ?
+  edit: Modifier
+  download: Télécharger
+  remove: Supprimer
+  upload: Uploader un fichier
+  cancel: Annuler
+
+# Symfony Security
+login:
+  username: Adresse email
+  password: Mot de passe
+  submit: Se connecter
+  remember_me: Se souvenir de moi
+  forgot_password: Mot de passe oublié ?
+  error: Identifiants invalides.
+
+reset_password:
+  request:
+    title: Réinitialiser votre mot de passe
+    label: Email
+    submit: Envoyer l'email de réinitialisation
+    help: Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+    back_to_login: Retour à la connexion
+  check_email:
+    title: Email de réinitialisation envoyé
+    message_line1: Un email a été envoyé contenant un lien sur lequel vous pouvez cliquer pour réinitialiser votre mot de passe.
+    message_line2: Ce lien expirera dans %ttl_hours% heure(s).
+    message_line3: Si vous ne recevez pas d'email, veuillez vérifier votre dossier spam ou <a href="%request_path%">réessayer</a>.
+  reset:
+    title: Réinitialiser votre mot de passe
+    label_new_password: Nouveau mot de passe
+    label_confirm_password: Confirmer le mot de passe
+    submit: Réinitialiser le mot de passe
+    password_mismatch: Les mots de passe ne correspondent pas.
+
+page_not_found:
+  title: Page non trouvée (Erreur 404)
+  message: Désolé, la page que vous recherchez n'existe pas ou a été déplacée.
+  back_home: Retourner à l'accueil
+
+# PWA related (if any visible strings)
+pwa:
+  offline: Vous êtes actuellement hors ligne. Certaines fonctionnalités peuvent ne pas être disponibles.
+  update_available: Une nouvelle version est disponible. Veuillez rafraîchir.
+
+# Dates
+date:
+  formats:
+    short: d/m/Y
+    long: d F Y
+    datetime: d F Y à H:i
+  months:
+    january: Janvier
+    february: Février
+    march: Mars
+    april: Avril
+    may: Mai
+    june: Juin
+    july: Juillet
+    august: Août
+    september: Septembre
+    october: Octobre
+    november: Novembre
+    december: Décembre
+  days:
+    monday: Lundi
+    tuesday: Mardi
+    wednesday: Mercredi
+    thursday: Jeudi
+    friday: Vendredi
+    saturday: Samedi
+    sunday: Dimanche
+  # Add more as needed
+time:
+  ago: il y a
+  # ... more time related translations

@@ -58,12 +58,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
-    /**
-     * @var Collection<int, OAuthAccount>
-     */
-    #[ORM\OneToMany(targetEntity: OAuthAccount::class, mappedBy: 'user', orphanRemoval: true)]
-    private Collection $oAuthAccounts;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $phone = null;
 
@@ -79,11 +73,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Ignore]
     private ?File $pictureFile = null;
 
+    /**
+     * @var Collection<int, Article>
+     */
+    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'author', orphanRemoval: true)]
+    private Collection $articles;
+
     public function __construct()
     {
-        $this->oAuthAccounts = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
+        $this->articles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -209,36 +209,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, OAuthAccount>
-     */
-    public function getOAuthAccounts(): Collection
-    {
-        return $this->oAuthAccounts;
-    }
-
-    public function addOAuthAccount(OAuthAccount $oAuthAccount): static
-    {
-        if (!$this->oAuthAccounts->contains($oAuthAccount)) {
-            $this->oAuthAccounts->add($oAuthAccount);
-            $oAuthAccount->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOAuthAccount(OAuthAccount $oAuthAccount): static
-    {
-        if ($this->oAuthAccounts->removeElement($oAuthAccount)) {
-            // set the owning side to null (unless already changed)
-            if ($oAuthAccount->getUser() === $this) {
-                $oAuthAccount->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getPhone(): ?string
     {
         return $this->phone;
@@ -273,6 +243,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->pictureFile = $pictureFile;
         if ($pictureFile) {
             $this->updatedAt = new \DateTime('now');
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Article>
+     */
+    public function getArticles(): Collection
+    {
+        return $this->articles;
+    }
+
+    public function addArticle(Article $article): static
+    {
+        if (!$this->articles->contains($article)) {
+            $this->articles->add($article);
+            $article->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArticle(Article $article): static
+    {
+        if ($this->articles->removeElement($article)) {
+            // set the owning side to null (unless already changed)
+            if ($article->getAuthor() === $this) {
+                $article->setAuthor(null);
+            }
         }
 
         return $this;

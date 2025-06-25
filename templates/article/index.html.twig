@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'article.all_articles'|trans }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="bg-base-200 py-12 md:py-20 min-h-screen">
+        <div class="container mx-auto px-6 lg:px-8">
+            <div class="text-center pt-8 mb-12 md:mb-16" data-aos="fade-down">
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary">{{ 'article.all_articles'|trans }}</h1>
+                <p class="mt-4 text-md md:text-lg text-base-content">{{ 'article.discover_posts'|trans }}</p>
+            </div>
+
+            {% if articles is not empty %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    {% for article in articles %}
+                        <div class="card bg-base-100 shadow-xl transform hover:scale-105 transition-transform duration-300 group" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                            {% if article.mainImageName %}
+                                <figure class="h-56 overflow-hidden">
+                                    <img src="{{ asset('uploads/images/articles/' ~ article.mainImageName) }}"
+                                         alt="{{ 'common.main_article_image_alt'|trans({'%title%': article.title}) }}"
+                                         class="object-cover h-full w-full group-hover:opacity-80 transition-opacity duration-300"/>
+                                </figure>
+                            {% else %}
+                                {# Placeholder if no image #}
+                                <figure class="h-56 bg-neutral flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-neutral-content opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                </figure>
+                            {% endif %}
+                            <div class="card-body p-5">
+                                <h2 class="card-title text-xl lg:text-2xl hover:text-primary transition-colors">
+                                    <a href="{{ path('app_article_show', {slug: article.slug}) }}">{{ article.title }}</a> {# From DB #}
+                                </h2>
+                                <p class="text-xs text-base-content opacity-60 mb-1">
+                                    {{ 'article.published_on'|trans }} {{ article.publishedAt|date('d M Y') }} {{ 'article.by_author'|trans }} {{ article.author.userName|default('Admin') }} {# Author from DB #}
+                                </p>
+                                <p class="text-sm text-base-content opacity-80 mb-3 min-h-[3.75rem]">
+                                    {{ article.content|striptags|slice(0, 120) }}{% if article.content|striptags|length > 120 %}...{% endif %} {# From DB #}
+                                </p>
+
+                                <div class="mb-3">
+                                    {% for tech in article.technologies|slice(0, 3) %}
+                                        <span class="badge badge-outline badge-sm mr-1 mb-1">{{ tech.name }}</span> {# From DB #}
+                                    {% endfor %}
+                                    {% if article.technologies|length > 3 %}
+                                        <span class="badge badge-outline badge-sm">{{ 'common.plus_more'|trans({'%count%': article.technologies|length - 3}) }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="card-actions justify-end mt-auto">
+                                    <a href="{{ path('app_article_show', {slug: article.slug}) }}" class="btn btn-primary btn-sm">
+                                        {{ 'article.read_more'|trans }}
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="transform: translateY(1px);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {# TODO: Add pagination if many articles #}
+            {% else %}
+                <div class="text-center py-10" data-aos="fade-up">
+                    <h3 class="text-2xl font-semibold mb-4">{{ 'article.no_articles'|trans }}</h3>
+                    <p class="text-base-content-secondary">{{ 'article.come_back_soon_articles'|trans }}</p>
+                </div>
+            {% endif %}
+
+            <div class="text-center mt-16" data-aos="fade-up" data-aos-delay="300">
+                <a href="{{ path('app_home') }}" class="btn btn-outline btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                    {{ 'common.back_to_home'|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

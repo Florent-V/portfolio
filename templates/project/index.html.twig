@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'project.all_projects'|trans }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="bg-base-200 py-12 md:py-20 min-h-screen">
+        <div class="container mx-auto px-6 lg:px-8">
+            <div class="text-center pt-8 mb-12 md:mb-16" data-aos="fade-down">
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary">{{ 'project.all_projects'|trans }}</h1>
+                <p class="mt-4 text-md md:text-lg text-base-content">{{ 'project.discover_realizations'|trans }}</p>
+            </div>
+
+            {% if projects is not empty %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    {% for project in projects %}
+                        <div class="card bg-base-100 shadow-xl transform hover:scale-105 transition-transform duration-300 group" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                            <figure class="h-56 overflow-hidden"> {# Fixed height for consistency #}
+                                <img src="{{ project.mainImageName ? asset('uploads/images/projects/' ~ project.mainImageName) : 'https://picsum.photos/seed/' ~ project.id ~ '/600/400' }}"
+                                     alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
+                                     class="object-cover h-full w-full group-hover:opacity-80 transition-opacity duration-300"/>
+                            </figure>
+                            <div class="card-body p-5">
+                                <h2 class="card-title text-xl lg:text-2xl">
+                                    {{ project.title }} {# From DB #}
+                                    {% if project.startDate %}
+                                        <span class="badge badge-neutral badge-sm md:badge-md text-xs">{{ project.startDate|date('Y') }}</span>
+                                    {% endif %}
+                                </h2>
+                                <p class="text-sm text-base-content opacity-80 mb-3 min-h-[3.75rem]"> {# approx 3 lines with text-sm #}
+                                    {{ project.description|striptags|slice(0, 100) }}{% if project.description|striptags|length > 100 %}...{% endif %} {# From DB #}
+                                </p>
+
+                                <div class="mb-3">
+                                    {% for tech in project.technologies|slice(0, 5) %}
+                                        <span class="badge badge-outline badge-sm mr-1 mb-1">{{ tech.name }}</span> {# From DB #}
+                                    {% endfor %}
+                                    {% if project.technologies|length > 5 %}
+                                        <span class="badge badge-outline badge-sm">{{ 'common.plus_more'|trans({'%count%': project.technologies|length - 5}) }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="card-actions justify-end">
+                                    <a href="{{ path('app_project_show_by_id', {id: project.id}) }}" class="btn btn-primary btn-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                        {{ 'project.details'|trans }}
+                                    </a>
+                                    {% if project.url %}
+                                        <a href="{{ project.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                                            {{ 'project.live_site'|trans }}
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-10" data-aos="fade-up">
+                    <h3 class="text-2xl font-semibold mb-4">{{ 'common.no_projects_yet'|trans }}</h3>
+                    <p class="text-base-content-secondary">{{ 'common.come_back_soon_projects'|trans }}</p>
+                </div>
+            {% endif %}
+
+            <div class="text-center mt-16" data-aos="fade-up" data-aos-delay="300">
+                <a href="{{ path('app_home') }}" class="btn btn-outline btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                    {{ 'common.back_to_home'|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

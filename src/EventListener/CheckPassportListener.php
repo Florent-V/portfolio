@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
-use App\Exception\OAuthAccountUsedException;
 use App\Repository\UserRepository;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
@@ -30,12 +29,6 @@ readonly class CheckPassportListener
         $userBadge      = $passport->getBadge(UserBadge::class);
         $userIdentifier = $userBadge->getUserIdentifier();
 
-        $user = $this->userRepository->findOneBy(['email' => $userIdentifier]);
-
-        if ($user && $user->getOAuthAccounts()->count()) {
-            throw new OAuthAccountUsedException(
-                $user->getOAuthAccounts()->first()->getProvider(),
-            );
-        }
+        $this->userRepository->findOneBy(['email' => $userIdentifier]);
     }
 }

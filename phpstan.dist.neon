@@ -7,6 +7,7 @@ parameters:
         - src/
     excludePaths:
         - tests/
+        - src/DataFixtures/
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
     ignoreErrors:

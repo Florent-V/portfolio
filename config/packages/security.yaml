@@ -34,9 +34,6 @@ security:
                 path: /
                 # where to redirect after logout
                 # target: app_any_route
-            custom_authenticators:
-                - App\Security\FacebookAuthenticator
-                - App\Security\GoogleAuthenticator
             entry_point: App\Security\AuthenticationEntryPoint
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

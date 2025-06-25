@@ -9,6 +9,7 @@ grumphp:
             ignore_patterns:
                 - '*/migrations/*'
                 - '*/var/*'
+                - '**/DataFixtures/*.php'
             whitelist_patterns:
                 - '/src/'
         phpcsfixer2:
