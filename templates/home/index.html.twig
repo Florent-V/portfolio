@@ -12,19 +12,17 @@
     <div class="bg-base-200 text-base-content">
 
         <!-- Hero Section -->
-        <section id="hero" class="min-h-screen flex items-center justify-center bg-cover bg-center relative" style="background-image: url('https://picsum.photos/seed/{{ 'now'|date('U') }}/1920/1080');">
-            <div class="absolute inset-0 bg-neutral bg-opacity-60"></div> {# Overlay for better text contrast, adapts to theme #}
-            <div class="relative z-10 p-8 md:p-12 rounded-lg text-center max-w-3xl mx-auto">
-                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-neutral-content mb-6" data-aos="zoom-in-down">
-                    {% if app.user and app.user.firstName and app.user.lastName %}
-                        {{ app.user.firstName }} {{ app.user.lastName }}
-                    {% elseif aboutMe.title is defined and aboutMe.title is not empty %}
-                        {{ aboutMe.title|split(' - ')|first }}
+        <section id="hero" class="min-h-screen flex items-center justify-center bg-base-100">
+            <div class="p-8 md:p-12 rounded-lg text-center max-w-3xl mx-auto">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-base-content mb-6" data-aos="zoom-in-down">
+                    {% if aboutMe.title is defined and aboutMe.title is not empty %}
+{#                        {{ aboutMe.title|split(' - ')|first }}#}
+                        {{ aboutMe.title }}
                     {% else %}
                         {{ 'hero.welcome_default'|trans }}
                     {% endif %}
                 </h1>
-                <p class="text-lg sm:text-xl text-neutral-content mb-8" data-aos="fade-up" data-aos-delay="200">
+                <p class="text-lg sm:text-xl text-base-content mb-8" data-aos="fade-up" data-aos-delay="200">
                     {% if aboutMe.description is defined and aboutMe.description is not empty %}
                         {{ aboutMe.description|striptags|slice(0, 200) }}{% if aboutMe.description|striptags|length > 200 %}...{% endif %}
                     {% else %}
@@ -316,7 +314,7 @@
                 </div>
             </div>
             <div>
-                <p>Copyright © {{ 'now'|date('Y') }} - {{ 'footer.copyright_by'|trans }}
+                <p>Copyright {{ 'now'|date('Y') }} - {{ 'footer.copyright_by'|trans }}
                     {% if app.user and app.user.firstName and app.user.lastName %}
                         {{ app.user.firstName }} {{ app.user.lastName }}
                     {% elseif aboutMe.title is defined and aboutMe.title is not empty %}
