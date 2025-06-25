@@ -103,6 +103,14 @@ class SkillCategoryCrudController extends AbstractCrudController
                     });
             })
 
+            // Ajouter l'action DETAIL sur la page INDEX
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->update(Crud::PAGE_INDEX, Action::DETAIL, function (Action $action) {
+                return $action
+                    ->setIcon('fa fa-eye')
+                    ->setLabel('View Details');
+            })
+
             // Ajouter l'action personnalisée
             ->add(Crud::PAGE_INDEX, $viewTechnologies)
 
@@ -258,16 +266,18 @@ class SkillCategoryCrudController extends AbstractCrudController
             ->hideOnForm();
     }
 
-    private function createCreatedByField(): TextField
+    private function createCreatedByField(): AssociationField
     {
-        return TextField::new('createdBy', 'Created By')
-            ->hideOnForm();
+        return AssociationField::new('createdBy', 'Created By')
+            ->hideOnForm()
+            ->setRequired(false);
     }
 
-    private function createUpdatedByField(): TextField
+    private function createUpdatedByField(): AssociationField
     {
-        return TextField::new('updatedBy', 'Updated By')
-            ->hideOnForm();
+        return AssociationField::new('updatedBy', 'Updated By')
+            ->hideOnForm()
+            ->setRequired(false);
     }
 
     private function createIsDeletedField(): BooleanField
