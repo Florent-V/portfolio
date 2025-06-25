@@ -11,10 +11,10 @@ use App\Entity\Experience;
 use App\Entity\Hobby;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
-use App\Entity\SkillCategory; // Added
+use App\Entity\SkillCategory;
 use App\Entity\SoftSkill;
 use App\Entity\Technology;
-use App\Entity\User; // Assuming you want to link to a User (e.g. the admin user)
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -45,15 +45,21 @@ class AppFixtures extends Fixture
 
     private function loadAdminUser(ObjectManager $manager): User
     {
-        $adminUser = $manager->getRepository(User::class)->findOneByEmail('admin@example.com');
+        $adminUser = $manager
+            ->getRepository(User::class)
+            ->findOneBy(
+                [
+                    'email' => 'superadmin@omega.com',
+                ]
+            );
         if (!$adminUser) {
             $adminUser = new User();
-            $adminUser->setEmail('admin@example.com');
-            $adminUser->setUserName('AdminUser');
-            $adminUser->setFirstName('Admin');
-            $adminUser->setLastName('User');
+            $adminUser->setEmail('superadmin@omega.com');
+            $adminUser->setUserName('Flo');
+            $adminUser->setFirstName('Florent');
+            $adminUser->setLastName('Vasseur');
             $adminUser->setRoles(['ROLE_SUPER_ADMIN', 'ROLE_ADMIN']);
-            $adminUser->setPassword($this->passwordHasher->hashPassword($adminUser, 'adminpass')); // Choose a secure password
+            $adminUser->setPassword($this->passwordHasher->hashPassword($adminUser, 'password'));
             $adminUser->setIsVerified(true);
             $manager->persist($adminUser);
         }
@@ -72,8 +78,8 @@ class AppFixtures extends Fixture
             "où je peux apprendre et partager mes connaissances. \n\n" .
             "En dehors du code, j'apprécie la randonnée, la photographie et les jeux de stratégie."
         );
-        $aboutMe->setCvFileName('placeholder_cv.pdf'); // User needs to place this file
-        $aboutMe->setProfilePictureName('placeholder_profile.jpg'); // User needs to place this file
+        $aboutMe->setCvFileName('test.pdf');
+        $aboutMe->setProfilePictureName('test-600x400.png');
         $manager->persist($aboutMe);
     }
 
@@ -87,19 +93,21 @@ class AppFixtures extends Fixture
         $php->setName('PHP');
         $php->setCategory($scBackend);
         $php->setLevel(5);
-        $php->setImageName('tech_php.svg'); // User needs to place this
+        $php->setImageName('test-600x400.png');
         $manager->persist($php);
         $symfony = new Technology();
         $symfony->setName('Symfony');
         $symfony->setCategory($scBackend);
         $symfony->setLevel(5);
-        $symfony->setImageName('tech_symfony.svg');
+        $symfony->setImageName('test-600x400.png');
         $manager->persist($symfony);
         $laravel = new Technology();
         $laravel->setName('Laravel');
         $laravel->setCategory($scBackend);
+        $laravel->setImageName('test-600x400.png');
         $laravel->setLevel(4);
         $manager->persist($laravel);
+
         $scFrontend = new SkillCategory();
         $scFrontend->setName('Frontend');
         $scFrontend->setDisplayOrder(2);
@@ -108,55 +116,53 @@ class AppFixtures extends Fixture
         $javascript->setName('JavaScript');
         $javascript->setCategory($scFrontend);
         $javascript->setLevel(4);
-        $javascript->setImageName('tech_js.svg');
+        $javascript->setImageName('test-600x400.png');
         $manager->persist($javascript);
-
         $vuejs = new Technology();
         $vuejs->setName('Vue.js');
         $vuejs->setCategory($scFrontend);
         $vuejs->setLevel(4);
-        $vuejs->setImageName('tech_vue.svg');
+        $vuejs->setImageName('test-600x400.png');
         $manager->persist($vuejs);
-
         $tailwind = new Technology();
         $tailwind->setName('Tailwind CSS');
         $tailwind->setCategory($scFrontend);
         $tailwind->setLevel(5);
-        $tailwind->setImageName('tech_tailwind.svg');
+        $tailwind->setImageName('test-600x400.png');
         $manager->persist($tailwind);
 
         $scDatabases = new SkillCategory();
         $scDatabases->setName('Bases de Données');
         $scDatabases->setDisplayOrder(3);
         $manager->persist($scDatabases);
-
         $mysql = new Technology();
         $mysql->setName('MySQL');
         $mysql->setCategory($scDatabases);
         $mysql->setLevel(4);
+        $mysql->setImageName('test-600x400.png');
         $manager->persist($mysql);
-
         $postgresql = new Technology();
         $postgresql->setName('PostgreSQL');
         $postgresql->setCategory($scDatabases);
         $postgresql->setLevel(3);
+        $postgresql->setImageName('test-600x400.png');
         $manager->persist($postgresql);
 
         $scDevOps = new SkillCategory();
         $scDevOps->setName('DevOps & Outils');
         $scDevOps->setDisplayOrder(4);
         $manager->persist($scDevOps);
-
         $docker = new Technology();
         $docker->setName('Docker');
         $docker->setCategory($scDevOps);
         $docker->setLevel(4);
-        $docker->setImageName('tech_docker.svg');
+        $docker->setImageName('test-600x400.png');
         $manager->persist($docker);
         $git = new Technology();
         $git->setName('Git');
         $git->setCategory($scDevOps);
         $git->setLevel(5);
+        $git->setImageName('test-600x400.png');
         $manager->persist($git);
 
         return [
@@ -181,6 +187,7 @@ class AppFixtures extends Fixture
             "Création d'un site portfolio personnel pour présenter mes compétences et réalisations. " .
             "Design moderne et responsive, avec une interface d'administration pour gérer le contenu."
         );
+        $project1->setMainImageName('test-600x400.png');
         $project1->setStartDate(new \DateTime('2023-01-15'));
         $project1->setEndDate(new \DateTime('2023-03-01'));
         $project1->setUrl('https://mon-portfolio-exemple.com');
@@ -216,6 +223,7 @@ class AppFixtures extends Fixture
             "Développement d'une plateforme e-commerce complète avec gestion de produits, paniers, " .
             "commandes et paiements. Intégration d'une API externe pour la gestion des stocks."
         );
+        $project2->setMainImageName('test-600x400.png');
         $project2->setStartDate(new \DateTime('2022-06-01'));
         $project2->setEndDate(new \DateTime('2022-12-20'));
         $project2->setMainImageName('project_ecommerce.jpg');
@@ -240,6 +248,7 @@ class AppFixtures extends Fixture
             "Une application web pour la gestion de tâches personnelles et d'équipe, avec des " .
             'fonctionnalités de priorisation, de suivi du temps et de collaboration.'
         );
+        $project3->setMainImageName('test-600x400.png');
         $project3->setStartDate(new \DateTime('2024-01-10'));
         $project3->setMainImageName('project_taskmanager.jpg');
         $project3->addTechnology($technologies['symfony']);
@@ -351,6 +360,7 @@ class AppFixtures extends Fixture
             "la nouvelle fonction `json_validate()`, en passant par des améliorations de performance... \n\n" .
             'Découvrons ensemble les apports les plus significatifs de cette version et comment ils peuvent impacter positivement vos projets.'
         );
+        $article2->setMainImageName('test-600x400.png');
         $article2->setAuthor($adminUser);
         $article2->addTechnology($technologies['php']);
         $article2->setIsPublished(true);
@@ -365,6 +375,7 @@ class AppFixtures extends Fixture
             "la vie des développeurs backend qui ont besoin de créer des interfaces rapidement sans se perdre dans du CSS complexe. \n\n" .
             'Cet article est un guide de démarrage rapide pour intégrer Tailwind dans vos projets Symfony ou Laravel...'
         );
+        $article3->setMainImageName('test-600x400.png');
         $article3->setAuthor($adminUser);
         $article3->addTechnology($technologies['tailwind']);
         $article3->addTechnology($technologies['symfony']);
@@ -377,60 +388,42 @@ class AppFixtures extends Fixture
     {
         $ssCommunication = new SoftSkill();
         $ssCommunication->setName('Communication');
-        $ssCommunication->setDescription(
-            'Capacité à transmettre des idées clairement, à l\'oral comme à l\'écrit, ' .
-            'et à adapter son discours à différents interlocuteurs.'
-        );
+
         $ssCommunication->setIcon('fas fa-comments');
         $ssCommunication->setDisplayOrder(1);
         $manager->persist($ssCommunication);
 
         $ssTeamwork = new SoftSkill();
         $ssTeamwork->setName('Travail d\'équipe');
-        $ssTeamwork->setDescription(
-            'Collaboration efficace avec les membres d\'une équipe, partage des connaissances ' .
-            'et contribution active aux objectifs communs.'
-        );
+
         $ssTeamwork->setIcon('fas fa-users');
         $ssTeamwork->setDisplayOrder(2);
         $manager->persist($ssTeamwork);
 
         $ssProblemSolving = new SoftSkill();
         $ssProblemSolving->setName('Résolution de problèmes');
-        $ssProblemSolving->setDescription(
-            'Analyse des problèmes complexes, identification des solutions potentielles ' .
-            'et mise en œuvre de la meilleure approche.'
-        );
+
         $ssProblemSolving->setIcon('fas fa-lightbulb'); // or 'fas fa-puzzle-piece'
         $ssProblemSolving->setDisplayOrder(3);
         $manager->persist($ssProblemSolving);
 
         $ssCuriosity = new SoftSkill();
         $ssCuriosity->setName('Curiosité & Apprentissage continu');
-        $ssCuriosity->setDescription(
-            'Volonté d\'apprendre de nouvelles technologies et méthodologies, ' .
-            'veille technologique active.'
-        );
+
         $ssCuriosity->setIcon('fas fa-search'); // or 'fas fa-book-reader'
         $ssCuriosity->setDisplayOrder(4);
         $manager->persist($ssCuriosity);
 
         $ssAdaptability = new SoftSkill();
         $ssAdaptability->setName('Adaptabilité');
-        $ssAdaptability->setDescription(
-            'Capacité à s\'adapter rapidement aux changements de contexte, ' .
-            'de technologies ou de priorités.'
-        );
+
         $ssAdaptability->setIcon('fas fa-cogs'); // or 'fas fa-random'
         $ssAdaptability->setDisplayOrder(5);
         $manager->persist($ssAdaptability);
 
         $ssCreativity = new SoftSkill();
         $ssCreativity->setName('Créativité');
-        $ssCreativity->setDescription(
-            'Penser en dehors des sentiers battus pour trouver des solutions ' .
-            'innovantes aux défis techniques.'
-        );
+
         $ssCreativity->setIcon('fas fa-paint-brush');
         $ssCreativity->setDisplayOrder(6);
         $manager->persist($ssCreativity);
