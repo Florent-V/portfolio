@@ -52,6 +52,9 @@ class SkillCategory
     #[ORM\OrderBy(['name' => 'ASC'])]
     private Collection $technologies;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $icon = null; // For Symfony UX icons
+
     public function __construct()
     {
         $this->setCreatedAt(new \DateTime());
@@ -121,5 +124,17 @@ class SkillCategory
     public function __toString(): string
     {
         return $this->name ?? 'New Skill Category';
+    }
+
+    public function getIcon(): ?string
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(?string $icon): static
+    {
+        $this->icon = $icon;
+
+        return $this;
     }
 }

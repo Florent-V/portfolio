@@ -68,6 +68,9 @@ class Technology
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'technologies')]
     private Collection $projects;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $icon = null; // For Symfony UX icons
+
     public function __construct()
     {
         $this->articles = new ArrayCollection();
@@ -202,5 +205,17 @@ class Technology
     public function __toString(): string
     {
         return $this->name ?? 'New Technology';
+    }
+
+    public function getIcon(): ?string
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(?string $icon): static
+    {
+        $this->icon = $icon;
+
+        return $this;
     }
 }
