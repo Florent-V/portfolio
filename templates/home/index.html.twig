@@ -22,7 +22,7 @@
 
             <div class="container mx-auto px-6 lg:px-8 relative z-10">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-                    
+
                     <!-- Colonne gauche : Photo et éléments visuels -->
                     <div class="m-auto order-2 lg:order-1" data-aos="fade-right" data-aos-duration="1000">
                         <div class="relative">
@@ -30,8 +30,8 @@
                                 <!-- Photo de profil avec effets -->
                                 <div class="relative mx-auto lg:mx-0 w-80 h-80 group">
                                     <div class="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-75 group-hover:opacity-100 transition duration-1000 animate-pulse"></div>
-                                    <img src="{{ asset('uploads/images/about_me/' ~ aboutMe.profilePictureName) }}" 
-                                         alt="{{ 'common.profile_picture'|trans }}" 
+                                    <img src="{{ asset('uploads/images/about_me/' ~ aboutMe.profilePictureName) }}"
+                                         alt="{{ 'common.profile_picture'|trans }}"
                                          class="relative rounded-full shadow-2xl w-full h-full object-cover ring-4 ring-base-300 group-hover:ring-primary transition-all duration-500 transform group-hover:scale-105">
                                 </div>
                                 <!-- Badge flottant -->
@@ -57,7 +57,7 @@
 
                     <!-- Colonne droite : Contenu textuel -->
                     <div class="order-1 lg:order-2 text-center lg:text-left" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
-                        
+
                         <!-- Badge de statut -->
                         <div class="mb-6" data-aos="fade-up" data-aos-delay="300">
                             <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-success/20 text-success ring-1 ring-success/25">
@@ -116,7 +116,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                                 </svg>
                             </a>
-                            
+
                             {% if aboutMe.cvFileName is defined and aboutMe.cvFileName is not null %}
                                 <a href="{{ asset('uploads/files/cv/' ~ aboutMe.cvFileName) }}" target="_blank" class="btn btn-outline btn-secondary btn-lg group">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
