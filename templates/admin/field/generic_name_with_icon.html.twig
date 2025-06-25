@@ -1,0 +1,6 @@
+{# Generic template for displaying name with icon for any entity #}
+{% set entity_instance = entity.instance %}
+{% set icon_name = entity_instance.icon ?? 'guidance:forbidden-2' %}
+
+<twig:ux:icon name="{{ icon_name }}" height="20" width="20" class="me-2 fs-4" />
+{{ field.value }}

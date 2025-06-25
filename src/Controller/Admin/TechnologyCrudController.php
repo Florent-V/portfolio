@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\SkillCategory;
+use App\Entity\Technology;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -14,37 +14,41 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\ChoiceFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\DateTimeFilter;
+use EasyCorp\Bundle\EasyAdminBundle\Filter\EntityFilter;
 use EasyCorp\Bundle\EasyAdminBundle\Filter\TextFilter;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
-class SkillCategoryCrudController extends AbstractCrudController
+class TechnologyCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
-        return SkillCategory::class;
+        return Technology::class;
     }
 
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
             // Labels et titre
-            ->setEntityLabelInSingular('Skill Category')
-            ->setEntityLabelInPlural('Skill Categories')
+            ->setEntityLabelInSingular('Technology')
+            ->setEntityLabelInPlural('Technologies')
             ->setPageTitle('index', '%entity_label_plural% Management')
-            ->setPageTitle('new', 'Create new %entity_label_singular%')
+            ->setPageTitle('new', 'Add new %entity_label_singular%')
             ->setPageTitle('edit', 'Edit %entity_label_singular%')
             ->setPageTitle('detail', '%entity_label_singular% Details')
 
             // Recherche
-            ->setSearchFields(['name', 'icon'])
+            ->setSearchFields(['name', 'category.name', 'icon'])
 
             // Tri par défaut
-            ->setDefaultSort(['displayOrder' => 'ASC', 'name' => 'ASC'])
+            ->setDefaultSort(['category.name' => 'ASC', 'name' => 'ASC'])
 
             // Pagination
-            ->setPaginatorPageSize(20)
+            ->setPaginatorPageSize(25)
             ->setPaginatorRangeSize(4)
 
             // Options d'affichage
@@ -58,49 +62,34 @@ class SkillCategoryCrudController extends AbstractCrudController
             // Help
             ->setHelp(
                 'index',
-                'Manage skill categories that group your technologies. Use display order to control the sequence.'
+                'Manage your technology stack.' .
+                ' Each technology belongs to a skill category and can have a proficiency level.'
             )
             ->setHelp(
                 'new',
-                'Create a new skill category to organize your technologies.'
+                'Add a new technology to your portfolio. Don\'t forget to set the category and level.'
             )
             ->setHelp(
                 'edit',
-                'Modify the skill category information. Changes will affect all associated technologies.'
+                'Modify technology information. You can update the image, level, or category as needed.'
             );
     }
 
     public function configureActions(Actions $actions): Actions
     {
-        // Action personnalisée pour voir les technologies liées
-        $viewTechnologies = Action::new('viewTechnologies', 'View Technologies', 'fa fa-list')
-            ->linkToRoute('admin', [
-                'crudAction'                    => 'index',
-                'crudControllerFqcn'            => 'App\\Controller\\Admin\\TechnologyCrudController',
-                'filters[category][comparison]' => '=',
-                'filters[category][value]'      => '',
-            ])
-            ->setHtmlAttributes(['title' => 'View all technologies in this category']);
-
         return $actions
             // Personnaliser les actions sur la page index
             ->update(Crud::PAGE_INDEX, Action::NEW, function (Action $action) {
                 return $action
                     ->setIcon('fa fa-plus')
-                    ->setLabel('New Category')
-                    ->setCssClass('btn btn-primary');
+                    ->setLabel('Add Technology')
+                    ->setCssClass('btn btn-success');
             })
             ->update(Crud::PAGE_INDEX, Action::EDIT, function (Action $action) {
                 return $action->setIcon('fa fa-edit')->setLabel('Edit');
             })
             ->update(Crud::PAGE_INDEX, Action::DELETE, function (Action $action) {
-                return $action
-                    ->setIcon('fa fa-trash')
-                    ->setLabel('Delete')
-                    ->displayIf(static function (SkillCategory $entity) {
-                        // Ne permettre la suppression que si aucune technologie n'est liée
-                        return $entity->getTechnologies()->isEmpty();
-                    });
+                return $action->setIcon('fa fa-trash')->setLabel('Delete');
             })
 
             // Ajouter l'action DETAIL sur la page INDEX
@@ -111,18 +100,12 @@ class SkillCategoryCrudController extends AbstractCrudController
                     ->setLabel('View Details');
             })
 
-            // Ajouter l'action personnalisée
-            ->add(Crud::PAGE_INDEX, $viewTechnologies)
-
             // Actions sur les autres pages
             ->update(Crud::PAGE_DETAIL, Action::EDIT, function (Action $action) {
                 return $action->setIcon('fa fa-edit');
             })
             ->update(Crud::PAGE_DETAIL, Action::DELETE, function (Action $action) {
-                return $action->setIcon('fa fa-trash')
-                    ->displayIf(static function (SkillCategory $entity) {
-                        return $entity->getTechnologies()->isEmpty();
-                    });
+                return $action->setIcon('fa fa-trash');
             })
             ->update(Crud::PAGE_NEW, Action::SAVE_AND_RETURN, function (Action $action) {
                 return $action->setIcon('fa fa-save');
@@ -135,7 +118,15 @@ class SkillCategoryCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add(TextFilter::new('name', 'Category Name'))
+            ->add(TextFilter::new('name', 'Technology Name'))
+            ->add(EntityFilter::new('category', 'Category'))
+            ->add(ChoiceFilter::new('level', 'Proficiency Level')->setChoices([
+                'Beginner (1)'     => 1,
+                'Novice (2)'       => 2,
+                'Intermediate (3)' => 3,
+                'Advanced (4)'     => 4,
+                'Expert (5)'       => 5,
+            ]))
             ->add(TextFilter::new('icon', 'Icon'))
             ->add(DateTimeFilter::new('createdAt', 'Created'))
             ->add(DateTimeFilter::new('updatedAt', 'Last Modified'));
@@ -157,10 +148,10 @@ class SkillCategoryCrudController extends AbstractCrudController
     private function getIndexFields(): array
     {
         return [
-            $this->createNameWithIconField(),
-            $this->createDisplayOrderField(),
-            $this->createTechnologiesField(),
-            $this->createIconDisplayField(),
+            $this->createTechnologyNameWithIconField(),
+            $this->createCategoryField(),
+            $this->createLevelDisplayField(),
+            $this->createImageDisplayField(),
             $this->createCreatedAtField(),
         ];
     }
@@ -171,10 +162,11 @@ class SkillCategoryCrudController extends AbstractCrudController
     private function getDetailFields(): array
     {
         return [
-            $this->createNameWithIconField(),
+            $this->createTechnologyNameWithIconField(),
+            $this->createCategoryField(),
+            $this->createLevelDisplayField(),
             $this->createIconDisplayField(),
-            $this->createDisplayOrderField(),
-            $this->createTechnologiesField(),
+            $this->createImageDisplayField(),
             $this->createCreatedAtField(),
             $this->createUpdatedAtField(),
             $this->createCreatedByField(),
@@ -190,32 +182,63 @@ class SkillCategoryCrudController extends AbstractCrudController
     {
         return [
             $this->createNameField(),
+            $this->createCategoryFormField(),
+            $this->createLevelFormField(),
             $this->createIconField(),
-            $this->createDisplayOrderField(),
+            $this->createImageUploadField(),
         ];
     }
 
     private function createNameField(): TextField
     {
-        return TextField::new('name', 'Category Name')
+        return TextField::new('name', 'Technology Name')
             ->setRequired(true)
             ->setMaxLength(255)
-            ->setHelp('Enter a descriptive name for this skill category (e.g., "Frontend", "Backend", "DevOps")')
+            ->setHelp('Enter the technology name (e.g., "React", "Laravel", "Docker")')
             ->setColumns(6);
     }
 
-    private function createNameWithIconField(): TextField
+    private function createTechnologyNameWithIconField(): TextField
     {
-        return TextField::new('name', 'Category')
+        return TextField::new('name', 'Technology')
             ->setTemplatePath('admin/field/generic_name_with_icon.html.twig');
+    }
+
+    private function createCategoryField(): AssociationField
+    {
+        return AssociationField::new('category', 'Category')
+            ->setRequired(false);
+    }
+
+    private function createCategoryFormField(): AssociationField
+    {
+        return AssociationField::new('category', 'Skill Category')
+            ->setRequired(true)
+            ->setCrudController(SkillCategoryCrudController::class)
+            ->setHelp('Select the skill category this technology belongs to')
+            ->setColumns(6);
+    }
+
+    private function createLevelFormField(): IntegerField
+    {
+        return IntegerField::new('level', 'Proficiency Level')
+            ->setRequired(false)
+            ->setHelp('Your skill level from 1 (Beginner) to 5 (Expert). Leave empty if not applicable.')
+            ->setColumns(6);
+    }
+
+    private function createLevelDisplayField(): IntegerField
+    {
+        return IntegerField::new('level', 'Level')
+            ->setTemplatePath('admin/field/technology_level_display.html.twig');
     }
 
     private function createIconField(): TextField
     {
-        return TextField::new('icon', 'Icon Class')
+        return TextField::new('icon', 'Icon')
             ->setRequired(false)
             ->setMaxLength(255)
-            ->setHelp('Name of Symfony UC icon. Ex : "hugeicons:developer". Leave empty if no icon.')
+            ->setHelp('Symfony UX icon name (e.g., "logos:react", "logos:laravel"). Leave empty for default.')
             ->setColumns(6);
     }
 
@@ -225,31 +248,21 @@ class SkillCategoryCrudController extends AbstractCrudController
             ->setTemplatePath('admin/field/generic_icon_preview.html.twig');
     }
 
-    private function createDisplayOrderField(): IntegerField
+    private function createImageUploadField(): TextField
     {
-        return IntegerField::new('displayOrder', 'Display Order')
-            ->setRequired(true)
-            ->setHelp('Order in which categories appear (lower numbers first, e.g., 1, 2, 3...)')
-            ->setColumns(6);
+        return TextField::new('imageFile', 'Technology Image')
+            ->setFormType(VichImageType::class)
+            ->setHelp('Upload an image (JPEG, PNG, WEBP, SVG). Max 1MB. This will override the icon if both are set.')
+            ->setRequired(false)
+            ->setColumns(12);
     }
 
-    private function createTechnologiesField(): AssociationField
+    private function createImageDisplayField(): ImageField
     {
-        return AssociationField::new('technologies', 'Technologies')
-            ->setRequired(false)
-            ->setCrudController(TechnologyCrudController::class)
-            ->setHelp('Technologies associated with this category')
-            ->formatValue(function ($value, $entity) {
-                if ($entity instanceof SkillCategory) {
-                    $count = $entity->getTechnologies()->count();
-
-                    return $count > 0
-                        ? sprintf('%d technolog%s', $count, $count > 1 ? 'ies' : 'y')
-                        : 'No technologies';
-                }
-
-                return $value;
-            });
+        return ImageField::new('imageName', 'Image')
+            ->setBasePath('/uploads/images/technologies')
+            ->setUploadDir('public/uploads/images/technologies')
+            ->hideOnForm();
     }
 
     private function createCreatedAtField(): DateTimeField
