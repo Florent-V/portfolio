@@ -27,13 +27,16 @@ class LocaleSubscriber implements EventSubscriberInterface
             return;
         }
 
-        // Try to see if the locale has been set as a _locale routing parameter
-        if ($locale = $request->attributes->get('_locale')) {
-            $request->getSession()->set('_locale', $locale);
-        } else {
-            // If no explicit locale has been set on this request, use one from the session
-            $request->setLocale($request->getSession()->get('_locale', $this->defaultLocale));
+        // If a locale is set as a routing parameter, use it and save it to the session
+        $localeInRoute = $request->attributes->get('_locale');
+        if (null !== $localeInRoute) {
+            $request->getSession()->set('_locale', $localeInRoute);
+
+            return;
         }
+
+        // If no explicit locale is set, use the one from the session
+        $request->setLocale($request->getSession()->get('_locale', $this->defaultLocale));
     }
 
     public static function getSubscribedEvents(): array

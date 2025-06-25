@@ -15,9 +15,11 @@ class LoginRedirectSubscriber implements EventSubscriberInterface
     private UrlGeneratorInterface $urlGenerator;
     private AuthorizationCheckerInterface $authorizationChecker;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, AuthorizationCheckerInterface $authorizationChecker)
-    {
-        $this->urlGenerator = $urlGenerator;
+    public function __construct(
+        UrlGeneratorInterface $urlGenerator,
+        AuthorizationCheckerInterface $authorizationChecker,
+    ) {
+        $this->urlGenerator         = $urlGenerator;
         $this->authorizationChecker = $authorizationChecker;
     }
 
@@ -32,9 +34,9 @@ class LoginRedirectSubscriber implements EventSubscriberInterface
     {
         if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
             $response = new RedirectResponse($this->urlGenerator->generate('admin'));
-        } else {
-            $response = new RedirectResponse($this->urlGenerator->generate('app_home'));
+            $event->setResponse($response);
         }
+        $response = new RedirectResponse($this->urlGenerator->generate('app_home'));
 
         $event->setResponse($response);
     }
