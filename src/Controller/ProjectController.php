@@ -10,10 +10,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/projects')]
 final class ProjectController extends AbstractController
 {
-    #[Route('/', name: 'app_project_index')]
+    #[Route('/projects/', name: 'app_project_index')]
     public function index(ProjectRepository $projectRepository): Response
     {
         $projects = $projectRepository->findBy(['published' => true], ['startDate' => 'DESC']);
@@ -23,7 +22,7 @@ final class ProjectController extends AbstractController
         ]);
     }
 
-    #[Route('/{id<\d+>}', name: 'app_project_show_by_id')]
+    #[Route('/projects/{id<\d+>}', name: 'app_project_show_by_id')]
     public function showById(Project $project): Response
     {
         if (!$project->isPublished() && !$this->isGranted('ROLE_ADMIN')) {
@@ -36,7 +35,7 @@ final class ProjectController extends AbstractController
     }
 
     // It could be useful to have a slug-based URL for SEO and readability
-    #[Route('/{slug}', name: 'app_project_show_by_slug')]
+    #[Route('/projects/{slug}', name: 'app_project_show_by_slug')]
     public function showBySlug(string $slug, ProjectRepository $projectRepository): Response
     {
         // This assumes you will add a "slug" field to your Project entity
