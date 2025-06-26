@@ -49,13 +49,13 @@ jobs:
         run: npm install
 
       - name: 🔍 Run PHP Code Sniffer (PSR-12)
-        run: vendor/bin/phpcs --standard=PSR12 src/
+        run: vendor/bin/phpcs --standard=PSR12 src/ --ignore=src/DataFixtures/
 
       - name: 🔧 Run PHP CS Fixer
         run: vendor/bin/php-cs-fixer fix --dry-run --diff
 
       - name: 🔎 Run PHPStan
-        run: vendor/bin/phpstan analyse src --xdebug --level 6
+        run: vendor/bin/phpstan analyse src --xdebug --level 6 --configuration=phpstan.dist.neon
 
       - name: 🛠️ Run PHP Mess Detector
         run: vendor/bin/phpmd src text phpmd.xml
@@ -68,4 +68,3 @@ jobs:
 
 #      - name: phpunit
 #        run: bin/phpunit
-
