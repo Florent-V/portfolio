@@ -49,7 +49,8 @@ final class HomeController extends AbstractController
 
             $email = (new Email())
                 ->from($data['email']) // Sender's email
-                ->to($this->getParameter('app.admin_email')) // Your admin email (configure in services.yaml or .env)
+                // Your admin email (configure in services.yaml or .env)
+                ->to($this->getParameter('app.admin_email'))
                 ->subject('Nouveau message de contact Portfolio: ' . $data['subject'])
                 ->html($this->renderView('emails/contact_email.html.twig', [
                     'name'         => $data['name'],
@@ -60,9 +61,16 @@ final class HomeController extends AbstractController
 
             try {
                 $mailer->send($email);
-                $this->addFlash('success', 'Votre message a bien été envoyé ! Je vous répondrai dès que possible.');
+                $this->addFlash(
+                    'success',
+                    'Votre message a bien été envoyé ! Je vous répondrai dès que possible.'
+                );
             } catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e) {
-                $this->addFlash('error', 'Une erreur est survenue lors de l\'envoi du message. Veuillez réessayer plus tard. Détail: ' . $e->getMessage());
+                $this->addFlash(
+                    'error',
+                    'Une erreur est survenue lors de l\'envoi du message. ' .
+                    'Veuillez réessayer plus tard. Détail: ' . $e->getMessage()
+                );
                 // Log the error for debugging:
                 // $this->container->get('logger')->error('Contact form mailer error: ' . $e->getMessage());
             }
