@@ -43,12 +43,12 @@ class Project
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Assert\Date]
+    #[Assert\Type(\DateTime::class)]
     #[Assert\LessThanOrEqual('today')]
     private ?\DateTime $startDate = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Assert\Date]
+    #[Assert\Type(\DateTime::class)]
     #[Assert\GreaterThanOrEqual(propertyPath: 'startDate')]
     private ?\DateTime $endDate = null;
 
