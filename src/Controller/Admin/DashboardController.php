@@ -10,19 +10,20 @@ use App\Entity\Education;
 use App\Entity\Experience;
 use App\Entity\Hobby;
 use App\Entity\Project;
+use App\Entity\ProjectImage;
 use App\Entity\SkillCategory;
-use App\Entity\SoftSkill; // Added
+use App\Entity\SoftSkill;
 use App\Entity\Technology;
 use App\Entity\User;
 use App\Enum\Role;
-use Doctrine\Persistence\ManagerRegistry; // Added missing import
+use Doctrine\Persistence\ManagerRegistry;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
-use Symfony\Component\HttpFoundation\Response; // Added missing import for getDoctrine
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
@@ -60,37 +61,55 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Portfolio Admin');
+            ->setTitle('Administration du Portfolio')
+            ->setFaviconPath('/favicon.ico')
+            ->setTranslationDomain('messages')
+            ->renderContentMaximized();
     }
 
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
 
-        yield MenuItem::section('Portfolio Content');
+        // Portfolio Content
+        yield MenuItem::section('Contenu du Portfolio');
 
         $aboutMeEntryId  = $this->getAboutMeEntryId();
-        $aboutMeMenuItem = MenuItem::linkToCrud('About Me', 'fa fa-address-card', AboutMe::class)
+        $aboutMeMenuItem = MenuItem::linkToCrud('À Propos', 'fa fa-address-card', AboutMe::class)
             ->setController(AboutMeCrudController::class);
 
         $aboutMeMenuItem->setAction(null !== $aboutMeEntryId ? Crud::PAGE_EDIT : Crud::PAGE_INDEX)
             ->setEntityId($aboutMeEntryId);
         yield $aboutMeMenuItem;
 
-        yield MenuItem::linkToCrud('Projects', 'fa fa-project-diagram', Project::class);
-        yield MenuItem::linkToCrud('Articles', 'fa fa-newspaper', Article::class);
-        yield MenuItem::subMenu('Skills & Technologies', 'fa fa-cogs')->setSubItems([
-            MenuItem::linkToCrud('Skill Categories', 'fa fa-tags', SkillCategory::class), // For Hard Skills
-            MenuItem::linkToCrud('Technologies', 'fa fa-microchip', Technology::class),   // Hard Skills
-            MenuItem::linkToCrud('Soft Skills', 'fa fa-handshake', SoftSkill::class),    // Soft Skills
+        yield MenuItem::subMenu('Projets', 'fa fa-project-diagram')->setSubItems([
+            MenuItem::linkToCrud('Projets', 'fa fa-project-diagram', Project::class),
+            MenuItem::linkToCrud('Images des Projets', 'fa fa-images', ProjectImage::class),
         ]);
-        yield MenuItem::linkToCrud('Education', 'fa fa-graduation-cap', Education::class);
-        yield MenuItem::linkToCrud('Experience', 'fa fa-briefcase', Experience::class);
+
+        yield MenuItem::linkToCrud('Articles', 'fa fa-newspaper', Article::class);
+
+        // Skills & Experience
+        yield MenuItem::section('Compétences & Expérience');
+
+        yield MenuItem::subMenu('Compétences', 'fa fa-cogs')->setSubItems([
+            MenuItem::linkToCrud('Catégories de Compétences', 'fa fa-tags', SkillCategory::class),
+            MenuItem::linkToCrud('Technologies', 'fa fa-microchip', Technology::class),
+            MenuItem::linkToCrud('Soft Skills', 'fa fa-handshake', SoftSkill::class),
+        ]);
+
+        yield MenuItem::subMenu('Parcours', 'fa fa-book')->setSubItems([
+            MenuItem::linkToCrud('Éducation', 'fa fa-graduation-cap', Education::class),
+            MenuItem::linkToCrud('Expérience', 'fa fa-briefcase', Experience::class),
+        ]);
+
         yield MenuItem::linkToCrud('Hobbies', 'fa fa-gamepad', Hobby::class);
 
+        // Administration
         if ($this->isGranted('ROLE_SUPER_ADMIN')) {
-            yield MenuItem::subMenu('Admin Settings', 'fa fa-users')->setSubItems([
-                MenuItem::linkToCrud('All Users', 'fa fa-user', User::class),
+            yield MenuItem::section('Administration');
+            yield MenuItem::subMenu('Utilisateurs', 'fa fa-users')->setSubItems([
+                MenuItem::linkToCrud('Tous les Utilisateurs', 'fa fa-user', User::class),
             ]);
         }
     }
