@@ -13,6 +13,11 @@ hero:
   learn_more: En savoir plus
   download_cv: Télécharger CV
   passionate_developer: Développeur Web Passionné | Créateur de Solutions Innovantes
+  available_for_work: Prêt à relever de nouveaux défis
+  get_in_touch: Contactez-moi
+  years_experience: Années d'Expériences
+  projects_completed: Projets Realisés
+  client_satisfaction: Satisfactions Clients
 
 sections:
   about_me: À Propos de Moi
@@ -185,9 +190,9 @@ ea:
   no_results_found: Aucun résultat trouvé.
   filter: Filtrer
   boolean:
-    true: Oui
-    false: Non
-    null: Non défini
+    'true': Oui
+    'false': Non
+    'null': Non défini
   entity:
     AboutMe: "Information 'À Propos'"
     User: Utilisateur

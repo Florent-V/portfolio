@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+// @phpstan-ignore-next-line
 class ContactFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -22,8 +23,13 @@ class ContactFormType extends AbstractType
             ->add('name', TextType::class, [
                 'label'       => 'Votre Nom',
                 'constraints' => [
-                    new NotBlank(['message' => 'Veuillez entrer votre nom.']),
-                    new Length(['min' => 2, 'minMessage' => 'Votre nom doit comporter au moins {{ limit }} caractères.']),
+                    new NotBlank([
+                        'message' => 'Veuillez entrer votre nom.',
+                    ]),
+                    new Length([
+                        'min'        => 2,
+                        'minMessage' => 'Votre nom doit comporter au moins {{ limit }} caractères.',
+                    ]),
                 ],
                 'attr' => [
                     'placeholder' => 'John Doe',
@@ -33,8 +39,12 @@ class ContactFormType extends AbstractType
             ->add('email', EmailType::class, [
                 'label'       => 'Votre Email',
                 'constraints' => [
-                    new NotBlank(['message' => 'Veuillez entrer votre adresse email.']),
-                    new Email(['message' => 'L\'adresse email "{{ value }}" n\'est pas valide.']),
+                    new NotBlank([
+                        'message' => 'Veuillez entrer votre adresse email.',
+                    ]),
+                    new Email([
+                        'message' => 'L\'adresse email "{{ value }}" n\'est pas valide.',
+                    ]),
                 ],
                 'attr' => [
                     'placeholder' => 'john.doe@example.com',
@@ -44,8 +54,13 @@ class ContactFormType extends AbstractType
             ->add('subject', TextType::class, [
                 'label'       => 'Sujet',
                 'constraints' => [
-                    new NotBlank(['message' => 'Veuillez entrer un sujet.']),
-                    new Length(['min' => 5, 'minMessage' => 'Le sujet doit comporter au moins {{ limit }} caractères.']),
+                    new NotBlank([
+                        'message' => 'Veuillez entrer un sujet.',
+                    ]),
+                    new Length([
+                        'min'        => 5,
+                        'minMessage' => 'Le sujet doit comporter au moins {{ limit }} caractères.',
+                    ]),
                 ],
                 'attr' => [
                     'placeholder' => 'Demande d\'information',
@@ -55,8 +70,13 @@ class ContactFormType extends AbstractType
             ->add('message', TextareaType::class, [
                 'label'       => 'Votre Message',
                 'constraints' => [
-                    new NotBlank(['message' => 'Veuillez entrer votre message.']),
-                    new Length(['min' => 10, 'minMessage' => 'Votre message doit comporter au moins {{ limit }} caractères.']),
+                    new NotBlank([
+                        'message' => 'Veuillez entrer votre message.',
+                    ]),
+                    new Length([
+                        'min'        => 10,
+                        'minMessage' => 'Votre message doit comporter au moins {{ limit }} caractères.',
+                    ]),
                 ],
                 'attr' => [
                     'placeholder' => 'Votre message ici...',

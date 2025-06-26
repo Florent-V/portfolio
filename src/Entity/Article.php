@@ -10,6 +10,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Mapping\Annotation\SoftDeleteable;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\HttpFoundation\File\File;
@@ -17,6 +19,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
+#[Gedmo\Loggable]
+#[SoftDeleteable]
+#[Vich\Uploadable]
 class Article
 {
     use TimestampableEntity;
@@ -64,7 +69,7 @@ class Article
     )]
     private ?File $mainImageFile = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $mainImageName = null;
 
     #[ORM\Column]
@@ -186,7 +191,7 @@ class Article
         return $this->mainImageName;
     }
 
-    public function setMainImageName(string $mainImageName): static
+    public function setMainImageName(?string $mainImageName): static
     {
         $this->mainImageName = $mainImageName;
 

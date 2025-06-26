@@ -1,0 +1,8 @@
+{% if field.value %}
+    <div class="d-flex align-items-center">
+        <twig:ux:icon name="{{ field.value }}" height="32" width="32" class="me-2" />
+        <code class="text-muted small">{{ field.value }}</code>
+    </div>
+{% else %}
+    <span class="text-muted">No icon set</span>
+{% endif %}

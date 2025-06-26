@@ -9,10 +9,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/articles')]
 final class ArticleController extends AbstractController
 {
-    #[Route('/', name: 'app_article_index', methods: ['GET'])]
+    #[Route('/articles/', name: 'app_article_index', methods: ['GET'])]
     public function index(ArticleRepository $articleRepository): Response
     {
         // Paginer les résultats serait une bonne amélioration ici
@@ -23,7 +22,7 @@ final class ArticleController extends AbstractController
         ]);
     }
 
-    #[Route('/{slug}', name: 'app_article_show', methods: ['GET'])]
+    #[Route('/articles/{slug}', name: 'app_article_show', methods: ['GET'])]
     public function show(string $slug, ArticleRepository $articleRepository): Response
     {
         $article = $articleRepository->findOnePublishedBySlug($slug);

@@ -96,6 +96,15 @@ class Education
         return $this;
     }
 
+    public function getStartDateDisplay(): string
+    {
+        if (null !== $this->getStartDate()) {
+            return $this->getStartDate()->format('F Y');
+        }
+
+        return '';
+    }
+
     public function getEndDate(): ?\DateTimeInterface
     {
         return $this->endDate;
@@ -106,6 +115,15 @@ class Education
         $this->endDate = $endDate;
 
         return $this;
+    }
+
+    public function getEndDateDisplay(): string
+    {
+        if (null !== $this->getEndDate()) {
+            return $this->getEndDate()->format('F Y');
+        }
+
+        return 'Present';
     }
 
     public function getDescription(): ?string

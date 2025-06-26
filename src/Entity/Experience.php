@@ -99,9 +99,27 @@ class Experience
         return $this;
     }
 
+    public function getStartDateDisplay(): string
+    {
+        if (null !== $this->getStartDate()) {
+            return $this->getStartDate()->format('F Y');
+        }
+
+        return '';
+    }
+
     public function getEndDate(): ?\DateTimeInterface
     {
         return $this->endDate;
+    }
+
+    public function getEndDateDisplay(): string
+    {
+        if (null !== $this->getEndDate()) {
+            return $this->getEndDate()->format('F Y');
+        }
+
+        return 'Present';
     }
 
     public function setEndDate(?\DateTimeInterface $endDate): static

@@ -17,4 +17,16 @@ class SoftSkillRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, SoftSkill::class);
     }
+
+    /**
+     * @return SoftSkill[]
+     */
+    public function findAllOrdered(): array
+    {
+        return $this->createQueryBuilder('s')
+            ->orderBy('s.name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

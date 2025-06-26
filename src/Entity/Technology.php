@@ -45,7 +45,7 @@ class Technology
     )]
     private ?File $imageFile = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageName = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
@@ -67,6 +67,9 @@ class Technology
      */
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'technologies')]
     private Collection $projects;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $icon = null; // For Symfony UX icons
 
     public function __construct()
     {
@@ -114,7 +117,7 @@ class Technology
         return $this->imageName;
     }
 
-    public function setImageName(string $imageName): static
+    public function setImageName(?string $imageName): static
     {
         $this->imageName = $imageName;
 
@@ -202,5 +205,17 @@ class Technology
     public function __toString(): string
     {
         return $this->name ?? 'New Technology';
+    }
+
+    public function getIcon(): ?string
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(?string $icon): static
+    {
+        $this->icon = $icon;
+
+        return $this;
     }
 }

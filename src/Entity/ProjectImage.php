@@ -44,7 +44,7 @@ class ProjectImage
     )]
     private ?File $imageFile = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageName = null;
 
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
@@ -86,7 +86,7 @@ class ProjectImage
         return $this->imageName;
     }
 
-    public function setImageName(string $imageName): static
+    public function setImageName(?string $imageName): static
     {
         $this->imageName = $imageName;
 

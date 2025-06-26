@@ -1,0 +1,18 @@
+{% if field.value %}
+    {% set level = field.value %}
+    {% set levelLabels = {1: 'Beginner', 2: 'Novice', 3: 'Intermediate', 4: 'Advanced', 5: 'Expert'} %}
+    {% set levelColors = {1: 'text-danger', 2: 'text-warning', 3: 'text-info', 4: 'text-primary', 5: 'text-success'} %}
+
+    <span class="{{ levelColors[level] ?? 'text-muted' }} fw-bold">
+        {% for i in 1..5 %}
+            {% if i <= level %}
+                ★
+            {% else %}
+                ☆
+            {% endif %}
+        {% endfor %}
+    </span>
+    <small class="text-muted ms-1">{{ levelLabels[level] ?? level }} ({{ level }}/5)</small>
+{% else %}
+    <span class="text-muted">No level set</span>
+{% endif %}
