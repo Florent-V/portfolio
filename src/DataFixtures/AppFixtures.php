@@ -341,9 +341,12 @@ class AppFixtures extends Fixture
         $article1->setTitle('Comprendre le Dataloader Pattern avec Symfony UX');
         $article1->setSlug('comprendre-dataloader-pattern-symfony-ux');
         $article1->setContent(
-            'Le Dataloader Pattern est une technique puissante pour optimiser les requêtes SQL/API dans les applications GraphQL, ' .
-            'mais son principe peut être appliqué plus largement. Symfony UX offre des outils qui, combinés à Stimulus, ' .
-            "permettent d'implémenter des chargements de données différés et groupés, améliorant ainsi les performances perçues. \n\n" .
+            'Le Dataloader Pattern est une technique puissante pour optimiser les requêtes '.
+            'SQL/API dans les applications GraphQL, ' .
+            'mais son principe peut être appliqué plus largement. '.
+            'Symfony UX offre des outils qui, combinés à Stimulus, ' .
+            "permettent d'implémenter des chargements de données différés et groupés, '.
+            'améliorant ainsi les performances perçues. \n\n" .
             'Cet article explore comment mettre en place ce pattern dans un contexte Symfony classique...'
         );
         $article1->setAuthor($adminUser);
