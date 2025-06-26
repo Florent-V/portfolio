@@ -72,9 +72,11 @@ class AppFixtures extends Fixture
         $aboutMe = new AboutMe();
         $aboutMe->setTitle('John Doe - Développeur Web Full-Stack');
         $aboutMe->setDescription(
-            "Passionné par la création d'applications web intuitives et performantes, j'ai plusieurs années d'expérience avec des technologies modernes. " .
+            "Passionné par la création d'applications web intuitives et performantes, " .
+            "j'ai plusieurs années d'expérience avec des technologies modernes. " .
             "J'aime transformer des idées complexes en solutions élégantes et fonctionnelles. \n\n" .
-            "Autodidacte, curieux et toujours à l'affût de nouvelles technologies, je m'épanouis dans les environnements stimulants " .
+            "Autodidacte, curieux et toujours à l'affût de nouvelles technologies, " .
+            "je m'épanouis dans les environnements stimulants " .
             "où je peux apprendre et partager mes connaissances. \n\n" .
             "En dehors du code, j'apprécie la randonnée, la photographie et les jeux de stratégie."
         );
@@ -356,9 +358,11 @@ class AppFixtures extends Fixture
         $article2->setTitle('Les Nouveautés de PHP 8.3 à ne pas Manquer');
         $article2->setSlug('nouveautes-php-8-3');
         $article2->setContent(
-            "PHP 8.3 arrive avec son lot d'améliorations et de nouvelles fonctionnalités. Des types readonly pour les classes, " .
+            "PHP 8.3 arrive avec son lot d'améliorations et de nouvelles fonctionnalités. " .
+            'Des types readonly pour les classes, ' .
             "la nouvelle fonction `json_validate()`, en passant par des améliorations de performance... \n\n" .
-            'Découvrons ensemble les apports les plus significatifs de cette version et comment ils peuvent impacter positivement vos projets.'
+            'Découvrons ensemble les apports les plus significatifs de cette version ".
+            "et comment ils peuvent impacter positivement vos projets.'
         );
         $article2->setMainImageName('test-600x400.png');
         $article2->setAuthor($adminUser);
@@ -371,8 +375,10 @@ class AppFixtures extends Fixture
         $article3->setTitle('Introduction à Tailwind CSS pour les Développeurs Backend');
         $article3->setSlug('tailwind-css-pour-backend-devs');
         $article3->setContent(
-            'Tailwind CSS est souvent perçu comme un outil purement frontend. Cependant, sa philosophie utility-first peut grandement simplifier ' .
-            "la vie des développeurs backend qui ont besoin de créer des interfaces rapidement sans se perdre dans du CSS complexe. \n\n" .
+            'Tailwind CSS est souvent perçu comme un outil purement frontend. ".
+            "Cependant, sa philosophie utility-first peut grandement simplifier ' .
+            'la vie des développeurs backend qui ont besoin de créer des interfaces rapidement ' .
+            "sans se perdre dans du CSS complexe. \n\n" .
             'Cet article est un guide de démarrage rapide pour intégrer Tailwind dans vos projets Symfony ou Laravel...'
         );
         $article3->setMainImageName('test-600x400.png');
