@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import IconComponent from '../Components/IconComponent.vue'
+import IconComponent from '../components/IconComponent.vue'
 
 const themes = [
   'default',
