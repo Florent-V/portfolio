@@ -192,19 +192,28 @@
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold text-primary">{{ 'sections.soft_skills'|trans }}</h2>
                 </div>
+{# #}{# old way #}
+{# {% if softSkills is not empty %} #}
+{# <div class="flex flex-wrap justify-center gap-4 md:gap-6"> #}
+{# {% for softSkill in softSkills %} #}
+{# <div class="card card-compact w-72 bg-base-100 shadow-lg hover:shadow-xl transition-shadow duration-300" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}"> #}
+{# <div class="card-body items-center text-center"> #}
+{# {% if softSkill.icon %} #}
+{# <twig:ux:icon name="{{ softSkill.icon }}" height="32" width="32" class="me-2" /> #}
+{# <span class="text-3xl text-accent mb-2"><i class="{{ softSkill.icon }}"></i></span> #}
+{# {% endif %} #}
+{# <h3 class="card-title text-lg">{{ softSkill.name }}</h3>  From DB #}
+{# </div> #}
+{# </div> #}
+{# {% endfor %} #}
+{# </div> #}
+{# {% else %} #}
+{# <p class="text-center text-lg" data-aos="fade-up">{{ 'common.no_items_default'|trans }}</p> #}
+{# {% endif %} #}
                 {% if softSkills is not empty %}
-                    <div class="flex flex-wrap justify-center gap-4 md:gap-6">
-                        {% for softSkill in softSkills %}
-                            <div class="card card-compact w-72 bg-base-100 shadow-lg hover:shadow-xl transition-shadow duration-300" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
-                                <div class="card-body items-center text-center">
-                                    {% if softSkill.icon %}
-                                        <span class="text-3xl text-accent mb-2"><i class="{{ softSkill.icon }}"></i></span>
-                                    {% endif %}
-                                    <h3 class="card-title text-lg">{{ softSkill.name }}</h3> {# From DB #}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+                    <div class="rounded-lg" {{ vue_component('SoftSkills2', {
+                        skills: softSkillsForVue,
+                    }) }}></div>
                 {% else %}
                     <p class="text-center text-lg" data-aos="fade-up">{{ 'common.no_items_default'|trans }}</p>
                 {% endif %}
