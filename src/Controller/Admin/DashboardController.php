@@ -12,6 +12,7 @@ use App\Entity\Hobby;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
 use App\Entity\SkillCategory;
+use App\Entity\Social;
 use App\Entity\SoftSkill;
 use App\Entity\Technology;
 use App\Entity\User;
@@ -81,6 +82,8 @@ class DashboardController extends AbstractDashboardController
         $aboutMeMenuItem->setAction(null !== $aboutMeEntryId ? Crud::PAGE_EDIT : Crud::PAGE_INDEX)
             ->setEntityId($aboutMeEntryId);
         yield $aboutMeMenuItem;
+
+        yield MenuItem::linkToCrud('Liens Sociaux', 'fa fa-share-alt', Social::class);
 
         yield MenuItem::subMenu('Projets', 'fa fa-project-diagram')->setSubItems([
             MenuItem::linkToCrud('Projets', 'fa fa-project-diagram', Project::class),
