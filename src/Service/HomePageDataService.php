@@ -11,6 +11,7 @@ use App\Repository\ExperienceRepository;
 use App\Repository\HobbyRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\SkillCategoryRepository;
+use App\Repository\SocialRepository;
 use App\Repository\SoftSkillRepository;
 use App\Repository\TechnologyRepository;
 use App\Repository\UserRepository;
@@ -34,6 +35,7 @@ readonly class HomePageDataService
         private EducationRepository $educationRepository,
         private ExperienceRepository $experienceRepository,
         private HobbyRepository $hobbyRepository,
+        private SocialRepository $socialRepository,
         private SerializerInterface&NormalizerInterface $serializer,
     ) {
     }
@@ -78,6 +80,7 @@ readonly class HomePageDataService
                 ['createdAt' => 'DESC'],
                 3
             ),
+            'socialLinks'      => $this->socialRepository->findActiveByOrder(),
             'softSkillsForVue' => $this->serializer->normalize(
                 $softSkills,
                 null,
