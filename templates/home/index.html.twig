@@ -423,22 +423,43 @@
                         {{ form_start(contactForm, {attr: {action: path('app_home') ~ '#contact'}}) }}
                         <div class="form-control mb-4">
                             {{ form_label(contactForm.name, 'form.contact.name'|trans) }}
-                            {{ form_widget(contactForm.name) }}
+                            {{ form_widget(contactForm.name, {
+                                attr: {
+                                    placeholder: 'John Doe',
+                                    class: 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary',
+                                },
+                            }) }}
                             {{ form_errors(contactForm.name) }}
                         </div>
                         <div class="form-control mb-4">
                             {{ form_label(contactForm.email, 'form.contact.email'|trans) }}
-                            {{ form_widget(contactForm.email) }}
+                            {{ form_widget(contactForm.email, {
+                                attr: {
+                                    placeholder: 'john.doe@example.com',
+                                    class: 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary',
+                                },
+                            }) }}
                             {{ form_errors(contactForm.email) }}
                         </div>
                         <div class="form-control mb-4">
                             {{ form_label(contactForm.subject, 'form.contact.subject'|trans) }}
-                            {{ form_widget(contactForm.subject) }}
+                            {{ form_widget(contactForm.subject, {
+                                attr: {
+                                    placeholder: 'Demande d\'information',
+                                    class: 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary',
+                                },
+                            }) }}
                             {{ form_errors(contactForm.subject) }}
                         </div>
                         <div class="form-control mb-4">
                             {{ form_label(contactForm.message, 'form.contact.message'|trans) }}
-                            {{ form_widget(contactForm.message) }}
+                            {{ form_widget(contactForm.message, {
+                                attr: {
+                                    placeholder: 'Votre message ici...',
+                                    class: 'w-full px-3 py-2 border border-base-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-none',
+                                    rows: 6,
+                                },
+                            }) }}
                             {{ form_errors(contactForm.message) }}
                         </div>
                         <div class="card-actions justify-end">
