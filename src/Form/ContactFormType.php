@@ -80,7 +80,7 @@ class ContactFormType extends AbstractType
                 ],
                 'attr' => [
                     'placeholder' => 'Votre message ici...',
-                    'class'       => 'textarea textarea-bordered h-32 w-full',
+                    'class'       => 'textarea textarea-bordered w-full',
                     'rows'        => 6,
                 ],
             ]);

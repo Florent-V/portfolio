@@ -83,7 +83,8 @@ form:
 
 footer:
   copyright_by: "Tous droits réservés par"
-  powered_by: "Theme DaisyUI & Tailwind CSS. Propulsé par Symfony."
+  made_by: "Fait avec ❤️ par "
+  powered_by: "Propulsé par Symfony."
   your_name_here: Votre Nom Ici # Fallback if user name not set
 
 common:

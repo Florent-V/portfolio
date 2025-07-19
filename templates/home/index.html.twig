@@ -195,7 +195,10 @@
                             <div class="card bg-base-200 shadow-xl" data-aos="zoom-in-up"
                                  data-aos-delay="{{ loop.index0 * 100 }}">
                                 <div class="card-body">
-                                    <h3 class="card-title text-xl md:text-2xl text-secondary">{{ category.name }}</h3> {# Category name from DB, not translated here #}
+                                    <h3 class="card-title text-xl md:text-2xl text-secondary">
+                                        <twig:ux:icon name="{{ category.icon }}" height="24" width="24" class="mr-2" />
+                                        {{ category.name }}
+                                    </h3>
                                     <ul class="list-disc list-inside mt-2 space-y-1">
                                         {% for tech in category.technologies %}
                                             <li class="flex items-center">
@@ -206,9 +209,9 @@
                                                     <span class="h-6 w-6 mr-2 flex items-center justify-center text-accent">●</span>
                                                 {% endif %}
                                                 {{ tech.name }} {# Tech name from DB #}
-                                                {% if tech.level %}
-                                                    <span class="text-xs text-neutral-content ml-2">({{ tech.level }}/5)</span>
-                                                {% endif %}
+{# {% if tech.level %} #}
+{# <span class="text-xs text-neutral-content ml-2">({{ tech.level }}/5)</span> #}
+{# {% endif %} #}
                                             </li>
                                         {% else %}
                                             <li>{{ 'common.no_items_category'|trans }}</li>
@@ -262,7 +265,7 @@
         <section
                 {{ stimulus_controller('adjustImageDisplay') }}
                 id="projects"
-                class="py-16 md:py-24 scroll-mt-16 bg-base-100"
+                class="py-16 md:py-24 bg-base-100 scroll-mt-16"
         >
             <div class="container mx-auto px-6 lg:px-8" data-aos="fade-up">
                 <div class="text-center mb-12">
@@ -474,13 +477,20 @@
                 <p>Copyright {{ 'now'|date('Y') }} - {{ 'footer.copyright_by'|trans }}
                     {% if app.user and app.user.firstName and app.user.lastName %}
                         {{ app.user.firstName }} {{ app.user.lastName }}
-                    {% elseif aboutMe.title is defined and aboutMe.title is not empty %}
-                        {{ aboutMe.title|split(' - ')|first }}
+                    {% elseif aboutMe.firstName is defined and aboutMe.firstName is not empty %}
+                        {{ aboutMe.firstName }} {{ aboutMe.lastName }}
                     {% else %}
                         {{ 'footer.your_name_here'|trans }}
                     {% endif %}
                 </p>
-                <p><small>{{ 'footer.powered_by'|trans }}</small></p>
+                <p>
+                    <small>
+                        {% if aboutMe.firstName is defined and aboutMe.firstName is not empty %}
+                            {{ 'footer.made_by'|trans }} {{ aboutMe.firstName }} {{ aboutMe.lastName }}.
+                        {% endif %}
+                        {{ 'footer.powered_by'|trans }}
+                    </small>
+                </p>
             </div>
         </footer>
 
