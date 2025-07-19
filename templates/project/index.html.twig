@@ -3,68 +3,156 @@
 {% block title %}{{ 'project.all_projects'|trans }} - {{ parent() }}{% endblock %}
 
 {% block body %}
-    <div class="bg-base-200 py-12 md:py-20 min-h-screen">
+    <div
+        {{ stimulus_controller('adjustImageDisplay') }}
+        class="flex-grow bg-gradient-to-br from-base-200 to-base-100"
+    >
         <div class="container mx-auto px-6 lg:px-8">
-            <div class="text-center pt-8 mb-12 md:mb-16" data-aos="fade-down">
-                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-primary">{{ 'project.all_projects'|trans }}</h1>
-                <p class="mt-4 text-md md:text-lg text-base-content">{{ 'project.discover_realizations'|trans }}</p>
+            <!-- Header Section -->
+            <div class="text-center mt-8 md:mt-16 mb-12 md:mb-24" data-aos="fade-down">
+                <div class="relative">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
+                        {{ 'project.discover_realizations'|trans }}
+                    </h1>
+                    <div class="absolute -top-2 -right-2 w-8 h-8 bg-primary/20 rounded-full animate-pulse"></div>
+                    <div class="absolute -bottom-2 -left-2 w-6 h-6 bg-secondary/20 rounded-full animate-pulse"
+                         style="animation-delay: 1s;"></div>
+                </div>
             </div>
 
             {% if projects is not empty %}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 md:my-8">
                     {% for project in projects %}
-                        <div class="card bg-base-100 shadow-xl transform hover:scale-105 transition-transform duration-300 group" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
-                            <figure class="h-56 overflow-hidden"> {# Fixed height for consistency #}
+                        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 group border border-base-300 hover:border-primary/20"
+                             data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                            <!-- Image Section with Overlay -->
+                            <figure class="relative overflow-hidden aspect-[4/3] bg-base-200">
                                 <img src="{{ project.mainImageName ? asset('uploads/images/projects/' ~ project.mainImageName) : 'https://picsum.photos/seed/' ~ project.id ~ '/600/400' }}"
                                      alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
-                                     class="object-cover h-full w-full group-hover:opacity-80 transition-opacity duration-300"/>
+                                     class="w-full h-full object-contain object-center project-image group-hover:scale-110 transition-transform duration-500" />
+
+                                <!-- Overlay with quick actions -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                                        <div class="flex gap-2">
+                                            <a href="{{ path('app_project_show_by_id', {id: project.id}) }}"
+                                               class="btn btn-sm btn-primary">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                     viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          stroke-width="2"
+                                                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </a>
+                                            {% if project.url %}
+                                                <a href="{{ project.url }}" target="_blank" rel="noopener noreferrer"
+                                                   class="btn btn-sm btn-secondary">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                         viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                              stroke-width="2"
+                                                              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                    </svg>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                        {% if project.startDate %}
+                                            <div class="badge badge-neutral badge-sm">{{ project.startDate|date('Y') }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </figure>
-                            <div class="card-body p-5">
-                                <h2 class="card-title text-xl lg:text-2xl">
-                                    {{ project.title }} {# From DB #}
-                                    {% if project.startDate %}
-                                        <span class="badge badge-neutral badge-sm md:badge-md text-xs">{{ project.startDate|date('Y') }}</span>
-                                    {% endif %}
+
+                            <!-- Content Section -->
+                            <div class="card-body p-6">
+                                <!-- Title -->
+                                <h2 class="card-title text-xl lg:text-2xl mb-3 text-base-content group-hover:text-primary transition-colors duration-300">
+                                    {{ project.title }}
                                 </h2>
-                                <p class="text-sm text-base-content opacity-80 mb-3 min-h-[3.75rem]"> {# approx 3 lines with text-sm #}
-                                    {{ project.description|striptags|slice(0, 100) }}{% if project.description|striptags|length > 100 %}...{% endif %} {# From DB #}
+
+                                <!-- Description -->
+                                <p class="text-sm text-base-content/80 mb-4 line-clamp-3 leading-relaxed">
+                                    {{ project.description|striptags|slice(0, 120) }}{% if project.description|striptags|length > 120 %}...{% endif %}
                                 </p>
 
-                                <div class="mb-3">
-                                    {% for tech in project.technologies|slice(0, 5) %}
-                                        <span class="badge badge-outline badge-sm mr-1 mb-1">{{ tech.name }}</span> {# From DB #}
-                                    {% endfor %}
-                                    {% if project.technologies|length > 5 %}
-                                        <span class="badge badge-outline badge-sm">{{ 'common.plus_more'|trans({'%count%': project.technologies|length - 5}) }}</span>
-                                    {% endif %}
+                                <!-- Technologies with Icons -->
+                                <div class="mb-4">
+                                    <h3 class="text-sm font-semibold text-base-content/60 mb-2">{{ 'project.technologies_used'|trans|default('Technologies utilisées') }}</h3>
+                                    <div class="flex flex-wrap gap-2">
+                                        {% for tech in project.technologies|slice(0, 6) %}
+                                            <div class="flex items-center bg-base-200 hover:bg-base-300 px-3 py-1.5 rounded-full transition-colors duration-200 group/tech">
+                                                {% if tech.icon %}
+                                                    <twig:ux:icon name="{{ tech.icon }}" height="16" width="16"
+                                                                  class="mr-1.5 text-primary group-hover/tech:scale-110 transition-transform duration-200" />
+                                                {% endif %}
+                                                <span class="text-xs font-medium text-base-content">{{ tech.name }}</span>
+                                            </div>
+                                        {% endfor %}
+                                        {% if project.technologies|length > 6 %}
+                                            <div class="flex items-center bg-primary/10 px-3 py-1.5 rounded-full">
+                                                <span class="text-xs font-medium text-primary">+{{ project.technologies|length - 6 }}</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
                                 </div>
 
-                                <div class="card-actions justify-end">
-                                    <a href="{{ path('app_project_show_by_id', {id: project.id}) }}" class="btn btn-primary btn-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                        {{ 'project.details'|trans }}
-                                    </a>
-                                    {% if project.url %}
-                                        <a href="{{ project.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                                            {{ 'project.live_site'|trans }}
+                                <!-- Action Buttons -->
+                                <div class="card-actions justify-between items-center pt-2">
+                                    <div class="flex items-center gap-2">
+                                        {% if project.url %}
+                                            <div class="badge badge-success badge-sm">{{ 'project.live'|trans|default('En ligne') }}</div>
+                                        {% endif %}
+                                        {% if project.repositoryUrl %}
+                                            <div class="badge badge-ghost badge-sm">{{ 'project.open_source'|trans|default('Open Source') }}</div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="flex gap-2">
+                                        <a href="{{ path('app_project_show_by_id', {id: project.id}) }}"
+                                           class="btn btn-primary btn-sm">
+                                            {{ 'project.details'|trans }}
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none"
+                                                 viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                            </svg>
                                         </a>
-                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
+
+                <!-- Pagination or Load More (if needed) -->
+                <div class="text-center mt-16" data-aos="fade-up" data-aos-delay="300">
+                    <div class="divider">{{ 'project.portfolio_complete'|trans|default('Portfolio complet') }}</div>
+                </div>
             {% else %}
-                <div class="text-center py-10" data-aos="fade-up">
-                    <h3 class="text-2xl font-semibold mb-4">{{ 'common.no_projects_yet'|trans }}</h3>
-                    <p class="text-base-content-secondary">{{ 'common.come_back_soon_projects'|trans }}</p>
+                <div class="text-center py-20" data-aos="fade-up">
+                    <div class="max-w-md mx-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 mx-auto text-base-content/40 mb-4"
+                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <h3 class="text-xl font-semibold text-base-content mb-2">{{ 'project.no_projects'|trans|default('Aucun projet') }}</h3>
+                        <p class="text-base-content/60">{{ 'project.no_projects_description'|trans|default('Aucun projet disponible pour le moment.') }}</p>
+                    </div>
                 </div>
             {% endif %}
 
+            <!-- Back to Home Button -->
             <div class="text-center mt-16" data-aos="fade-up" data-aos-delay="300">
-                <a href="{{ path('app_home') }}" class="btn btn-outline btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                <a href="{{ path('app_home') }}" class="btn btn-outline btn-primary btn-lg group">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-5 w-5 mr-2 group-hover:-translate-x-1 transition-transform" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
                     {{ 'common.back_to_home'|trans }}
                 </a>
             </div>

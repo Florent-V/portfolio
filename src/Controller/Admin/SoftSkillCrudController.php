@@ -117,6 +117,7 @@ class SoftSkillCrudController extends AbstractCrudController
             $this->createNameWithIconField(),
             $this->createIconPreviewField(),
             $this->createDisplayOrderField(),
+            $this->createDescriptionField(),
             $this->createCreatedAtField(),
             $this->createUpdatedAtField(),
             $this->createCreatedByField(),
@@ -134,6 +135,7 @@ class SoftSkillCrudController extends AbstractCrudController
             $this->createNameField(),
             $this->createIconField(),
             $this->createDisplayOrderFormField(),
+            $this->createDescriptionField(),
         ];
     }
 
@@ -150,6 +152,14 @@ class SoftSkillCrudController extends AbstractCrudController
     {
         return TextField::new('name', 'Soft Skill')
             ->setTemplatePath('admin/field/generic_name_with_icon.html.twig');
+    }
+
+    private function createDescriptionField(): TextField
+    {
+        return TextField::new('description', 'Description')
+            ->setRequired(false)
+            ->setHelp('Enter a short description of the soft skill ' .
+                '(e.g., "Ability to work in a team", "Ability to solve problems")');
     }
 
     private function createIconField(): TextField

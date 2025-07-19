@@ -42,6 +42,21 @@ project:
   start_date: "Start:"
   end_date: "End:"
   tech_used: Technologies Used
+  total_projects: Projects
+  technologies_used: Technologies used
+  live: Live
+  open_source: Open Source
+  portfolio_complete: Portfolio complete
+  no_projects: No projects
+  no_projects_description: No projects available at the moment.
+  discover_posts: Find my technical analyses, tutorials, and thoughts here.
+  read_more: Read More
+  published_on: Published on
+  by_author: by
+  tech_covered: "Technologies covered:"
+  back_to_articles: Back to articles list
+  no_articles: No articles published yet.
+  come_back_soon_articles: Come back soon to discover my posts!
 
 article:
   all_articles: Articles & News
@@ -68,7 +83,8 @@ form:
 
 footer:
   copyright_by: "All rights reserved by"
-  powered_by: "DaisyUI Theme & Tailwind CSS. Powered by Symfony."
+  made_by: "Designed and built with ❤️ "
+  powered_by: "Powered by Symfony."
   your_name_here: Your Name Here # Fallback if user name not set
 
 common:
