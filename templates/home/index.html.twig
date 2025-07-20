@@ -399,9 +399,9 @@
                             <div class="badge badge-lg badge-outline p-4" data-aos="zoom-in"
                                  data-aos-delay="{{ loop.index0 * 100 }}">
                                 {% if hobby.icon and hobby.icon starts with '<svg' %}
-                                    {{ hobby.icon|raw }} {# Assuming direct SVG code for icon #}
+                                    {{ hobby.icon|raw }}
                                 {% elseif hobby.icon %}
-                                    <i class="{{ hobby.icon }} mr-2"></i> {# Assuming FontAwesome class #}
+                                    <twig:ux:icon name="{{ hobby.icon }}" height="24" width="24" class="mr-2" />
                                 {% endif %}
                                 {{ hobby.name }} {# Hobby name from DB #}
                             </div>
