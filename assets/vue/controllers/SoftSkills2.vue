@@ -23,20 +23,11 @@
       </div>
     </div>
 
-    <!-- Modal Overlay -->
-    <Transition name="modal-fade">
-      <div
-        v-if="selectedSkill"
-        class="fixed inset-0 bg-black/70 z-40 backdrop-blur-sm rounded-lg"
-        @click="deselectSkill"
-      ></div>
-    </Transition>
-
     <!-- Expanded Card Modal -->
     <Transition name="modal-zoom">
       <div
         v-if="selectedSkill"
-        class="fixed inset-0 flex items-center justify-center z-50 p-4"
+        class="fixed inset-0 flex items-center justify-center z-50 p-4 bg-black/70 backdrop-blur-sm"
         @click.self="deselectSkill"
       >
         <div class="flip-card w-[22rem] md:w-[28rem]">
@@ -112,7 +103,6 @@ const isFlipped = ref(false)
 
 const selectSkill = (skill) => {
   selectedSkill.value = skill
-  document.body.style.overflow = 'hidden' // Prevent background scrolling
   // Flip the card shortly after the zoom animation starts
   setTimeout(() => {
     isFlipped.value = true
@@ -121,7 +111,6 @@ const selectSkill = (skill) => {
 
 const deselectSkill = () => {
   selectedSkill.value = null
-  document.body.style.overflow = '' // Restore background scrolling
   // Reset flip state after the modal has closed
   setTimeout(() => {
     isFlipped.value = false
@@ -141,7 +130,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
-  document.body.style.overflow = '' // Ensure scroll is restored
 })
 </script>
 
@@ -177,15 +165,6 @@ onUnmounted(() => {
 }
 
 /* Modal Transitions */
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.4s ease;
-}
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
 .modal-zoom-enter-active,
 .modal-zoom-leave-active {
   transition: all 0.4s ease;
