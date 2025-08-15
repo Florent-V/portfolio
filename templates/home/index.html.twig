@@ -331,13 +331,15 @@
                                                       clip-rule="evenodd" />
                                             </svg>
                                         </div>
-                                        <div class="{% if loop.index is odd %}timeline-start md:text-end{% else %}timeline-end{% endif %} mb-10 p-1">
+                                        <div class="{% if loop.index is odd %}timeline-start md:text-end{% else %}timeline-end{% endif %} mb-2 p-1">
                                             <time class="font-mono italic text-sm">{{ exp.startDate|date('M Y') }}
                                                 - {{ exp.isCurrent ? ('common.present'|trans) : exp.endDate|date('M Y') }}</time>
                                             <div class="text-lg md:text-xl font-black">{{ exp.jobTitle }}</div> {# From DB #}
                                             <div class="text-md md:text-lg font-semibold text-accent">{{ exp.company }}</div> {# From DB #}
                                             {% if exp.description %}
-                                                <div class="text-sm mt-1 prose prose-sm max-w-none">{{ exp.description|striptags|nl2br }}</div> {# From DB #}
+                                                <div class="text-sm mt-1 prose prose-sm max-w-none text-base-content prose-headings:text-base-content prose-strong:text-base-content prose-p:text-base-content prose-ul:text-base-content prose-li:text-base-content">
+                                                    {{ exp.description|raw }}
+                                                </div>
                                             {% endif %}
                                         </div>
                                         {% if not loop.last %}
@@ -365,13 +367,13 @@
                                                       clip-rule="evenodd" />
                                             </svg>
                                         </div>
-                                        <div class="{% if loop.index is odd %}timeline-start md:text-end{% else %}timeline-end{% endif %} mb-10 p-1">
-                                            <time class="font-mono italic text-sm">{{ edu.startDate|date('Y') }}
-                                                - {{ edu.endDate ? edu.endDate|date('Y') : ('common.ongoing'|trans) }}</time>
+                                        <div class="{% if loop.index is odd %}timeline-start md:text-end{% else %}timeline-end{% endif %} mb-2 p-1">
+                                            <time class="font-mono italic text-sm">{{ edu.startDate|date('M Y') }}
+                                                - {{ edu.endDate ? edu.endDate|date('M Y') : ('common.ongoing'|trans) }}</time>
                                             <div class="text-lg md:text-xl font-black">{{ edu.degree }}</div> {# From DB #}
                                             <div class="text-md md:text-lg font-semibold text-accent">{{ edu.institution }}</div> {# From DB #}
                                             {% if edu.description %}
-                                                <div class="text-sm mt-1 prose prose-sm max-w-none">{{ edu.description|striptags|nl2br }}</div> {# From DB #}
+                                                <div class="text-sm mt-1 prose prose-sm max-w-none">{{ edu.description|raw }}</div>
                                             {% endif %}
                                         </div>
                                         {% if not loop.last %}
@@ -399,9 +401,9 @@
                             <div class="badge badge-lg badge-outline p-4" data-aos="zoom-in"
                                  data-aos-delay="{{ loop.index0 * 100 }}">
                                 {% if hobby.icon and hobby.icon starts with '<svg' %}
-                                    {{ hobby.icon|raw }} {# Assuming direct SVG code for icon #}
+                                    {{ hobby.icon|raw }}
                                 {% elseif hobby.icon %}
-                                    <i class="{{ hobby.icon }} mr-2"></i> {# Assuming FontAwesome class #}
+                                    <twig:ux:icon name="{{ hobby.icon }}" height="24" width="24" class="mr-2" />
                                 {% endif %}
                                 {{ hobby.name }} {# Hobby name from DB #}
                             </div>
@@ -474,7 +476,7 @@
         <!-- Footer -->
         <footer class="footer footer-center p-10 bg-base-200 text-base-content rounded" data-aos="fade-up"
                 data-aos-anchor-placement="top-bottom">
-            <div class="grid grid-flow-col gap-4">
+            <div class="flex flex-col sm:flex-row gap-4">
                 <a href="#hero" class="link link-hover">{{ 'navbar.about'|trans }}</a>
                 <a href="#projects" class="link link-hover">{{ 'navbar.projects'|trans }}</a>
                 <a href="#contact" class="link link-hover">{{ 'navbar.contact'|trans }}</a>

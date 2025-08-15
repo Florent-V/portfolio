@@ -1,0 +1,46 @@
+name: Deploy
+
+on:
+  push:
+    branches: [prod]
+  pull_request:
+    branches: [prod]
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v4
+
+      # ===== PRE-DEPLOYMENT CHECKS =====
+      - name: 🔍 Pre-deployment verification
+        run: |
+          echo "🔍 Vérification pre-déploiement..."
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+
+      # ===== DEPLOYMENT =====
+      - name: 🚀 Deploy to server
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            echo "🚀 Début du déploiement automatique"
+            cd ${{ secrets.DEPLOY_PATH }}
+            bash ~/deploy-portfolio.sh
+            echo "✅ Déploiement terminé"
+
+      - name: 📊 Notification de succès
+        if: success()
+        run: echo "🎉 Déploiement réussi sur le serveur de production"
+
+      - name: ❌ Notification d'échec
+        if: failure()
+        run: echo "💥 Échec du déploiement"
