@@ -44,9 +44,6 @@ class Article
     )]
     private ?string $slug = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank]
-    private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $publishedAt = null;
@@ -77,11 +74,19 @@ class Article
     #[Assert\Type(type: 'bool')]
     private bool $isPublished = false;
 
+    /**
+     * @var Collection<int, ArticleContent>
+     */
+    #[ORM\OneToMany(mappedBy: 'article', targetEntity: ArticleContent::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['displayOrder' => 'ASC'])]
+    private Collection $contentElements;
+
     public function __construct()
     {
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
         $this->technologies = new ArrayCollection();
+        $this->contentElements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -113,17 +118,6 @@ class Article
         return $this;
     }
 
-    public function getContent(): ?string
-    {
-        return $this->content;
-    }
-
-    public function setContent(string $content): static
-    {
-        $this->content = $content;
-
-        return $this;
-    }
 
     public function getPublishedAt(): \DateTimeInterface
     {
@@ -216,5 +210,35 @@ class Article
     public function __toString(): string
     {
         return $this->title ?? 'Nouvel Article';
+    }
+
+    /**
+     * @return Collection<int, ArticleContent>
+     */
+    public function getContentElements(): Collection
+    {
+        return $this->contentElements;
+    }
+
+    public function addContentElement(ArticleContent $contentElement): static
+    {
+        if (!$this->contentElements->contains($contentElement)) {
+            $this->contentElements->add($contentElement);
+            $contentElement->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContentElement(ArticleContent $contentElement): static
+    {
+        if ($this->contentElements->removeElement($contentElement)) {
+            // set the owning side to null (unless already changed)
+            if ($contentElement->getArticle() === $this) {
+                $contentElement->setArticle(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -18,7 +18,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use App\Form\ArticleContentFormType;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Bundle\SecurityBundle\Security;
 use Vich\UploaderBundle\Form\Type\VichImageType;
@@ -114,12 +115,15 @@ class ArticleCrudController extends AbstractCrudController
         return [
             $this->createTitleField(),
             $this->createSlugField(),
-            $this->createContentField(),
             $this->createMainImageUploadField(),
             $this->createAuthorField(),
             $this->createTechnologiesField(),
             $this->createIsPublishedField(),
             $this->createPublishedAtField(),
+            CollectionField::new('contentElements', 'Contenu de l\'article')
+                ->setEntryType(ArticleContentFormType::class)
+                ->setFormTypeOptions(['by_reference' => false])
+                ->onlyOnForms(),
         ];
     }
 
@@ -136,18 +140,6 @@ class ArticleCrudController extends AbstractCrudController
             ->setHelp('URL-friendly version du titre. Généré automatiquement si laissé vide.');
     }
 
-    private function createContentField(): TextEditorField
-    {
-        return TextEditorField::new('content', 'Contenu')
-            ->setNumOfRows(20)
-            ->setHelp('Contenu principal de l\'article. Utilisez l\'éditeur pour formater le texte.');
-    }
-
-    private function createContentDetailField(): TextareaField
-    {
-        return TextareaField::new('content', 'Contenu')
-            ->renderAsHtml();
-    }
 
     private function createAuthorField(): AssociationField
     {

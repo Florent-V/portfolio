@@ -26,7 +26,22 @@
                     </div>
 
                     <div class="prose lg:prose-lg xl:prose-xl max-w-none mb-8 text-base-content" data-aos="fade-up" data-aos-delay="300">
-                        {{ article.content|raw }} {# From DB, assuming content comes from a WYSIWYG editor #}
+                        {% for element in article.contentElements %}
+                            {% if element.type.value == 'paragraph' %}
+                                <p>{{ element.content|raw }}</p>
+                            {% elseif element.type.value == 'image' and element.image %}
+                                <figure class="my-4">
+                                    <img src="{{ asset('uploads/images/articles/' ~ element.image.imageName) }}" alt="{{ element.image.altText }}" class="mx-auto rounded-lg shadow-lg">
+                                    {% if element.image.altText %}
+                                        <figcaption class="text-center text-sm text-gray-500 mt-2">{{ element.image.altText }}</figcaption>
+                                    {% endif %}
+                                </figure>
+                            {% elseif element.type.value == 'code' and element.codeSnippet %}
+                                <div class="my-4">
+                                    <pre><code class="language-{{ element.codeSnippet.language }}">{{ element.codeSnippet.content }}</code></pre>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
 
                     {% if article.technologies is not empty %}
