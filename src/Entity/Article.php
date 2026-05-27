@@ -53,10 +53,10 @@ class Article
     private ?User $author = null;
 
     /**
-     * @var Collection<int, Technology>
+     * @var Collection<int, Tag>
      */
-    #[ORM\ManyToMany(targetEntity: Technology::class, inversedBy: 'articles')]
-    private Collection $technologies;
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'articles')]
+    private Collection $tags;
 
     #[Vich\UploadableField(mapping: 'article_image', fileNameProperty: 'mainImageName')]
     #[Assert\File(
@@ -77,7 +77,12 @@ class Article
     /**
      * @var Collection<int, ArticleContent>
      */
-    #[ORM\OneToMany(mappedBy: 'article', targetEntity: ArticleContent::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(
+        targetEntity: ArticleContent::class,
+        mappedBy: 'article',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     #[ORM\OrderBy(['displayOrder' => 'ASC'])]
     private Collection $contentElements;
 
@@ -85,7 +90,7 @@ class Article
     {
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
-        $this->technologies = new ArrayCollection();
+        $this->tags            = new ArrayCollection();
         $this->contentElements = new ArrayCollection();
     }
 
@@ -118,7 +123,6 @@ class Article
         return $this;
     }
 
-
     public function getPublishedAt(): \DateTimeInterface
     {
         return $this->publishedAt;
@@ -144,25 +148,25 @@ class Article
     }
 
     /**
-     * @return Collection<int, Technology>
+     * @return Collection<int, Tag>
      */
-    public function getTechnologies(): Collection
+    public function getTags(): Collection
     {
-        return $this->technologies;
+        return $this->tags;
     }
 
-    public function addTechnology(Technology $technology): static
+    public function addTag(Tag $tag): static
     {
-        if (!$this->technologies->contains($technology)) {
-            $this->technologies->add($technology);
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
         }
 
         return $this;
     }
 
-    public function removeTechnology(Technology $technology): static
+    public function removeTag(Tag $tag): static
     {
-        $this->technologies->removeElement($technology);
+        $this->tags->removeElement($tag);
 
         return $this;
     }

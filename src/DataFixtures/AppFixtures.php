@@ -14,6 +14,7 @@ use App\Entity\Project;
 use App\Entity\ProjectImage;
 use App\Entity\SkillCategory;
 use App\Entity\SoftSkill;
+use App\Entity\Tag;
 use App\Entity\Technology;
 use App\Entity\User;
 use App\Enum\ArticleColumnSpan;
@@ -40,7 +41,7 @@ class AppFixtures extends Fixture
         $this->loadEducation($manager);
         $this->loadExperience($manager);
         $this->loadHobbies($manager);
-        $this->loadArticles($manager, $adminUser, $technologies);
+        $this->loadArticles($manager, $adminUser);
         $this->loadSoftSkills($manager);
 
         $manager->flush();
@@ -343,15 +344,15 @@ class AppFixtures extends Fixture
     /**
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
-    private function loadArticles(ObjectManager $manager, User $adminUser, array $technologies): void
+    private function loadArticles(ObjectManager $manager, User $adminUser): void
     {
         // --- Article 1 : Dataloader Pattern avec Symfony UX ---
         $article1 = new Article();
         $article1->setTitle('Comprendre le Dataloader Pattern avec Symfony UX');
         $article1->setSlug('comprendre-dataloader-pattern-symfony-ux');
         $article1->setAuthor($adminUser);
-        $article1->addTechnology($technologies['symfony']);
-        $article1->addTechnology($technologies['javascript']);
+        $article1->addTag($this->createTag($manager, 'Symfony'));
+        $article1->addTag($this->createTag($manager, 'JavaScript'));
         $article1->setIsPublished(true);
         $article1->setPublishedAt(new \DateTimeImmutable('-5 days'));
         $article1->setMainImageName('article_symfony_ux.jpg');
@@ -426,7 +427,7 @@ CODE
         $article2->setSlug('nouveautes-php-8-3');
         $article2->setMainImageName('test-600x400.png');
         $article2->setAuthor($adminUser);
-        $article2->addTechnology($technologies['php']);
+        $article2->addTag($this->createTag($manager, 'PHP'));
         $article2->setIsPublished(true);
         $article2->setPublishedAt(new \DateTimeImmutable('-15 days'));
         $manager->persist($article2);
@@ -490,8 +491,8 @@ CODE
         $article3->setSlug('tailwind-css-pour-backend-devs');
         $article3->setMainImageName('test-600x400.png');
         $article3->setAuthor($adminUser);
-        $article3->addTechnology($technologies['tailwind']);
-        $article3->addTechnology($technologies['symfony']);
+        $article3->addTag($this->createTag($manager, 'Tailwind CSS'));
+        $article3->addTag($this->createTag($manager, 'Symfony'));
         $article3->setIsPublished(false);
         $article3->setPublishedAt(new \DateTimeImmutable('+10 days'));
         $manager->persist($article3);
@@ -591,5 +592,19 @@ CODE
         $ssCreativity->setIcon('fas fa-paint-brush');
         $ssCreativity->setDisplayOrder(6);
         $manager->persist($ssCreativity);
+    }
+
+    /** @var array<string, Tag> */
+    private array $tagCache = [];
+
+    private function createTag(ObjectManager $manager, string $name): Tag
+    {
+        if (!isset($this->tagCache[$name])) {
+            $tag = (new Tag())->setName($name);
+            $manager->persist($tag);
+            $this->tagCache[$name] = $tag;
+        }
+
+        return $this->tagCache[$name];
     }
 }

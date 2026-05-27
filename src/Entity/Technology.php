@@ -57,12 +57,6 @@ class Technology
     private ?SkillCategory $category = null;
 
     /**
-     * @var Collection<int, Article>
-     */
-    #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'technologies')]
-    private Collection $articles;
-
-    /**
      * @var Collection<int, Project>
      */
     #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'technologies')]
@@ -73,7 +67,6 @@ class Technology
 
     public function __construct()
     {
-        $this->articles = new ArrayCollection();
         $this->projects = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
@@ -144,33 +137,6 @@ class Technology
     public function setCategory(?SkillCategory $category): static
     {
         $this->category = $category;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Article>
-     */
-    public function getArticles(): Collection
-    {
-        return $this->articles;
-    }
-
-    public function addArticle(Article $article): static
-    {
-        if (!$this->articles->contains($article)) {
-            $this->articles->add($article);
-            $article->addTechnology($this);
-        }
-
-        return $this;
-    }
-
-    public function removeArticle(Article $article): static
-    {
-        if ($this->articles->removeElement($article)) {
-            $article->removeTechnology($this);
-        }
 
         return $this;
     }
