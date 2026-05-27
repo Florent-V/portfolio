@@ -1,38 +1,248 @@
-# Gestion de contenu d'article
+# 🎨 Portfolio Template Symfony
 
-Cette documentation explique comment gérer le contenu des articles avec le nouveau système de blocs.
+Un template de portfolio professionnel moderne et entièrement configurable, basé sur Symfony 7.2 avec une interface d'administration EasyAdmin intuitive.
 
-## Principe
+## ✨ Fonctionnalités
 
-Un article n'est plus un simple bloc de texte, mais une collection de "blocs de contenu". Chaque bloc peut être d'un des types suivants :
+### 🎯 Portfolio Complet
+- **Page d'accueil moderne** : Section Hero/About fusionnée avec animations AOS
+- **Projets** : Galerie de projets avec technologies, images et descriptions détaillées
+- **Articles/Blog** : Section blog intégrée pour partager vos connaissances
+- **Parcours professionnel** : Gestion complète de l'éducation et de l'expérience
+- **Compétences** : Affichage dynamique des technologies et soft skills
+- **Contact** : Formulaire de contact fonctionnel avec envoi d'emails
 
-*   **Paragraphe** : Un simple bloc de texte.
-*   **Image** : Une image avec un texte alternatif.
-*   **Code** : Un extrait de code avec son langage spécifié pour la coloration syntaxique.
+### ⚙️ Administration Facile
+- **Interface EasyAdmin** : Administration complète via `/admin`
+- **Gestion des médias** : Upload d'images avec VichUploader
+- **Liens sociaux dynamiques** : Configuration des réseaux sociaux
+- **Système de rôles** : USER, ADMIN, SUPER_ADMIN
+- **CRUD complet** : Interface intuitive pour tous les contenus
 
-Ces blocs sont ordonnés et affichés séquentiellement sur la page de l'article.
+### 🎨 Design Moderne
+- **Responsive Design** : Compatible mobile, tablette et desktop
+- **Tailwind CSS + DaisyUI** : Framework CSS moderne et customisable
+- **Animations** : Transitions et animations AOS
+- **Thèmes** : Support des thèmes clairs/sombres
+- **Iconographie** : Intégration Symfony UX Icons
 
-## Comment ça marche ?
+## 🛠️ Technologies Utilisées
 
-### Entités
+### Backend
+- **Symfony 7.2** (PHP 8.3+)
+- **Doctrine ORM** avec migrations
+- **EasyAdmin 4.24** pour l'administration
+- **VichUploader** pour la gestion des fichiers
+- **Gedmo Extensions** (Timestamps, Blameable, SoftDelete)
+- **Symfony Mailer** pour les emails
 
-*   `Article` : L'entité principale de l'article. Elle contient les métadonnées de l'article (titre, slug, etc.) et une collection de `ArticleContent`.
-*   `ArticleContent` : Représente un bloc de contenu. Il a un type (`ArticleContentType`), un ordre d'affichage, et une relation vers l'entité de contenu spécifique (`ArticleImage` ou `ArticleCodeSnippet`).
-*   `ArticleImage` : Contient les informations sur une image (nom du fichier, texte alternatif).
-*   `ArticleCodeSnippet` : Contient un extrait de code et son langage.
+### Frontend
+- **Webpack Encore** pour l'asset management
+- **Vue.js 3** pour les composants interactifs
+- **Tailwind CSS + DaisyUI** pour le styling
+- **Symfony UX** (Live Components, Turbo, Icons)
+- **AOS** pour les animations
 
-### EasyAdmin
+### DevOps
+- **Docker** avec Docker Compose
+- **Makefile** pour l'automatisation
+- **ESLint + Prettier** pour la qualité du code
+- **PHPStan + PHP-CS-Fixer** pour l'analyse statique
 
-Dans l'interface d'administration, lorsque vous créez ou modifiez un article, vous verrez une section "Contenu de l'article". Vous pouvez y ajouter, supprimer et réordonner des blocs de contenu.
+## 🚀 Installation Rapide
 
-Pour chaque bloc, vous devez d'abord choisir son type. En fonction du type choisi, vous devrez remplir les champs correspondants :
+### Prérequis
+- PHP 8.3 ou supérieur
+- Composer
+- Node.js & NPM
+- Docker & Docker Compose
 
-*   **Paragraphe** : Remplissez le champ "Contenu".
-*   **Image** : Sélectionnez une image dans la liste. Vous pouvez en créer de nouvelles via le CRUD `ArticleImage`.
-*   **Code** : Sélectionnez un extrait de code dans la liste. Vous pouvez en créer de nouveaux via le CRUD `ArticleCodeSnippet`.
+### 1. Cloner le projet
+```bash
+git clone <votre-repo-url> mon-portfolio
+cd mon-portfolio
+```
 
-N'oubliez pas de définir l'ordre d'affichage pour chaque bloc.
+### 2. Installation automatique
+```bash
+make setup
+```
 
-### Affichage
+Cette commande exécute automatiquement :
+- Installation des dépendances PHP et NPM
+- Configuration de l'environnement
+- Création de la base de données
+- Exécution des migrations
+- Build des assets
 
-Le template `article/show.html.twig` itère sur les blocs de contenu de l'article et les affiche dans l'ordre défini. Chaque type de bloc a son propre rendu.
+### 3. Créer un utilisateur administrateur
+```bash
+php bin/console security:hash-password
+```
+Entrez votre mot de passe et copiez le hash généré.
+
+Ensuite, créez manuellement un utilisateur en base avec les rôles `ROLE_ADMIN` et `ROLE_SUPER_ADMIN`.
+
+### 4. Démarrer le serveur
+```bash
+make start
+```
+
+Votre portfolio sera accessible sur `http://localhost:8000` et l'administration sur `http://localhost:8000/admin`.
+
+## 📁 Structure du Projet
+
+### Entités Principales
+
+#### 📄 **AboutMe**
+Profil principal du portfolio avec informations personnelles et liens sociaux intégrés.
+
+#### 🚀 **Project**
+Gestion des projets avec :
+- Technologies utilisées
+- Images multiples
+- Dates de début/fin
+- Descriptions détaillées
+- Statut de publication
+
+#### 📝 **Article**
+Système de blog intégré avec :
+- Éditeur de contenu riche
+- Tags et catégories
+- Images principales
+- Gestion des brouillons
+
+#### 💻 **Technology & SkillCategory**
+Système de compétences avec :
+- Catégorisation des technologies
+- Niveaux de maîtrise (1-5 étoiles)
+- Icônes personnalisables
+- Images ou icônes Symfony UX
+
+#### 🔗 **Social**
+Liens sociaux dynamiques avec :
+- Icônes personnalisables
+- Ordre d'affichage configurable
+- Activation/désactivation
+
+#### 🎓 **Education & Experience**
+Parcours professionnel avec :
+- Timeline automatique
+- Descriptions riches
+- Dates flexibles
+
+## 🎨 Personnalisation
+
+### 1. Configuration du Profil
+1. Connectez-vous à `/admin`
+2. Remplissez la section "À Propos"
+3. Ajoutez vos liens sociaux
+4. Configurez vos informations de contact
+
+### 2. Ajout de Projets
+1. Aller dans "Projets" → "Projets"
+2. Créer un nouveau projet
+3. Ajouter les technologies utilisées
+4. Uploader les images
+5. Publier le projet
+
+### 3. Gestion des Compétences
+1. Créer des catégories de compétences
+2. Ajouter les technologies avec niveaux
+3. Configurer les soft skills
+4. Utiliser les icônes Symfony UX recommandées
+
+### 4. Personnalisation Visuelle
+- Modifier les couleurs dans `tailwind.config.js`
+- Personnaliser les thèmes DaisyUI
+- Ajuster les animations AOS
+
+## 🔧 Commandes Utiles
+
+```bash
+# Développement
+make start          # Démarrer tous les services
+make stop           # Arrêter tous les services
+make install        # Installer les dépendances
+make build          # Build de production
+
+# Base de données
+make db-reset       # Réinitialiser la base
+make db-migrate     # Exécuter les migrations
+
+# Qualité du code
+make test           # Lancer les tests
+make cs-fix         # Fixer le style de code
+make stan           # Analyse statique
+```
+
+## 📊 Icônes Recommandées
+
+Pour une cohérence visuelle, utilisez ces icônes Symfony UX :
+
+### Technologies
+- `skill-icons:javascript`
+- `skill-icons:php-dark`
+- `skill-icons:symfony-dark`
+- `skill-icons:react-dark`
+- `skill-icons:vue-dark`
+
+### Réseaux Sociaux
+- `skill-icons:github-dark`
+- `skill-icons:linkedin`
+- `skill-icons:twitter`
+- `logos:youtube-icon`
+- `skill-icons:instagram`
+
+### Catégories
+- `la:tools` (Outils)
+- `hugeicons:developer` (Développement)
+- `ph:devices` (Appareils)
+
+## 🌍 Internationalisation
+
+Le projet supporte le français et l'anglais :
+- Fichiers de traduction dans `/translations`
+- Interface d'administration en français
+- Frontend adaptable selon la locale
+
+## 🔒 Sécurité
+
+- Authentification Symfony Security
+- Protection CSRF sur les formulaires
+- Validation des données d'entrée
+- Upload de fichiers sécurisé
+- Système de rôles granulaire
+
+## 📈 Performance
+
+- Assets optimisés avec Webpack Encore
+- Images redimensionnées automatiquement
+- Lazy loading des images
+- Cache Symfony activé en production
+- Progressive Web App ready
+
+## 🤝 Contribution
+
+Ce template est conçu pour être facilement personnalisable. N'hésitez pas à :
+- Forker le projet
+- Adapter le design à vos besoins
+- Ajouter de nouvelles fonctionnalités
+- Partager vos améliorations
+
+## 📄 Licence
+
+Ce projet est sous licence propriétaire. Vous êtes libre de l'utiliser pour créer votre portfolio personnel.
+
+## 🆘 Support
+
+Pour toute question ou problème :
+1. Vérifiez la documentation
+2. Consultez les logs d'erreur
+3. Utilisez les commandes de debug Symfony
+
+---
+
+**Créé avec ❤️ et Symfony**
+
+*Un template portfolio moderne pour développeurs exigeants*

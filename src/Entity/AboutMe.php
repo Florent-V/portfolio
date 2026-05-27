@@ -6,6 +6,8 @@ namespace App\Entity;
 
 use App\Entity\Trait\BlameableEntity;
 use App\Repository\AboutMeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -69,10 +71,24 @@ class AboutMe
     #[ORM\Column(nullable: true)]
     private ?int $yearsExperience = null;
 
+    /**
+     * @var Collection<int, Social>
+     */
+    #[ORM\OneToMany(
+        targetEntity: Social::class,
+        mappedBy: 'aboutMe',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )
+    ]
+    #[ORM\OrderBy(['sortOrder' => 'ASC', 'name' => 'ASC'])]
+    private Collection $socialLinks;
+
     public function __construct()
     {
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
+        $this->socialLinks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -194,5 +210,40 @@ class AboutMe
         $this->yearsExperience = $yearsExperience;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Social>
+     */
+    public function getSocialLinks(): Collection
+    {
+        return $this->socialLinks;
+    }
+
+    public function addSocialLink(Social $socialLink): static
+    {
+        if (!$this->socialLinks->contains($socialLink)) {
+            $this->socialLinks[] = $socialLink;
+            $socialLink->setAboutMe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSocialLink(Social $socialLink): static
+    {
+        if ($this->socialLinks->removeElement($socialLink)) {
+            // set the owning side to null (unless already changed)
+            if ($socialLink->getAboutMe() === $this) {
+                $socialLink->setAboutMe(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->title ?? 'About Me Default Title';
     }
 }

@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Entity\AboutMe;
+use App\Form\SocialEmbeddedFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
@@ -46,31 +49,50 @@ class AboutMeCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         return [
-            TextField::new('firstName'),
-            TextField::new('lastName'),
-            TextField::new('title'),
-            TextareaField::new('description')
+            TextField::new('firstName', 'Prénom')
+                ->setColumns(6)
+                ->setHelp('Votre prénom'),
+            TextField::new('lastName', 'Nom')
+                ->setColumns(6)
+                ->setHelp('Votre nom de famille'),
+            TextField::new('title', 'Titre professionnel')
+                ->setColumns(12)
+                ->setHelp('Votre titre ou poste actuel'),
+            IntegerField::new('yearsExperience', 'Années d\'expérience')
+                ->setColumns(6)
+                ->setHelp('Nombre d\'années d\'expérience professionnelle'),
+            TextareaField::new('description', 'Description')
+                ->setColumns(12)
                 ->setNumOfRows(5)
-                ->setHelp('A brief description about yourself.'),
+                ->setHelp('Une brève description de votre profil professionnel'),
 
-            TextareaField::new('profilePictureFile', 'Profile Picture')
+            TextareaField::new('profilePictureFile', 'Photo de profil')
                 ->setFormType(VichImageType::class)
-                ->setHelp('Upload your profile picture (JPEG, PNG, WEBP). Max 2MB.')
+                ->setHelp('Téléchargez votre photo de profil (JPEG, PNG, WEBP). Max 2MB.')
                 ->setRequired(false) // Allow empty to keep existing image
                 ->onlyOnForms(),
-            ImageField::new('profilePictureName', 'Profile Picture')
+            ImageField::new('profilePictureName', 'Photo de profil')
                 ->setBasePath('/uploads/images/about_me')
                 ->hideOnForm(),
 
             TextareaField::new('cvFile', 'CV (PDF)')
                 ->setFormType(VichFileType::class)
-                ->setHelp('Upload your CV in PDF format. Max 5MB.')
+                ->setHelp('Téléchargez votre CV en format PDF. Max 5MB.')
                 ->setRequired(false) // Allow empty to keep existing file
                 ->onlyOnForms(),
-            TextField::new('cvFileName', 'CV Filename')
+            TextField::new('cvFileName', 'Nom du fichier CV')
                 ->hideOnForm()
                 ->setCustomOption('base_path', '/uploads/files/cv/')
                 ->setTemplatePath('admin/fields/file_link.html.twig'),
+
+            CollectionField::new('socialLinks', 'Liens sociaux')
+                ->setEntryType(SocialEmbeddedFormType::class)
+                ->setEntryIsComplex(true)
+                ->setFormTypeOptions(['by_reference' => false])
+                ->allowAdd(true)
+                ->allowDelete(true)
+                ->setHelp('Ajoutez vos liens vers les réseaux sociaux et plateformes professionnelles')
+                ->onlyOnForms(),
         ];
     }
 

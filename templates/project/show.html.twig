@@ -3,59 +3,69 @@
 {% block title %}{{ project.title }} - {{ parent() }}{% endblock %} {# project.title from DB #}
 
 {% block body %}
-    <div class="bg-base-200 py-12 md:py-20 min-h-screen">
+    <div
+        {{ stimulus_controller('projectCarousel') }}
+        class="bg-base-200 py-12 md:py-20 min-h-screen"
+    >
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <article class="max-w-4xl mx-auto bg-base-100 shadow-xl rounded-lg overflow-hidden" data-aos="fade-up">
 
                 {# Main Image or Carousel Start #}
                 {% if project.projectImages is not empty %}
-                    <div class="carousel w-full h-64 md:h-96 lg:h-[30rem]" data-aos="zoom-in">
-                        {# Include main image as the first item if it exists and different from gallery images #}
-                        {% set mainImageDisplayedInGallery = false %}
-                        {% for galleryImage in project.projectImages %}
-                            {% if galleryImage.imageName == project.mainImageName %}
-                                {% set mainImageDisplayedInGallery = true %}
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if project.mainImageName and not mainImageDisplayedInGallery %}
-                            <div id="slide_main_{{ project.id }}" class="carousel-item relative w-full">
-                                <img src="{{ asset('uploads/images/projects/' ~ project.mainImageName) }}"
-                                     alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
-                                     class="w-full object-cover" />
-                                <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                                    <a href="#slide_gallery_{{ project.id }}_{{ project.projectImages|last.id }}" class="btn btn-circle btn-sm">❮</a>
-                                    <a href="#slide_gallery_{{ project.id }}_{{ project.projectImages|first.id }}" class="btn btn-circle btn-sm">❯</a>
-                                </div>
-                            </div>
-                        {% endif %}
-
-                        {% for image in project.projectImages %}
-                            <div id="slide_gallery_{{ project.id }}_{{ image.id }}" class="carousel-item relative w-full">
-                                <img src="{{ asset('uploads/images/projects/gallery/' ~ image.imageName) }}"
-                                     alt="{{ image.altText|default('common.project_gallery_image_alt'|trans({'%project_title%': project.title, '%index%': loop.index})) }}"
-                                     class="w-full object-cover" />
-                                <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                                    {% if loop.first %}
-                                        <a href="#{% if project.mainImageName and not mainImageDisplayedInGallery %}slide_main_{{ project.id }}{% else %}slide_gallery_{{ project.id }}_{{ project.projectImages|last.id }}{% endif %}" class="btn btn-circle btn-sm">❮</a>
-                                    {% else %}
-                                        <a href="#slide_gallery_{{ project.id }}_{{ project.projectImages[loop.index0 - 1].id }}" class="btn btn-circle btn-sm">❮</a>
+                    <div class="carousel-container w-full h-64 md:h-96 lg:h-[30rem] relative" data-aos="zoom-in">
+                        <div class="carousel-wrapper w-full h-full overflow-hidden">
+                            <div class="carousel-track flex transition-transform duration-300 ease-in-out" style="transform: translateX(0%);">
+                                {# Include main image as the first item if it exists and different from gallery images #}
+                                {% set mainImageDisplayedInGallery = false %}
+                                {% for galleryImage in project.projectImages %}
+                                    {% if galleryImage.imageName == project.mainImageName %}
+                                        {% set mainImageDisplayedInGallery = true %}
                                     {% endif %}
+                                {% endfor %}
 
-                                    {% if loop.last %}
-                                        <a href="#{% if project.mainImageName and not mainImageDisplayedInGallery %}slide_main_{{ project.id }}{% else %}slide_gallery_{{ project.id }}_{{ project.projectImages|first.id }}{% endif %}" class="btn btn-circle btn-sm">❯</a>
-                                    {% else %}
-                                        <a href="#slide_gallery_{{ project.id }}_{{ project.projectImages[loop.index + 1 - 1].id }}" class="btn btn-circle btn-sm">❯</a>
-                                    {% endif %}
-                                </div>
+                                {% if project.mainImageName and not mainImageDisplayedInGallery %}
+                                    <div class="carousel-slide w-full h-full flex-shrink-0 flex justify-center items-center bg-base-300/20">
+                                        <img src="{{ asset('uploads/images/projects/' ~ project.mainImageName) }}"
+                                             alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
+                                             class="w-auto h-auto max-w-full max-h-full object-contain" />
+                                    </div>
+                                {% endif %}
+
+                                {% for image in project.projectImages %}
+                                    <div class="carousel-slide w-full h-full flex-shrink-0 flex justify-center items-center bg-base-300/20">
+                                        <img src="{{ asset('uploads/images/projects/gallery/' ~ image.imageName) }}"
+                                             alt="{{ image.altText|default('common.project_gallery_image_alt'|trans({'%project_title%': project.title, '%index%': loop.index})) }}"
+                                             class="w-auto h-auto max-w-full max-h-full object-contain" />
+                                    </div>
+                                {% endfor %}
                             </div>
-                        {% endfor %}
+                        </div>
+
+                        <!-- Navigation Controls -->
+                        <button class="carousel-prev absolute left-5 top-1/2 -translate-y-1/2 btn btn-circle btn-sm z-10 hover:bg-primary hover:text-primary-content transition-colors duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <button class="carousel-next absolute right-5 top-1/2 -translate-y-1/2 btn btn-circle btn-sm z-10 hover:bg-primary hover:text-primary-content transition-colors duration-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+
+                        <!-- Dots Indicator -->
+                        <div class="carousel-dots absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                            {% set totalSlides = project.projectImages|length + ((project.mainImageName and not mainImageDisplayedInGallery) ? 1 : 0) %}
+                            {% for i in 0..(totalSlides - 1) %}
+                                <button class="carousel-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white/80 transition-colors duration-200 {{ loop.first ? 'bg-white' : '' }}" data-slide="{{ i }}"></button>
+                            {% endfor %}
+                        </div>
                     </div>
                 {% elseif project.mainImageName %}
-                    <figure class="h-64 md:h-96 lg:h-[30rem] w-full" data-aos="zoom-in">
+                    <figure class="h-64 md:h-96 lg:h-[30rem] w-full flex justify-center items-center bg-base-300/20" data-aos="zoom-in">
                         <img src="{{ asset('uploads/images/projects/' ~ project.mainImageName) }}"
                              alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
-                             class="object-cover w-full h-full">
+                             class="w-auto h-auto max-w-full max-h-full object-contain">
                     </figure>
                 {% endif %}
                 {# Carousel End #}
@@ -73,7 +83,7 @@
                     </div>
 
                     <div class="prose lg:prose-lg max-w-none mb-8 text-base-content" data-aos="fade-up" data-aos-delay="300">
-                        {{ project.description|striptags|nl2br }} {# From DB. Use |raw if HTML is intended #}
+                        {{ project.description|raw }} {# From DB. Use |raw if HTML is intended #}
                     </div>
 
                     {% if project.technologies is not empty %}

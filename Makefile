@@ -70,7 +70,8 @@ help:
 
 # -------------- ⚙️ Installation et configuration ⚙️ --------------
 
-setup: install up db-create db-migrate db-fixtures assets-build start
+# Commande pour une première installation et configuration du projet
+setup: install up db-create db-migrate db-fixtures server-start assets-dev-server
 	@echo "${GREEN}Projet configuré avec succès !${RESET}"
 
 install:

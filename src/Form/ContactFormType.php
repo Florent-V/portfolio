@@ -31,10 +31,6 @@ class ContactFormType extends AbstractType
                         'minMessage' => 'Votre nom doit comporter au moins {{ limit }} caractères.',
                     ]),
                 ],
-                'attr' => [
-                    'placeholder' => 'John Doe',
-                    'class'       => 'input input-bordered w-full',
-                ],
             ])
             ->add('email', EmailType::class, [
                 'label'       => 'Votre Email',
@@ -45,10 +41,6 @@ class ContactFormType extends AbstractType
                     new Email([
                         'message' => 'L\'adresse email "{{ value }}" n\'est pas valide.',
                     ]),
-                ],
-                'attr' => [
-                    'placeholder' => 'john.doe@example.com',
-                    'class'       => 'input input-bordered w-full',
                 ],
             ])
             ->add('subject', TextType::class, [
@@ -62,10 +54,6 @@ class ContactFormType extends AbstractType
                         'minMessage' => 'Le sujet doit comporter au moins {{ limit }} caractères.',
                     ]),
                 ],
-                'attr' => [
-                    'placeholder' => 'Demande d\'information',
-                    'class'       => 'input input-bordered w-full',
-                ],
             ])
             ->add('message', TextareaType::class, [
                 'label'       => 'Votre Message',
@@ -77,11 +65,6 @@ class ContactFormType extends AbstractType
                         'min'        => 10,
                         'minMessage' => 'Votre message doit comporter au moins {{ limit }} caractères.',
                     ]),
-                ],
-                'attr' => [
-                    'placeholder' => 'Votre message ici...',
-                    'class'       => 'textarea textarea-bordered h-32 w-full',
-                    'rows'        => 6,
                 ],
             ]);
     }

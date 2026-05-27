@@ -157,8 +157,17 @@ class ProjectCrudController extends AbstractCrudController
     {
         return TextareaField::new('mainImageFile', 'Image Principale')
             ->setFormType(VichImageType::class)
+            ->setFormTypeOptions([
+                'allow_delete'       => false,
+                'delete_label'       => 'Supprimer',
+                'download_label'     => 'Télécharger',
+                'download_uri'       => false,
+                'image_uri'          => true,
+                'translation_domain' => 'VichUploaderBundle',
+            ])
             ->setHelp('Image principale du projet (JPEG, PNG, WEBP). Max 5MB.')
-            ->setRequired(true);
+            ->setRequired(Crud::PAGE_NEW === $this->getContext()?->getCrud()->getCurrentPage())
+            ->setColumns(6);
     }
 
     private function createStartDateField(): DateTimeField
