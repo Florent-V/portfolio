@@ -44,11 +44,11 @@
                                 </p>
 
                                 <div class="mb-3">
-                                    {% for tech in article.technologies|slice(0, 3) %}
-                                        <span class="badge badge-outline badge-sm mr-1 mb-1">{{ tech.name }}</span> {# From DB #}
+                                    {% for tag in article.tags|slice(0, 3) %}
+                                        <span class="badge badge-outline badge-sm mr-1 mb-1">{{ tag.name }}</span>
                                     {% endfor %}
-                                    {% if article.technologies|length > 3 %}
-                                        <span class="badge badge-outline badge-sm">{{ 'common.plus_more'|trans({'%count%': article.technologies|length - 3}) }}</span>
+                                    {% if article.tags|length > 3 %}
+                                        <span class="badge badge-outline badge-sm">{{ 'common.plus_more'|trans({'%count%': article.tags|length - 3}) }}</span>
                                     {% endif %}
                                 </div>
 

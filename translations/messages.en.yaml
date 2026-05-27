@@ -54,6 +54,7 @@ project:
   published_on: Published on
   by_author: by
   tech_covered: "Technologies covered:"
+  tags: "Tags:"
   back_to_articles: Back to articles list
   no_articles: No articles published yet.
   come_back_soon_articles: Come back soon to discover my posts!
@@ -65,6 +66,7 @@ article:
   published_on: Published on
   by_author: by
   tech_covered: "Technologies covered:"
+  tags: "Tags:"
   back_to_articles: Back to articles list
   no_articles: No articles published yet.
   come_back_soon_articles: Come back soon to discover my posts!

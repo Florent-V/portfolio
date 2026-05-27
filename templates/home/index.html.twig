@@ -196,7 +196,7 @@
                                  data-aos-delay="{{ loop.index0 * 100 }}">
                                 <div class="card-body">
                                     <h3 class="card-title text-xl md:text-2xl text-secondary">
-                                        <twig:ux:icon name="{{ category.icon }}" height="24" width="24" class="mr-2" />
+                                        {% if category.icon %}<twig:ux:icon name="{{ category.icon }}" height="24" width="24" class="mr-2" />{% endif %}
                                         {{ category.name }}
                                     </h3>
                                     <ul class="list-disc list-inside mt-2 space-y-1">
@@ -402,7 +402,7 @@
                                  data-aos-delay="{{ loop.index0 * 100 }}">
                                 {% if hobby.icon and hobby.icon starts with '<svg' %}
                                     {{ hobby.icon|raw }}
-                                {% elseif hobby.icon %}
+                                {% elseif hobby.icon and ' ' not in hobby.icon %}
                                     <twig:ux:icon name="{{ hobby.icon }}" height="24" width="24" class="mr-2" />
                                 {% endif %}
                                 {{ hobby.name }} {# Hobby name from DB #}

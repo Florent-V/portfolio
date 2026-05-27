@@ -59,17 +59,14 @@
                         {% endfor %}
                     </div>
 
-                    {% if article.technologies is not empty %}
+                    {% if article.tags is not empty %}
                         <div class="mb-8" data-aos="fade-up" data-aos-delay="400">
-                            <h3 class="text-lg md:text-xl font-semibold text-secondary mb-3">{{ 'article.tech_covered'|trans }}</h3>
+                            <h3 class="text-lg md:text-xl font-semibold text-secondary mb-3">{{ 'article.tags'|trans }}</h3>
                             <div class="flex flex-wrap gap-2">
-                                {% for tech in article.technologies %}
+                                {% for tag in article.tags %}
                                     <span class="badge badge-md lg:badge-lg badge-outline" data-aos="zoom-in" data-aos-delay="{{ 500 + loop.index0 * 50 }}">
-                                    {% if tech.imageName %}
-                                        <img src="{{ asset('uploads/images/technologies/' ~ tech.imageName) }}" alt="{{ tech.name }}" class="h-4 w-4 mr-1.5 object-contain">
-                                    {% endif %}
-                                        {{ tech.name }}
-                                </span>
+                                        {{ tag.name }}
+                                    </span>
                                 {% endfor %}
                             </div>
                         </div>

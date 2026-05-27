@@ -6,14 +6,18 @@ namespace App\Controller\Admin;
 
 use App\Entity\Article;
 use App\Entity\User;
+use App\Repository\TagRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
@@ -23,12 +27,18 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class ArticleCrudController extends AbstractCrudController
 {
-    public function __construct(private readonly Security $security)
-    {
+    public function __construct(
+        private readonly Security $security,
+        private readonly TagRepository $tagRepository,
+        private readonly EntityManagerInterface $em,
+    ) {
     }
 
     public static function getEntityFqcn(): string
@@ -45,14 +55,14 @@ class ArticleCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_EDIT, 'Modifier l\'article')
             ->setPageTitle(Crud::PAGE_NEW, 'Créer un article')
             ->setPageTitle(Crud::PAGE_DETAIL, 'Détail de l\'article')
-            ->setSearchFields(['title', 'content', 'slug', 'author.email', 'technologies.name'])
+            ->setSearchFields(['title', 'slug', 'author.email', 'tags.name'])
             ->setDefaultSort(['publishedAt' => 'DESC', 'createdAt' => 'DESC'])
             ->setPaginatorPageSize(25)
             ->showEntityActionsInlined()
             ->setAutofocusSearch()
             ->setTimezone('Europe/Paris')
             ->setHelp(Crud::PAGE_INDEX, 'Gérez vos articles de blog et leur publication.'
-                . ' Associez-les à des technologies pour améliorer la navigation.');
+                . ' Associez-leur des tags pour améliorer la navigation.');
     }
 
     public function configureAssets(Assets $assets): Assets
@@ -70,6 +80,56 @@ class ArticleCrudController extends AbstractCrudController
             Crud::PAGE_NEW, Crud::PAGE_EDIT => $this->getFormFields(),
             default => [],
         };
+    }
+
+    /** @return FormBuilderInterface<mixed> */
+    public function createEditFormBuilder(
+        EntityDto $entityDto,
+        KeyValueStore $formOptions,
+        \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext $context,
+    ): FormBuilderInterface {
+        $builder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
+        $this->addTagsPreSubmitListener($builder);
+
+        return $builder;
+    }
+
+    /** @return FormBuilderInterface<mixed> */
+    public function createNewFormBuilder(
+        EntityDto $entityDto,
+        KeyValueStore $formOptions,
+        \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext $context,
+    ): FormBuilderInterface {
+        $builder = parent::createNewFormBuilder($entityDto, $formOptions, $context);
+        $this->addTagsPreSubmitListener($builder);
+
+        return $builder;
+    }
+
+    /** @param FormBuilderInterface<mixed> $builder */
+    private function addTagsPreSubmitListener(FormBuilderInterface $builder): void
+    {
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
+            $data = $event->getData();
+            if (!isset($data['tags']) || !is_array($data['tags'])) {
+                return;
+            }
+
+            $resolvedIds = [];
+            foreach ($data['tags'] as $value) {
+                if (ctype_digit((string) $value)) {
+                    $resolvedIds[] = $value;
+                    continue;
+                }
+
+                $tag = $this->tagRepository->findOneByNameOrCreate(trim($value));
+                $this->em->flush();
+                $resolvedIds[] = (string) $tag->getId();
+            }
+
+            $data['tags'] = $resolvedIds;
+            $event->setData($data);
+        });
     }
 
     public function createEntity(string $entityFqcn): Article
@@ -91,7 +151,7 @@ class ArticleCrudController extends AbstractCrudController
             $this->createMainImageField()->setLabel('Image'),
             $this->createTitleField(),
             $this->createAuthorField(),
-            $this->createTechnologiesField(),
+            $this->createTagsField(),
             $this->createIsPublishedField(),
             $this->createPublishedAtField(),
             $this->createCreatedAtField(),
@@ -106,7 +166,7 @@ class ArticleCrudController extends AbstractCrudController
             $this->createTitleField(),
             $this->createSlugField(),
             $this->createAuthorField(),
-            $this->createTechnologiesField(),
+            $this->createTagsField(),
             $this->createIsPublishedField(),
             $this->createPublishedAtField(),
             $this->createCreatedAtField(),
@@ -124,7 +184,7 @@ class ArticleCrudController extends AbstractCrudController
             $this->createSlugField()->setColumns(12),
             $this->createMainImageUploadField()->setColumns(12),
             $this->createAuthorField()->setColumns(12),
-            $this->createTechnologiesField()->setColumns(12),
+            $this->createTagsField()->setColumns(12),
             $this->createIsPublishedField()->setColumns(12),
             $this->createPublishedAtField()->setColumns(12),
             CollectionField::new('contentElements', 'Contenu de l\'article')
@@ -155,11 +215,14 @@ class ArticleCrudController extends AbstractCrudController
             ->setHelp('Auteur de l\'article. Défini automatiquement lors de la création.');
     }
 
-    private function createTechnologiesField(): AssociationField
+    private function createTagsField(): AssociationField
     {
-        return AssociationField::new('technologies', 'Technologies')
-            ->setFormTypeOptions(['by_reference' => false])
-            ->setHelp('Technologies associées à cet article pour faciliter la recherche et la navigation.');
+        return AssociationField::new('tags', 'Tags')
+            ->setFormTypeOptions([
+                'by_reference' => false,
+                'attr'         => ['data-ea-autocomplete-allow-item-create' => 'true'],
+            ])
+            ->setHelp('Tags associés à cet article. Tapez pour rechercher ou créer un nouveau tag.');
     }
 
     private function createMainImageField(): ImageField
@@ -234,7 +297,7 @@ class ArticleCrudController extends AbstractCrudController
             ->add('title')
             ->add('slug')
             ->add('author')
-            ->add('technologies')
+            ->add('tags')
             ->add('isPublished')
             ->add('publishedAt')
             ->add('createdAt')
