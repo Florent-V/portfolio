@@ -405,12 +405,12 @@
         ]
     },
     "symfony/ux-vue": {
-        "version": "2.23",
+        "version": "2.35",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "2.9",
-            "ref": "7a6b5e211acc7b10b7190e704b40f6d2bca01adf"
+            "ref": "8b87f5866b5af6728a58aaf7f5ba77e3816e35ed"
         },
         "files": [
             "assets/vue/controllers/Hello.vue"
