@@ -1,11 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ article.title }} - {{ parent() }}{% endblock %} {# article.title from DB #}
+{% block title %}{{ article.title }} - {{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+{% endblock %}
 
 {% block body %}
     <div class="bg-base-200 py-12 md:py-20 min-h-screen">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <article class="max-w-3xl mx-auto bg-base-100 shadow-xl rounded-lg overflow-hidden" data-aos="fade-up">
+            <article class="max-w-5xl mx-auto bg-base-100 shadow-xl rounded-lg overflow-hidden" data-aos="fade-up">
 
                 {% if article.mainImageName %}
                     <figure class="h-64 md:h-80 lg:h-96 w-full" data-aos="zoom-in">
@@ -16,31 +26,36 @@
                 {% endif %}
 
                 <div class="p-6 md:p-8 lg:p-10">
-                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-2" data-aos="fade-left" data-aos-delay="100">{{ article.title }}</h1> {# From DB #}
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-2" data-aos="fade-left" data-aos-delay="100">{{ article.title }}</h1>
 
                     <div class="text-sm text-base-content opacity-70 mb-6" data-aos="fade-left" data-aos-delay="200">
                         <span>{{ 'article.published_on'|trans }} {{ article.publishedAt|date('d F Y à H:i') }}</span>
                         {% if article.author %}
-                            <span>{{ 'article.by_author'|trans }} <a href="#" class="link link-hover">{{ article.author.userName|default(article.author.firstName ~ ' ' ~ article.author.lastName) }}</a></span> {# Author from DB #}
+                            <span>{{ 'article.by_author'|trans }} <a href="#" class="link link-hover">{{ article.author.userName|default(article.author.firstName ~ ' ' ~ article.author.lastName) }}</a></span>
                         {% endif %}
                     </div>
 
-                    <div class="prose lg:prose-lg xl:prose-xl max-w-none mb-8 text-base-content" data-aos="fade-up" data-aos-delay="300">
+                    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8" data-aos="fade-up" data-aos-delay="300">
                         {% for element in article.contentElements %}
-                            {% if element.type.value == 'paragraph' %}
-                                <p>{{ element.content|raw }}</p>
-                            {% elseif element.type.value == 'image' and element.image %}
-                                <figure class="my-4">
-                                    <img src="{{ asset('uploads/images/articles/' ~ element.image.imageName) }}" alt="{{ element.image.altText }}" class="mx-auto rounded-lg shadow-lg">
-                                    {% if element.image.altText %}
-                                        <figcaption class="text-center text-sm text-gray-500 mt-2">{{ element.image.altText }}</figcaption>
-                                    {% endif %}
-                                </figure>
-                            {% elseif element.type.value == 'code' and element.codeSnippet %}
-                                <div class="my-4">
-                                    <pre><code class="language-{{ element.codeSnippet.language }}">{{ element.codeSnippet.content }}</code></pre>
-                                </div>
-                            {% endif %}
+                            {% set spanClass = element.columnSpan.value == 'one_third' ? 'xl:col-span-1' : (element.columnSpan.value == 'two_thirds' ? 'xl:col-span-2' : 'xl:col-span-3') %}
+                            <div class="col-span-1 {{ spanClass }}">
+                                {% if element.type.value == 'paragraph' %}
+                                    <div class="prose lg:prose-lg xl:prose-xl max-w-none text-base-content">
+                                        <p>{{ element.content|raw }}</p>
+                                    </div>
+                                {% elseif element.type.value == 'image' and element.imageName %}
+                                    <figure>
+                                        <img src="{{ asset('uploads/images/articles/' ~ element.imageName) }}"
+                                             alt="{{ element.altText ?? '' }}"
+                                             class="w-full rounded-lg shadow-lg">
+                                        {% if element.altText %}
+                                            <figcaption class="text-center text-sm text-gray-500 mt-2">{{ element.altText }}</figcaption>
+                                        {% endif %}
+                                    </figure>
+                                {% elseif element.type.value == 'code' and element.content %}
+                                    <pre class="rounded-lg overflow-x-auto"><code class="language-{{ element.language ?? 'plaintext' }}">{{ element.content|replace({'</p>': '\n', '<br>': '\n', '<br/>': '\n', '<br />': '\n', '</div>': '\n'})|striptags|trim|raw }}</code></pre>
+                                {% endif %}
+                            </div>
                         {% endfor %}
                     </div>
 
@@ -53,20 +68,12 @@
                                     {% if tech.imageName %}
                                         <img src="{{ asset('uploads/images/technologies/' ~ tech.imageName) }}" alt="{{ tech.name }}" class="h-4 w-4 mr-1.5 object-contain">
                                     {% endif %}
-                                        {{ tech.name }} {# From DB #}
+                                        {{ tech.name }}
                                 </span>
                                 {% endfor %}
                             </div>
                         </div>
                     {% endif %}
-
-                    {# Placeholder for future comments section #}
-                    {#
-                    <div id="comments" class="mt-12 pt-8 border-t border-base-300">
-                        <h3 class="text-2xl font-semibold text-secondary mb-6">Commentaires</h3>
-                        <p class="text-base-content opacity-70">Les commentaires seront bientôt disponibles.</p>
-                    </div>
-                    #}
 
                     <div class="text-center border-t pt-8 mt-8" data-aos="fade-up" data-aos-delay="600">
                         <a href="{{ path('app_article_index') }}" class="btn btn-ghost">
@@ -78,4 +85,5 @@
             </article>
         </div>
     </div>
+    <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
 {% endblock %}

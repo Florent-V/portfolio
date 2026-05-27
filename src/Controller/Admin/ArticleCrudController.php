@@ -8,18 +8,19 @@ use App\Entity\Article;
 use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
-use App\Form\ArticleContentFormType;
-use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Bundle\SecurityBundle\Security;
 use Vich\UploaderBundle\Form\Type\VichImageType;
@@ -52,6 +53,13 @@ class ArticleCrudController extends AbstractCrudController
             ->setTimezone('Europe/Paris')
             ->setHelp(Crud::PAGE_INDEX, 'Gérez vos articles de blog et leur publication.'
                 . ' Associez-les à des technologies pour améliorer la navigation.');
+    }
+
+    public function configureAssets(Assets $assets): Assets
+    {
+        return $assets
+            ->addCssFile(Asset::fromEasyAdminAssetPackage('field-text-editor.css')->onlyOnForms())
+            ->addJsFile(Asset::fromEasyAdminAssetPackage('field-text-editor.js')->onlyOnForms());
     }
 
     public function configureFields(string $pageName): iterable
@@ -97,7 +105,6 @@ class ArticleCrudController extends AbstractCrudController
             $this->createMainImageField()->setLabel('Image Principale'),
             $this->createTitleField(),
             $this->createSlugField(),
-            $this->createContentDetailField(),
             $this->createAuthorField(),
             $this->createTechnologiesField(),
             $this->createIsPublishedField(),
@@ -113,16 +120,17 @@ class ArticleCrudController extends AbstractCrudController
     private function getFormFields(): array
     {
         return [
-            $this->createTitleField(),
-            $this->createSlugField(),
-            $this->createMainImageUploadField(),
-            $this->createAuthorField(),
-            $this->createTechnologiesField(),
-            $this->createIsPublishedField(),
-            $this->createPublishedAtField(),
+            $this->createTitleField()->setColumns(12),
+            $this->createSlugField()->setColumns(12),
+            $this->createMainImageUploadField()->setColumns(12),
+            $this->createAuthorField()->setColumns(12),
+            $this->createTechnologiesField()->setColumns(12),
+            $this->createIsPublishedField()->setColumns(12),
+            $this->createPublishedAtField()->setColumns(12),
             CollectionField::new('contentElements', 'Contenu de l\'article')
-                ->setEntryType(ArticleContentFormType::class)
+                ->useEntryCrudForm(ArticleContentCrudController::class)
                 ->setFormTypeOptions(['by_reference' => false])
+                ->setColumns(12)
                 ->onlyOnForms(),
         ];
     }
@@ -139,7 +147,6 @@ class ArticleCrudController extends AbstractCrudController
             ->setTargetFieldName('title')
             ->setHelp('URL-friendly version du titre. Généré automatiquement si laissé vide.');
     }
-
 
     private function createAuthorField(): AssociationField
     {

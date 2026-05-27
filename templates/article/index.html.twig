@@ -34,7 +34,13 @@
                                     {{ 'article.published_on'|trans }} {{ article.publishedAt|date('d M Y') }} {{ 'article.by_author'|trans }} {{ article.author.userName|default('Admin') }} {# Author from DB #}
                                 </p>
                                 <p class="text-sm text-base-content opacity-80 mb-3 min-h-[3.75rem]">
-                                    {{ article.content|striptags|slice(0, 120) }}{% if article.content|striptags|length > 120 %}...{% endif %} {# From DB #}
+                                    {% set excerpt = '' %}
+                                    {% for element in article.contentElements %}
+                                        {% if element.type.value == 'paragraph' and excerpt == '' %}
+                                            {% set excerpt = element.content|striptags %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {{ excerpt|slice(0, 120) }}{% if excerpt|length > 120 %}...{% endif %}
                                 </p>
 
                                 <div class="mb-3">
