@@ -7,7 +7,7 @@ Un template de portfolio professionnel moderne et entièrement configurable, bas
 ### 🎯 Portfolio Complet
 - **Page d'accueil moderne** : Section Hero/About fusionnée avec animations AOS
 - **Projets** : Galerie de projets avec technologies, images et descriptions détaillées
-- **Articles/Blog** : Section blog intégrée pour partager vos connaissances
+- **Articles/Blog** : Section blog avec éditeur riche, blocs de contenu mixtes (texte, image, code) et mise en page en colonnes
 - **Parcours professionnel** : Gestion complète de l'éducation et de l'expérience
 - **Compétences** : Affichage dynamique des technologies et soft skills
 - **Contact** : Formulaire de contact fonctionnel avec envoi d'emails
@@ -42,6 +42,7 @@ Un template de portfolio professionnel moderne et entièrement configurable, bas
 - **Tailwind CSS + DaisyUI** pour le styling
 - **Symfony UX** (Live Components, Turbo, Icons)
 - **AOS** pour les animations
+- **Highlight.js** pour la coloration syntaxique des blocs code
 
 ### DevOps
 - **Docker** avec Docker Compose
@@ -105,12 +106,16 @@ Gestion des projets avec :
 - Descriptions détaillées
 - Statut de publication
 
-#### 📝 **Article**
-Système de blog intégré avec :
-- Éditeur de contenu riche
-- Tags et catégories
-- Images principales
-- Gestion des brouillons
+#### 📝 **Article & ArticleContent**
+Système de blog avec blocs de contenu modulaires :
+- **Blocs mixtes** : chaque article est composé de blocs indépendants (paragraphe, image, code)
+- **Éditeur riche** : Trix WYSIWYG natif EasyAdmin pour les blocs texte (gras, italique, listes…)
+- **Coloration syntaxique** : highlight.js (200+ langages) pour les blocs code
+- **Mise en page CSS Grid** : chaque bloc configurable en pleine largeur, 1/3 ou 2/3 de colonne
+- **Responsive** : layout en colonnes activé uniquement ≥ 1280px (xl), 1 colonne sur mobile/tablette
+- **Ordre d'affichage** : champ `displayOrder` pour ordonner les blocs librement
+- **Image principale** : bannière séparée du contenu de l'article
+- **Gestion des brouillons** : publication manuelle avec date configurable
 
 #### 💻 **Technology & SkillCategory**
 Système de compétences avec :
@@ -146,13 +151,26 @@ Parcours professionnel avec :
 4. Uploader les images
 5. Publier le projet
 
-### 3. Gestion des Compétences
+### 3. Rédaction d'Articles
+1. Aller dans "Articles" → "Articles"
+2. Créer un nouvel article (titre, slug, image principale, technologies)
+3. Dans la section "Contenu de l'article", ajouter des blocs :
+   - **Paragraphe** : éditeur Trix avec mise en forme (gras, italique, listes, liens)
+   - **Image** : upload d'image avec texte alternatif
+   - **Code** : coller du code source avec le langage (ex: `php`, `javascript`, `bash`)
+4. Configurer la **Largeur** de chaque bloc : Pleine largeur / 1/3 / 2/3
+5. Ajuster l'**Ordre** pour contrôler la disposition des blocs
+6. Publier l'article
+
+> Les blocs 1/3 et 2/3 s'affichent côte à côte sur les écrans ≥ 1280px et s'empilent sur mobile/tablette.
+
+### 4. Gestion des Compétences
 1. Créer des catégories de compétences
 2. Ajouter les technologies avec niveaux
 3. Configurer les soft skills
 4. Utiliser les icônes Symfony UX recommandées
 
-### 4. Personnalisation Visuelle
+### 5. Personnalisation Visuelle
 - Modifier les couleurs dans `tailwind.config.js`
 - Personnaliser les thèmes DaisyUI
 - Ajuster les animations AOS
