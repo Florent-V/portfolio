@@ -29,7 +29,7 @@ Un template de portfolio professionnel moderne et entièrement configurable, bas
 ## 🛠️ Technologies Utilisées
 
 ### Backend
-- **Symfony 7.2** (PHP 8.3+)
+- **Symfony 7.4** (PHP 8.4)
 - **Doctrine ORM** avec migrations
 - **EasyAdmin 4.24** pour l'administration
 - **VichUploader** pour la gestion des fichiers
@@ -53,7 +53,7 @@ Un template de portfolio professionnel moderne et entièrement configurable, bas
 ## 🚀 Installation Rapide
 
 ### Prérequis
-- PHP 8.3 ou supérieur
+- PHP 8.4 ou supérieur
 - Composer
 - Node.js & NPM
 - Docker & Docker Compose
