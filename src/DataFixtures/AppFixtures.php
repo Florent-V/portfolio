@@ -6,6 +6,7 @@ namespace App\DataFixtures;
 
 use App\Entity\AboutMe;
 use App\Entity\Article;
+use App\Entity\ArticleContent;
 use App\Entity\Education;
 use App\Entity\Experience;
 use App\Entity\Hobby;
@@ -15,6 +16,8 @@ use App\Entity\SkillCategory;
 use App\Entity\SoftSkill;
 use App\Entity\Technology;
 use App\Entity\User;
+use App\Enum\ArticleColumnSpan;
+use App\Enum\ArticleContentType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -70,6 +73,8 @@ class AppFixtures extends Fixture
     private function loadAboutMe(ObjectManager $manager): void
     {
         $aboutMe = new AboutMe();
+        $aboutMe->setFirstName('Florent');
+        $aboutMe->setLastName('Vasseur');
         $aboutMe->setTitle('John Doe - Développeur Web Full-Stack');
         $aboutMe->setDescription(
             "Passionné par la création d'applications web intuitives et performantes, " .
@@ -335,38 +340,90 @@ class AppFixtures extends Fixture
         $manager->persist($hobby4);
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
+     */
     private function loadArticles(ObjectManager $manager, User $adminUser, array $technologies): void
     {
+        // --- Article 1 : Dataloader Pattern avec Symfony UX ---
         $article1 = new Article();
         $article1->setTitle('Comprendre le Dataloader Pattern avec Symfony UX');
         $article1->setSlug('comprendre-dataloader-pattern-symfony-ux');
-        $article1->setContent(
-            'Le Dataloader Pattern est une technique puissante pour optimiser les requêtes ' .
-            'SQL/API dans les applications GraphQL, ' .
-            'mais son principe peut être appliqué plus largement. ' .
-            'Symfony UX offre des outils qui, combinés à Stimulus, ' .
-            "permettent d'implémenter des chargements de données différés et groupés, '.
-            'améliorant ainsi les performances perçues. \n\n" .
-            'Cet article explore comment mettre en place ce pattern dans un contexte Symfony classique...'
-        );
         $article1->setAuthor($adminUser);
         $article1->addTechnology($technologies['symfony']);
         $article1->addTechnology($technologies['javascript']);
         $article1->setIsPublished(true);
         $article1->setPublishedAt(new \DateTimeImmutable('-5 days'));
-        $article1->setMainImageName('article_symfony_ux.jpg'); // User needs to place this image
+        $article1->setMainImageName('article_symfony_ux.jpg');
         $manager->persist($article1);
 
+        $block = new ArticleContent();
+        $block->setType(ArticleContentType::PARAGRAPH)
+            ->setDisplayOrder(1)
+            ->setColumnSpan(ArticleColumnSpan::FULL)
+            ->setContent(
+                'Le Dataloader Pattern est une technique puissante pour optimiser les requêtes SQL/API ' .
+                'dans les applications GraphQL, mais son principe peut être appliqué plus largement. ' .
+                'Symfony UX offre des outils qui, combinés à Stimulus, permettent d\'implémenter ' .
+                'des chargements de données différés et groupés, améliorant ainsi les performances perçues.'
+            )
+            ->setArticle($article1);
+        $manager->persist($block);
+
+        $block = new ArticleContent();
+        $block->setType(ArticleContentType::PARAGRAPH)
+            ->setDisplayOrder(2)
+            ->setColumnSpan(ArticleColumnSpan::TWO_THIRDS)
+            ->setContent(
+                'Le principe est simple : plutôt que d\'exécuter N requêtes pour N entités, ' .
+                'on accumule les identifiants dans un buffer, puis on exécute une seule requête groupée. ' .
+                'Avec Symfony et Doctrine, cela se traduit par un service dédié qui collecte les IDs ' .
+                'avant de les résoudre en une seule passe <code>findBy()</code>.'
+            )
+            ->setArticle($article1);
+        $manager->persist($block);
+
+        $block = new ArticleContent();
+        $block->setType(ArticleContentType::CODE)
+            ->setDisplayOrder(3)
+            ->setColumnSpan(ArticleColumnSpan::FULL)
+            ->setLanguage('php')
+            ->setContent(
+                <<<'CODE'
+class UserDataLoader
+{
+    private array $buffer = [];
+
+    public function load(int $id): void
+    {
+        $this->buffer[] = $id;
+    }
+
+    public function resolve(UserRepository $repo): array
+    {
+        return $repo->findBy(['id' => array_unique($this->buffer)]);
+    }
+}
+CODE
+            )
+            ->setArticle($article1);
+        $manager->persist($block);
+
+        $block = new ArticleContent();
+        $block->setType(ArticleContentType::PARAGRAPH)
+            ->setDisplayOrder(4)
+            ->setColumnSpan(ArticleColumnSpan::FULL)
+            ->setContent(
+                'Cet article explore comment mettre en place ce pattern dans un contexte Symfony classique, ' .
+                'en s\'appuyant sur les événements du kernel pour déclencher la résolution au bon moment.'
+            )
+            ->setArticle($article1);
+        $manager->persist($block);
+
+        // --- Article 2 : PHP 8.3 ---
         $article2 = new Article();
         $article2->setTitle('Les Nouveautés de PHP 8.3 à ne pas Manquer');
         $article2->setSlug('nouveautes-php-8-3');
-        $article2->setContent(
-            "PHP 8.3 arrive avec son lot d'améliorations et de nouvelles fonctionnalités. " .
-            'Des types readonly pour les classes, ' .
-            "la nouvelle fonction `json_validate()`, en passant par des améliorations de performance... \n\n" .
-            'Découvrons ensemble les apports les plus significatifs de cette version ".
-            "et comment ils peuvent impacter positivement vos projets.'
-        );
         $article2->setMainImageName('test-600x400.png');
         $article2->setAuthor($adminUser);
         $article2->addTechnology($technologies['php']);
@@ -374,23 +431,121 @@ class AppFixtures extends Fixture
         $article2->setPublishedAt(new \DateTimeImmutable('-15 days'));
         $manager->persist($article2);
 
+        $block = new ArticleContent();
+        $block->setType(ArticleContentType::PARAGRAPH)
+            ->setDisplayOrder(1)
+            ->setColumnSpan(ArticleColumnSpan::FULL)
+            ->setContent(
+                'PHP 8.3 arrive avec son lot d\'améliorations et de nouvelles fonctionnalités : ' .
+                'constantes typées dans les classes, la nouvelle fonction <code>json_validate()</code>, ' .
+                'des améliorations de performance et bien d\'autres ajouts. ' .
+                'Découvrons ensemble les apports les plus significatifs de cette version.'
+            )
+            ->setArticle($article2);
+        $manager->persist($block);
+
+        $block = new ArticleContent();
+        $block->setType(ArticleContentType::CODE)
+            ->setDisplayOrder(2)
+            ->setColumnSpan(ArticleColumnSpan::TWO_THIRDS)
+            ->setLanguage('php')
+            ->setContent(
+                <<<'CODE'
+// Constantes typées dans les classes (PHP 8.3)
+class Config
+{
+    const string VERSION = '8.3.0';
+    const int MAX_RETRIES = 3;
+}
+
+// json_validate() — sans décoder
+if (json_validate($payload)) {
+    echo "JSON valide";
+}
+
+// Readonly properties sur les classes anonymes
+$obj = new readonly class(42) {
+    public function __construct(public int $value) {}
+};
+CODE
+            )
+            ->setArticle($article2);
+        $manager->persist($block);
+
+        $block = new ArticleContent();
+        $block->setType(ArticleContentType::PARAGRAPH)
+            ->setDisplayOrder(3)
+            ->setColumnSpan(ArticleColumnSpan::ONE_THIRD)
+            ->setContent(
+                'Les constantes typées évitent les erreurs silencieuses lors de l\'affectation de valeurs ' .
+                'incompatibles. <code>json_validate()</code> est bien plus performant qu\'un ' .
+                '<code>json_decode()</code> suivi d\'une vérification d\'erreur.'
+            )
+            ->setArticle($article2);
+        $manager->persist($block);
+
+        // --- Article 3 : Tailwind CSS (brouillon) ---
         $article3 = new Article();
         $article3->setTitle('Introduction à Tailwind CSS pour les Développeurs Backend');
         $article3->setSlug('tailwind-css-pour-backend-devs');
-        $article3->setContent(
-            'Tailwind CSS est souvent perçu comme un outil purement frontend. ".
-            "Cependant, sa philosophie utility-first peut grandement simplifier ' .
-            'la vie des développeurs backend qui ont besoin de créer des interfaces rapidement ' .
-            "sans se perdre dans du CSS complexe. \n\n" .
-            'Cet article est un guide de démarrage rapide pour intégrer Tailwind dans vos projets Symfony ou Laravel...'
-        );
         $article3->setMainImageName('test-600x400.png');
         $article3->setAuthor($adminUser);
         $article3->addTechnology($technologies['tailwind']);
         $article3->addTechnology($technologies['symfony']);
-        $article3->setIsPublished(false); // Draft
-        $article3->setPublishedAt(new \DateTimeImmutable('+10 days')); // Scheduled
+        $article3->setIsPublished(false);
+        $article3->setPublishedAt(new \DateTimeImmutable('+10 days'));
         $manager->persist($article3);
+
+        $block = new ArticleContent();
+        $block->setType(ArticleContentType::PARAGRAPH)
+            ->setDisplayOrder(1)
+            ->setColumnSpan(ArticleColumnSpan::FULL)
+            ->setContent(
+                'Tailwind CSS est souvent perçu comme un outil purement frontend. ' .
+                'Cependant, sa philosophie utility-first peut grandement simplifier la vie des développeurs ' .
+                'backend qui ont besoin de créer des interfaces rapidement sans se perdre dans du CSS complexe.'
+            )
+            ->setArticle($article3);
+        $manager->persist($block);
+
+        $block = new ArticleContent();
+        $block->setType(ArticleContentType::CODE)
+            ->setDisplayOrder(2)
+            ->setColumnSpan(ArticleColumnSpan::FULL)
+            ->setLanguage('javascript')
+            ->setContent(
+                <<<'CODE'
+// tailwind.config.js
+module.exports = {
+    content: [
+        './templates/**/*.html.twig',
+        './assets/**/*.js',
+    ],
+    theme: {
+        extend: {
+            colors: {
+                primary: '#6366f1',
+            },
+        },
+    },
+    plugins: [],
+};
+CODE
+            )
+            ->setArticle($article3);
+        $manager->persist($block);
+
+        $block = new ArticleContent();
+        $block->setType(ArticleContentType::PARAGRAPH)
+            ->setDisplayOrder(3)
+            ->setColumnSpan(ArticleColumnSpan::FULL)
+            ->setContent(
+                'Cet article est un guide de démarrage rapide pour intégrer Tailwind dans vos projets Symfony, ' .
+                'en passant par la configuration de Webpack Encore jusqu\'aux premières classes utilitaires ' .
+                'dans vos templates Twig.'
+            )
+            ->setArticle($article3);
+        $manager->persist($block);
     }
 
     private function loadSoftSkills(ObjectManager $manager): void
