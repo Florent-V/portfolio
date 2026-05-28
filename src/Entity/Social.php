@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Entity\Trait\BlameableEntity;
 use App\Repository\SocialRepository;
+use App\Service\Admin\DuplicatableInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Mapping\Annotation\SoftDeleteable;
@@ -16,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: SocialRepository::class)]
 #[Gedmo\Loggable]
 #[SoftDeleteable]
-class Social
+class Social implements DuplicatableInterface
 {
     use TimestampableEntity;
     use BlameableEntity;
@@ -141,5 +142,11 @@ class Social
     public function __toString(): string
     {
         return $this->name ?? 'Nouveau lien social';
+    }
+
+    public function prepareDuplicate(): void
+    {
+        $this->name     = 'Copie de ' . $this->name;
+        $this->isActive = false;
     }
 }
