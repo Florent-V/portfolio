@@ -51,7 +51,8 @@ class SoftSkillFieldsConfigurationService extends AbstractFieldsConfigurationSer
     {
         return [
             $this->createTextField('name', 'Nom'),
-            $this->createTextField('icon', 'Icône')->setHelp('Nom d\'icône Symfony UX (ex: "bi:star")'),
+            $this->createTextField('icon', 'Icône')
+                ->setHelp('Nom d\'icône Symfony UX (ex: "bi:star")'),
             $this->createDisplayOrderFormField(),
             $this->createTextField('description', 'Description'),
         ];

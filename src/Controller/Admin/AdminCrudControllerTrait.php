@@ -70,6 +70,7 @@ trait AdminCrudControllerTrait
             ->setDateTimeFormat('dd/MM/yyyy HH:mm')
             ->setPaginatorPageSize(25)
             ->setPaginatorRangeSize(4)
+            ->setDefaultRowAction(Action::DETAIL)
             ->setAutofocusSearch()
             ->setTimezone('Europe/Paris');
     }
