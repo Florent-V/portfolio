@@ -87,12 +87,13 @@ trait FieldsConfigurationTrait
     protected function createImageField(string $property, string $label, string $basePath): ImageField
     {
         return ImageField::new($property, $label)
-            ->setBasePath($basePath);
+            ->setBasePath($basePath)
+            ->setTemplatePath('admin/field/generic_image.html.twig');
     }
 
-    protected function createVichImageUploadField(string $property, string $label): TextareaField
+    protected function createVichImageUploadField(string $property, string $label): TextField
     {
-        return TextareaField::new($property, $label)
+        return TextField::new($property, $label)
             ->setFormType(VichImageType::class)
             ->setFormTypeOptions([
                 'allow_delete'       => false,
@@ -103,6 +104,13 @@ trait FieldsConfigurationTrait
                 'translation_domain' => 'VichUploaderBundle',
             ])
             ->setRequired(false);
+    }
+
+    protected function createIsDeletedField(): BooleanField
+    {
+        return BooleanField::new('isDeleted', 'Statut')
+            ->setTemplatePath('admin/fields/is_deleted.html.twig')
+            ->hideOnForm();
     }
 
     protected function createdAtField(): DateTimeField
