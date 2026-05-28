@@ -109,7 +109,7 @@ trait FieldsConfigurationTrait
     protected function createIsDeletedField(): BooleanField
     {
         return BooleanField::new('isDeleted', 'Statut')
-            ->setTemplatePath('admin/fields/is_deleted.html.twig')
+            ->setTemplatePath('admin/field/is_deleted.html.twig')
             ->hideOnForm();
     }
 
