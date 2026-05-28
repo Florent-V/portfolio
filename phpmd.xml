@@ -24,7 +24,7 @@
     <rule ref="rulesets/design.xml/CountInLoopExpression" />
     <rule ref="rulesets/design.xml/NumberOfChildren">
         <properties>
-            <property name="minimum" value="10"/>
+            <property name="minimum" value="15"/>
         </properties>
     </rule>
 
