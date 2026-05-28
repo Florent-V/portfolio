@@ -1,0 +1,23 @@
+{% block field %}
+    {% set images = field.value %}
+    {% if images is empty %}
+        <span class="text-muted">Aucune image dans la galerie</span>
+    {% else %}
+        <div class="d-flex flex-wrap gap-2">
+            {% for image in images %}
+                <div class="text-center" style="max-width: 120px;">
+                    <img
+                        src="{{ '/uploads/images/projects/gallery/' ~ image.imageName }}"
+                        alt="{{ image.altText ?? image.imageName }}"
+                        style="max-width: 120px; max-height: 90px; object-fit: cover; border-radius: 4px; border: 1px solid #dee2e6;"
+                    />
+                    {% if image.altText %}
+                        <small class="d-block text-muted text-truncate" style="max-width: 120px;" title="{{ image.altText }}">
+                            {{ image.altText }}
+                        </small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
