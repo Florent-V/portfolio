@@ -19,14 +19,12 @@
     <rule ref="rulesets/design.xml/EvalExpression" />
     <rule ref="rulesets/design.xml/GotoStatement" />
     <rule ref="rulesets/design.xml/DepthOfInheritance" />
-<!--    TODO : corriger cette erreur dans les authenticator -->
-<!--    <rule ref="rulesets/design.xml/CouplingBetweenObjects" />-->
     <rule ref="rulesets/design.xml/DevelopmentCodeFragment" />
     <rule ref="rulesets/design.xml/EmptyCatchBlock" />
     <rule ref="rulesets/design.xml/CountInLoopExpression" />
     <rule ref="rulesets/design.xml/NumberOfChildren">
         <properties>
-            <property name="minimum" value="3"/>
+            <property name="minimum" value="10"/>
         </properties>
     </rule>
 
