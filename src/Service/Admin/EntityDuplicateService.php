@@ -97,14 +97,14 @@ final class EntityDuplicateService
                 continue;
             }
 
-            $reflection = $metadata->getReflectionProperty($fieldName);
-            if (null === $reflection) {
+            $accessor = $metadata->getPropertyAccessor($fieldName);
+            if (null === $accessor) {
                 continue;
             }
 
-            $collection = $reflection->getValue($clone);
+            $collection = $accessor->getValue($clone);
             if ($collection instanceof Collection) {
-                $reflection->setValue($clone, new ArrayCollection($collection->toArray()));
+                $accessor->setValue($clone, new ArrayCollection($collection->toArray()));
             }
         }
     }
