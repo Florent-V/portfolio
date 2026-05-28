@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Entity\Trait\BlameableEntity;
 use App\Repository\ProjectRepository;
+use App\Service\Admin\DuplicatableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -16,13 +17,13 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 #[Gedmo\Loggable]
 #[SoftDeleteable]
 #[Vich\Uploadable]
-class Project
+class Project implements DuplicatableInterface
 {
     use TimestampableEntity;
     use BlameableEntity;
@@ -274,5 +275,13 @@ class Project
     public function __toString(): string
     {
         return $this->title ?? 'New Project';
+    }
+
+    public function prepareDuplicate(): void
+    {
+        $this->projectImages = new ArrayCollection();
+        $this->mainImageFile = null;
+        $this->mainImageName = null;
+        $this->published     = false;
     }
 }

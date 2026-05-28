@@ -6,6 +6,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\AboutMe;
 use App\Entity\Article;
+use App\Entity\ArticleContent;
 use App\Entity\Education;
 use App\Entity\Experience;
 use App\Entity\Hobby;
@@ -90,7 +91,11 @@ class DashboardController extends AbstractDashboardController
             MenuItem::linkToCrud('Images des Projets', 'fa fa-images', ProjectImage::class),
         ]);
 
-        yield MenuItem::linkToCrud('Articles', 'fa fa-newspaper', Article::class);
+        yield MenuItem::subMenu('Articles', 'fa fa-newspaper')->setSubItems([
+            MenuItem::linkToCrud('Articles', 'fa fa-newspaper', Article::class),
+            MenuItem::linkToCrud('Blocs de contenu', 'fa fa-cubes', ArticleContent::class)
+                ->setController(ArticleContentCrudController::class),
+        ]);
 
         // Skills & Experience
         yield MenuItem::section('Compétences & Expérience');

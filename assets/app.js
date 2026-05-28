@@ -1,6 +1,6 @@
+import './stimulus_bootstrap.js'
 import { Workbox } from 'workbox-window'
 import { registerVueControllerComponents } from '@symfony/ux-vue'
-import './bootstrap.js'
 /*
  * Welcome to your app's main JavaScript file!
  *

@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Entity\Trait\BlameableEntity;
 use App\Repository\ArticleRepository;
+use App\Service\Admin\DuplicatableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -16,13 +17,13 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 #[Gedmo\Loggable]
 #[SoftDeleteable]
 #[Vich\Uploadable]
-class Article
+class Article implements DuplicatableInterface
 {
     use TimestampableEntity;
     use BlameableEntity;
@@ -44,9 +45,6 @@ class Article
     )]
     private ?string $slug = null;
 
-    #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank]
-    private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $publishedAt = null;
@@ -56,10 +54,10 @@ class Article
     private ?User $author = null;
 
     /**
-     * @var Collection<int, Technology>
+     * @var Collection<int, Tag>
      */
-    #[ORM\ManyToMany(targetEntity: Technology::class, inversedBy: 'articles')]
-    private Collection $technologies;
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'articles')]
+    private Collection $tags;
 
     #[Vich\UploadableField(mapping: 'article_image', fileNameProperty: 'mainImageName')]
     #[Assert\File(
@@ -77,11 +75,24 @@ class Article
     #[Assert\Type(type: 'bool')]
     private bool $isPublished = false;
 
+    /**
+     * @var Collection<int, ArticleContent>
+     */
+    #[ORM\OneToMany(
+        targetEntity: ArticleContent::class,
+        mappedBy: 'article',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    #[ORM\OrderBy(['displayOrder' => 'ASC'])]
+    private Collection $contentElements;
+
     public function __construct()
     {
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
-        $this->technologies = new ArrayCollection();
+        $this->tags            = new ArrayCollection();
+        $this->contentElements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -113,18 +124,6 @@ class Article
         return $this;
     }
 
-    public function getContent(): ?string
-    {
-        return $this->content;
-    }
-
-    public function setContent(string $content): static
-    {
-        $this->content = $content;
-
-        return $this;
-    }
-
     public function getPublishedAt(): \DateTimeInterface
     {
         return $this->publishedAt;
@@ -150,25 +149,25 @@ class Article
     }
 
     /**
-     * @return Collection<int, Technology>
+     * @return Collection<int, Tag>
      */
-    public function getTechnologies(): Collection
+    public function getTags(): Collection
     {
-        return $this->technologies;
+        return $this->tags;
     }
 
-    public function addTechnology(Technology $technology): static
+    public function addTag(Tag $tag): static
     {
-        if (!$this->technologies->contains($technology)) {
-            $this->technologies->add($technology);
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
         }
 
         return $this;
     }
 
-    public function removeTechnology(Technology $technology): static
+    public function removeTag(Tag $tag): static
     {
-        $this->technologies->removeElement($technology);
+        $this->tags->removeElement($tag);
 
         return $this;
     }
@@ -216,5 +215,45 @@ class Article
     public function __toString(): string
     {
         return $this->title ?? 'Nouvel Article';
+    }
+
+    /**
+     * @return Collection<int, ArticleContent>
+     */
+    public function getContentElements(): Collection
+    {
+        return $this->contentElements;
+    }
+
+    public function addContentElement(ArticleContent $contentElement): static
+    {
+        if (!$this->contentElements->contains($contentElement)) {
+            $this->contentElements->add($contentElement);
+            $contentElement->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContentElement(ArticleContent $contentElement): static
+    {
+        if ($this->contentElements->removeElement($contentElement)) {
+            // set the owning side to null (unless already changed)
+            if ($contentElement->getArticle() === $this) {
+                $contentElement->setArticle(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function prepareDuplicate(): void
+    {
+        $this->slug            = ($this->slug ?? 'article') . '-' . substr(bin2hex(random_bytes(3)), 0, 6);
+        $this->contentElements = new ArrayCollection();
+        $this->mainImageFile   = null;
+        $this->mainImageName   = null;
+        $this->isPublished     = false;
+        $this->publishedAt     = null;
     }
 }
