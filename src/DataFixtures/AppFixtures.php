@@ -322,22 +322,22 @@ class AppFixtures extends Fixture
     {
         $hobby1 = new Hobby();
         $hobby1->setName('Randonnée en montagne');
-        $hobby1->setIcon('fas fa-hiking'); // FontAwesome example
+        $hobby1->setIcon('material-symbols:hiking'); // FontAwesome example
         $manager->persist($hobby1);
 
         $hobby2 = new Hobby();
         $hobby2->setName('Photographie');
-        $hobby2->setIcon('fas fa-camera-retro');
+        $hobby2->setIcon('fa6-solid:camera-retro');
         $manager->persist($hobby2);
 
         $hobby3 = new Hobby();
         $hobby3->setName('Jeux de stratégie');
-        $hobby3->setIcon('fas fa-chess-knight');
+        $hobby3->setIcon('fa7-solid:chess-knight');
         $manager->persist($hobby3);
 
         $hobby4 = new Hobby();
         $hobby4->setName('Lecture (Science-Fiction)');
-        $hobby4->setIcon('fas fa-book-open');
+        $hobby4->setIcon('uil:book-open');
         $manager->persist($hobby4);
     }
 
@@ -554,42 +554,42 @@ CODE
         $ssCommunication = new SoftSkill();
         $ssCommunication->setName('Communication');
 
-        $ssCommunication->setIcon('fas fa-comments');
+        $ssCommunication->setIcon('material-symbols:comment');
         $ssCommunication->setDisplayOrder(1);
         $manager->persist($ssCommunication);
 
         $ssTeamwork = new SoftSkill();
         $ssTeamwork->setName('Travail d\'équipe');
 
-        $ssTeamwork->setIcon('fas fa-users');
+        $ssTeamwork->setIcon('mdi:users');
         $ssTeamwork->setDisplayOrder(2);
         $manager->persist($ssTeamwork);
 
         $ssProblemSolving = new SoftSkill();
         $ssProblemSolving->setName('Résolution de problèmes');
 
-        $ssProblemSolving->setIcon('fas fa-lightbulb'); // or 'fas fa-puzzle-piece'
+        $ssProblemSolving->setIcon('line-md:lightbulb-filled'); // or 'fas fa-puzzle-piece'
         $ssProblemSolving->setDisplayOrder(3);
         $manager->persist($ssProblemSolving);
 
         $ssCuriosity = new SoftSkill();
         $ssCuriosity->setName('Curiosité & Apprentissage continu');
 
-        $ssCuriosity->setIcon('fas fa-search'); // or 'fas fa-book-reader'
+        $ssCuriosity->setIcon('material-symbols:search'); // or 'fas fa-book-reader'
         $ssCuriosity->setDisplayOrder(4);
         $manager->persist($ssCuriosity);
 
         $ssAdaptability = new SoftSkill();
         $ssAdaptability->setName('Adaptabilité');
 
-        $ssAdaptability->setIcon('fas fa-cogs'); // or 'fas fa-random'
+        $ssAdaptability->setIcon('mdi:cogs'); // or 'fas fa-random'
         $ssAdaptability->setDisplayOrder(5);
         $manager->persist($ssAdaptability);
 
         $ssCreativity = new SoftSkill();
         $ssCreativity->setName('Créativité');
 
-        $ssCreativity->setIcon('fas fa-paint-brush');
+        $ssCreativity->setIcon('mdi:paintbrush');
         $ssCreativity->setDisplayOrder(6);
         $manager->persist($ssCreativity);
     }
