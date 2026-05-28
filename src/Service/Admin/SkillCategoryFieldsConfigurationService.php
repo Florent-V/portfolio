@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Service\Admin;
 
+use App\Controller\Admin\TechnologyCrudController;
+use App\Entity\SkillCategory;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-class SoftSkillFieldsConfigurationService extends AbstractFieldsConfigurationService
+class SkillCategoryFieldsConfigurationService extends AbstractFieldsConfigurationService
 {
     /**
      * @return FieldInterface[]
@@ -19,6 +21,7 @@ class SoftSkillFieldsConfigurationService extends AbstractFieldsConfigurationSer
         return [
             $this->createNameWithIconField(),
             $this->createIconPreviewField(),
+            $this->createTechnologiesField(),
             $this->createIsDeletedField(),
             $this->createIntegerField('displayOrder', 'Ordre'),
             $this->createdAtField(),
@@ -34,7 +37,7 @@ class SoftSkillFieldsConfigurationService extends AbstractFieldsConfigurationSer
             $this->createNameWithIconField(),
             $this->createIconPreviewField(),
             $this->createIntegerField('displayOrder', 'Ordre'),
-            $this->createTextField('description', 'Description'),
+            $this->createTechnologiesField(),
             $this->createdAtField(),
             $this->updatedAtField(),
             $this->createdByField(),
@@ -52,23 +55,33 @@ class SoftSkillFieldsConfigurationService extends AbstractFieldsConfigurationSer
     {
         return [
             $this->createTextField('name', 'Nom'),
-            $this->createTextField('icon', 'Icône')
-                ->setHelp('Nom d\'icône Symfony UX (ex: "bi:star")'),
-            $this->createDisplayOrderFormField(),
-            $this->createTextField('description', 'Description'),
+            $this->createTextField('icon', 'Icône')->setHelp('Nom d\'icône Symfony UX (ex: "logos:php")'),
+            $this->createIntegerField('displayOrder', 'Ordre d\'affichage'),
         ];
     }
 
     private function createNameWithIconField(): TextField
     {
-        return $this->createTextField('name', 'Soft Skill')
+        return $this->createTextField('name', 'Category')
             ->setTemplatePath('admin/field/generic_name_with_icon.html.twig');
     }
 
-    private function createDisplayOrderFormField(): IntegerField
+    private function createTechnologiesField(): AssociationField
     {
-        return $this->createIntegerField('displayOrder', 'Ordre d\'affichage')
-            ->setHelp('Ordre d\'affichage (0 = premier)')
-            ->setRequired(false);
+        return $this->createAssociationField('technologies', 'Technologies')
+            ->setRequired(false)
+            ->setCrudController(TechnologyCrudController::class)
+            ->setHelp('Technologies associées à cette catégorie')
+            ->formatValue(static function (mixed $value, object $entity): string {
+                if ($entity instanceof SkillCategory) {
+                    $count = $entity->getTechnologies()->count();
+
+                    return $count > 0
+                        ? sprintf('%d technolog%s', $count, $count > 1 ? 'ies' : 'y')
+                        : 'No technologies';
+                }
+
+                return (string) $value;
+            });
     }
 }

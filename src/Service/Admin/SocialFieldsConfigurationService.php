@@ -17,6 +17,7 @@ class SocialFieldsConfigurationService extends AbstractFieldsConfigurationServic
     {
         return [
             $this->createNameWithIconField(),
+            $this->createIconPreviewField(),
             $this->createUrlField('url', 'URL')->setHelp('URL du lien social'),
             $this->createIntegerField('sortOrder', 'Ordre')->setHelp('Ordre d\'affichage (0 = premier)'),
             $this->createBooleanField('isActive', 'Actif')->setHelp('Lien visible sur le site'),
@@ -84,11 +85,5 @@ class SocialFieldsConfigurationService extends AbstractFieldsConfigurationServic
     private function createNameWithIconField(): TextField
     {
         return $this->createTextField('name', 'Réseau social');
-    }
-
-    private function createIconPreviewField(): TextField
-    {
-        return $this->createTextField('icon', 'Aperçu icône')
-            ->setTemplatePath('admin/field/generic_icon_preview.html.twig');
     }
 }

@@ -19,6 +19,7 @@ class TechnologyFieldsConfigurationService extends AbstractFieldsConfigurationSe
     {
         return [
             $this->createTechnologyNameWithIconField(),
+            $this->createIconPreviewField(),
             $this->createAssociationField('category', 'Catégorie'),
             $this->createIsDeletedField(),
             $this->createIntegerField('level', 'Niveau'),
@@ -34,9 +35,9 @@ class TechnologyFieldsConfigurationService extends AbstractFieldsConfigurationSe
     {
         return [
             $this->createTechnologyNameWithIconField(),
+            $this->createIconPreviewField(),
             $this->createAssociationField('category', 'Catégorie'),
             $this->createIntegerField('level', 'Niveau'),
-            $this->createTextField('icon', 'Icône'),
             $this->createImageField('imageName', 'Image', '/uploads/images/technologies'),
             $this->createdAtField(),
             $this->updatedAtField(),

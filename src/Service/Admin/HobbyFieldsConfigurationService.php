@@ -6,7 +6,6 @@ namespace App\Service\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 
 class HobbyFieldsConfigurationService extends AbstractFieldsConfigurationService
@@ -18,6 +17,7 @@ class HobbyFieldsConfigurationService extends AbstractFieldsConfigurationService
     {
         return [
             $this->createNameWithIconField(),
+            $this->createIconPreviewField(),
             $this->createIsDeletedField(),
             $this->createdAtField(),
         ];
@@ -29,8 +29,10 @@ class HobbyFieldsConfigurationService extends AbstractFieldsConfigurationService
     protected function buildDetailFields(): array
     {
         return [
-            $this->createNameWithIconField()->setColumns(6),
-            $this->createIconPreviewField()->setColumns(6),
+            $this->createNameWithIconField()
+                ->setColumns(6),
+            $this->createIconPreviewField()
+                ->setColumns(6),
             $this->createdAtField(),
             $this->updatedAtField(),
             $this->createdByField(),
@@ -57,11 +59,5 @@ class HobbyFieldsConfigurationService extends AbstractFieldsConfigurationService
     {
         return $this->createTextAreaField('name', 'Hobby')
             ->setTemplatePath('admin/field/generic_name_with_icon.html.twig');
-    }
-
-    private function createIconPreviewField(): Field
-    {
-        return Field::new('icon', 'Aperçu icône')
-            ->setTemplatePath('admin/field/generic_icon_preview.html.twig');
     }
 }

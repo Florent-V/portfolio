@@ -106,6 +106,13 @@ trait FieldsConfigurationTrait
             ->setRequired(false);
     }
 
+    protected function createIconPreviewField(): TextField
+    {
+        return TextField::new('icon', 'Aperçu icône')
+            ->setTemplatePath('admin/field/generic_icon_preview.html.twig')
+            ->hideOnForm();
+    }
+
     protected function createIsDeletedField(): BooleanField
     {
         return BooleanField::new('isDeleted', 'Statut')
