@@ -1,0 +1,29 @@
+{% block field %}
+    {% set imageElements = [] %}
+    {% for element in field.value %}
+        {% if element.imageName and element.type.value == 'image' %}
+            {% set imageElements = imageElements|merge([element]) %}
+        {% endif %}
+    {% endfor %}
+
+    {% if imageElements is empty %}
+        <span class="text-muted">Aucune image dans les blocs de contenu</span>
+    {% else %}
+        <div class="d-flex flex-wrap gap-2">
+            {% for element in imageElements %}
+                <div class="text-center" style="max-width: 120px;">
+                    <img
+                        src="/uploads/images/articles/{{ element.imageName }}"
+                        alt="{{ element.altText ?? element.imageName }}"
+                        style="max-width: 120px; max-height: 90px; object-fit: cover; border-radius: 4px; border: 1px solid #dee2e6;"
+                    />
+                    {% if element.altText %}
+                        <small class="d-block text-muted text-truncate" style="max-width: 120px;" title="{{ element.altText }}">
+                            {{ element.altText }}
+                        </small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
