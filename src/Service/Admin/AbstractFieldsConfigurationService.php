@@ -15,6 +15,8 @@ abstract class AbstractFieldsConfigurationService
     /**
      * Returns configured fields for a given EasyAdmin page.
      *
+     * @param AdminContext<object>|null $context
+     *
      * @return FieldInterface[]
      */
     public function getFieldsForPage(string $pageName, ?AdminContext $context = null): iterable
