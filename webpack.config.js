@@ -34,7 +34,7 @@ Encore
   .enableVueLoader()
   .enableVueLoader(() => {}, { runtimeCompilerBuild: false })
 
-  // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
+  // enables the Symfony UX Stimulus bridge (used in assets/stimulus_bootstrap.js)
   .enableStimulusBridge('./assets/controllers.json')
 
   // will require an extra script tag for runtime.js

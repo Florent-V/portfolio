@@ -7,6 +7,7 @@ namespace App\Security;
 use App\Entity\User as AppUser;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -22,8 +23,10 @@ readonly class UserChecker implements UserCheckerInterface
         // Rien à faire ici
     }
 
-    public function checkPostAuth(UserInterface $user): void
-    {
+    public function checkPostAuth(
+        UserInterface $user,
+        ?TokenInterface $token = null,
+    ): void {
         if (!$user instanceof AppUser) {
             return;
         }
