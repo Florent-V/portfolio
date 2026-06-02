@@ -90,6 +90,7 @@ class ArticleContentFieldsConfigurationService extends AbstractFieldsConfigurati
             ->setFormTypeOptions([
                 'class'        => ArticleContentType::class,
                 'choice_label' => static fn (ArticleContentType $t): string => match ($t) {
+                    ArticleContentType::SUMMARY   => 'Résumé',
                     ArticleContentType::PARAGRAPH => 'Paragraphe',
                     ArticleContentType::IMAGE     => 'Image',
                     ArticleContentType::CODE      => 'Code',

@@ -6,6 +6,7 @@ namespace App\Enum;
 
 enum ArticleContentType: string
 {
+    case SUMMARY   = 'summary';
     case PARAGRAPH = 'paragraph';
     case IMAGE     = 'image';
     case CODE      = 'code';

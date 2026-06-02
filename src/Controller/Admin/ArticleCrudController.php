@@ -159,10 +159,22 @@ class ArticleCrudController extends AbstractCrudController
             })
             ->setHtmlAttributes(['title' => 'Voir les blocs de contenu de cet article']);
 
+        $generateSummary = Action::new('generateSummary', 'Résumé IA', 'fa fa-wand-magic-sparkles')
+            ->linkToUrl(
+                fn (Article $article) => $this->generateUrl(
+                    'admin_article_summarize',
+                    ['id' => $article->getId()]
+                )
+            )
+            ->addCssClass('btn btn-secondary btn-sm');
+
         return $this->configureSoftDeleteActions(
             $this->configureCommonActions($actions)
         )
             ->add(Crud::PAGE_INDEX, $viewContentElements)
+            ->add(Crud::PAGE_EDIT, $generateSummary)
+            ->add(Crud::PAGE_DETAIL, $generateSummary)
+            ->add(Crud::PAGE_INDEX, $generateSummary)
             ->add(
                 Crud::PAGE_INDEX,
                 $this->buildDuplicateAction()
