@@ -8,6 +8,12 @@ framework:
     #esi: true
     #fragments: true
 
+    assets:
+        packages:
+            easyadmin:
+                json_manifest_path: '%kernel.project_dir%/public/bundles/easyadmin/manifest.json'
+                base_path: '/bundles/easyadmin'
+
 when@test:
     framework:
         test: true
