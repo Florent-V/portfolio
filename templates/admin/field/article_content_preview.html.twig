@@ -1,6 +1,8 @@
 {% block field %}
     {% set ac = entity.getInstance() %}
-    {% if ac.type.value == 'image' %}
+    {% if ac.type.value == 'summary' %}
+        <twig:ux:icon name="bi:card-checklist" height="20" width="20" title="Résumé IA" />
+    {% elseif ac.type.value == 'image' %}
         {% if field.value %}
             <img
                 src="/uploads/images/articles/{{ field.value }}"
