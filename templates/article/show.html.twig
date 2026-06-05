@@ -35,13 +35,28 @@
                         {% endif %}
                     </div>
 
+                    {% set summaryBlocks = article.contentElements|filter(e => e.type.value == 'summary') %}
+                    {% set contentBlocks = article.contentElements|filter(e => e.type.value != 'summary') %}
+
+                    {% for element in summaryBlocks %}
+                        <div class="bg-base-200 border-l-4 border-primary rounded-lg p-5 mb-6" data-aos="fade-up" data-aos-delay="250">
+                            <h3 class="text-sm font-bold text-primary uppercase tracking-wide mb-3 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                                Points clés
+                            </h3>
+                            <div class="text-base-content text-sm [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-2 [&_strong]:text-primary">
+                                {{ element.content|raw }}
+                            </div>
+                        </div>
+                    {% endfor %}
+
                     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8" data-aos="fade-up" data-aos-delay="300">
-                        {% for element in article.contentElements %}
+                        {% for element in contentBlocks %}
                             {% set spanClass = element.columnSpan.value == 'one_third' ? 'xl:col-span-1' : (element.columnSpan.value == 'two_thirds' ? 'xl:col-span-2' : 'xl:col-span-3') %}
                             <div class="col-span-1 {{ spanClass }}">
                                 {% if element.type.value == 'paragraph' %}
                                     <div class="prose lg:prose-lg xl:prose-xl max-w-none text-base-content">
-                                        <p>{{ element.content|raw }}</p>
+                                        {{ element.content|raw }}
                                     </div>
                                 {% elseif element.type.value == 'image' and element.imageName %}
                                     <figure>
