@@ -15,7 +15,7 @@ registerVueControllerComponents(
   require.context('./vue/controllers', true, /\.vue$/),
 )
 
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
   window.addEventListener('load', () => {
     const wb = new Workbox('/service-worker.js') // Adjusted path
 
