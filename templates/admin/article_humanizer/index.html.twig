@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Humaniser un texte brut{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-base-200 py-10">
+    <div class="max-w-4xl mx-auto px-4">
+
+        <div class="breadcrumbs text-sm mb-6">
+            <ul>
+                <li><a href="{{ path('admin') }}">Administration</a></li>
+                <li>Humaniser un texte</li>
+            </ul>
+        </div>
+
+        <div class="flex items-center gap-4 mb-8">
+            <div class="w-12 h-12 rounded-xl bg-warning/10 flex items-center justify-center shrink-0">
+                <twig:ux:icon name="lucide:wand-sparkles" height="32" width="32" />
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-base-content">Humaniser un texte brut</h1>
+                <p class="text-sm text-base-content/60">L'IA restructure et humanise votre contenu, puis le sauvegarde en brouillon</p>
+            </div>
+        </div>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div role="alert" class="alert {{ type == 'danger' ? 'alert-error' : (type == 'success' ? 'alert-success' : 'alert-info') }} mb-4">
+                    <i class="fa fa-{{ type == 'danger' ? 'circle-xmark' : (type == 'success' ? 'circle-check' : 'circle-info') }}"></i>
+                    <span>{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" class="btn btn-ghost btn-xs ml-auto">✕</button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body p-8 space-y-6">
+
+                {{ form_start(form) }}
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div class="form-control">
+                        {{ form_label(form.provider, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
+                        {{ form_widget(form.provider, {attr: {class: 'select select-bordered w-full'}}) }}
+                        {{ form_errors(form.provider) }}
+                    </div>
+                    <div class="form-control">
+                        {{ form_label(form.language, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
+                        {{ form_widget(form.language, {attr: {class: 'select select-bordered w-full'}}) }}
+                        {{ form_errors(form.language) }}
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    {{ form_label(form.rawText, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
+                    {{ form_widget(form.rawText, {attr: {class: 'textarea textarea-bordered w-full font-mono text-sm', rows: 20, placeholder: 'Collez ici votre texte brut, notes, brouillon, transcription...'}}) }}
+                    {{ form_errors(form.rawText) }}
+                    <p class="text-xs text-base-content/60 mt-1">
+                        <i class="fa fa-circle-info text-info mr-1"></i>
+                        Pas de limite de taille — collez l'intégralité de votre contenu.
+                    </p>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="flex items-center justify-between">
+                    <a href="{{ path('admin') }}" class="btn btn-outline gap-2">
+                        <i class="fa fa-arrow-left"></i>Retour
+                    </a>
+                    {{ form_widget(form.submit, {attr: {class: 'btn btn-primary gap-2'}}) }}
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <div class="alert mt-4 bg-base-100 border border-warning/40">
+            <i class="fa fa-clock text-warning"></i>
+            <span class="text-sm text-base-content/70">
+                <strong>Temps estimé :</strong> 20–90 secondes selon la longueur du texte et le modèle choisi.
+            </span>
+        </div>
+
+    </div>
+</div>
+
+<div id="ai-loader" class="hidden fixed inset-0 bg-black/70 z-[9999] flex flex-col items-center justify-center gap-5">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+    <div class="text-center">
+        <p class="text-white font-bold text-lg">Humanisation en cours…</p>
+        <p class="text-white/60 text-sm mt-1">L'IA reformate et améliore votre texte</p>
+    </div>
+</div>
+
+<script>
+(function () {
+    var loader = document.getElementById('ai-loader');
+    var form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function () {
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+        });
+    }
+})();
+</script>
+{% endblock %}
