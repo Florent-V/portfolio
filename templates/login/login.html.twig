@@ -5,7 +5,7 @@
 {% block body %}
     <div class="flex items-center justify-center min-h-screen">
         <div class="w-full max-w-md p-6 rounded-lg shadow-lg">
-            <form method="post">
+            <form method="post" data-turbo="false">
                 {% if error %}
                     <div class="alert alert-danger text-red-600 mb-4">
                         {% if error.message == 'The presented password is invalid.' or error.message == 'Bad credentials.' %}

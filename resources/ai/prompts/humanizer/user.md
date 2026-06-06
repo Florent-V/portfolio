@@ -1,0 +1,4 @@
+Transform the following raw text into a structured, polished article. Preserve my voice and intent.
+
+RAW TEXT:
+{{RAW_TEXT}}

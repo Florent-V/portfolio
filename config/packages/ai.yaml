@@ -1,0 +1,34 @@
+ai:
+    platform:
+        openrouter:
+            api_key: '%env(OPENROUTER_API_KEY)%'
+        generic:
+            default:
+                base_url: '%env(GENERIC_BASE_URL)%'
+            nvidia:
+                base_url: 'https://integrate.api.nvidia.com'
+                api_key: '%env(NVIDIA_API_KEY)%'
+            ollama:
+                base_url: 'https://ollama.com'
+                api_key: '%env(OLLAMA_API_KEY)%'
+
+    agent:
+        article_generator_openrouter:
+            platform: 'ai.platform.openrouter'
+            model: '%env(AI_DEFAULT_MODEL)%'
+            tools: false
+
+        article_generator_openrouter_web:
+            platform: 'ai.platform.openrouter'
+            model: '%env(AI_WEB_SEARCH_MODEL)%'
+            tools: false
+
+        article_generator_ollama:
+            platform: 'ai.platform.generic.ollama'
+            model: '%env(AI_OLLAMA_MODEL)%'
+            tools: false
+
+        article_generator_nvidia:
+            platform: 'ai.platform.generic.nvidia'
+            model: '%env(AI_NVIDIA_MODEL)%'
+            tools: false

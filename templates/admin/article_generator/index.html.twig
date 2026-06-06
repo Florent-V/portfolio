@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Générer un article via IA{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-base-200 py-10">
+    <div class="max-w-3xl mx-auto px-4">
+
+        <div class="breadcrumbs text-sm mb-6">
+            <ul>
+                <li><a href="{{ path('admin') }}">Administration</a></li>
+                <li>Générer un article via IA</li>
+            </ul>
+        </div>
+
+        <div class="flex items-center gap-4 mb-8">
+            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <twig:ux:icon name="mage:robot" height="32" width="32" />
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-base-content">Générer un article via IA</h1>
+                <p class="text-sm text-base-content/60">L'IA rédige un article structuré et le sauvegarde en brouillon</p>
+            </div>
+        </div>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div role="alert" class="alert {{ type == 'danger' ? 'alert-error' : (type == 'success' ? 'alert-success' : 'alert-info') }} mb-4">
+                    <i class="fa fa-{{ type == 'danger' ? 'circle-xmark' : (type == 'success' ? 'circle-check' : 'circle-info') }}"></i>
+                    <span>{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" class="btn btn-ghost btn-xs ml-auto">✕</button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body p-8 space-y-6">
+
+                {{ form_start(form) }}
+
+                <div class="form-control mb-4">
+                    {{ form_label(form.provider, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
+                    {{ form_widget(form.provider, {attr: {class: 'select select-bordered w-full'}}) }}
+                    {{ form_errors(form.provider) }}
+                </div>
+
+                <div class="form-control mb-4">
+                    {{ form_label(form.topic, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
+                    {{ form_widget(form.topic, {attr: {class: 'textarea textarea-bordered w-full', rows: 5, placeholder: 'Ex: Les nouveautés de PHP 8.4 et leurs cas d\'usage pratiques'}}) }}
+                    {{ form_errors(form.topic) }}
+                    <p class="text-xs text-base-content/60 mt-1">Soyez précis — plus le thème est détaillé, meilleur sera l'article.</p>
+                </div>
+
+                <div class="form-control max-w-xs mb-4">
+                    {{ form_label(form.language, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
+                    {{ form_widget(form.language, {attr: {class: 'select select-bordered w-full'}}) }}
+                    {{ form_errors(form.language) }}
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="label cursor-pointer justify-start gap-3">
+                        {{ form_widget(form.useWebSearch, {attr: {class: 'toggle toggle-primary'}}) }}
+                        {{ form_label(form.useWebSearch, null, {label_attr: {class: 'font-medium text-base-content cursor-pointer'}}) }}
+                    </label>
+                    <p class="text-xs text-base-content/60 mt-1">
+                        <i class="fa fa-circle-info text-info mr-1"></i>
+                        Active un modèle de recherche web (Perplexity Sonar Pro) pour des informations fraîches.
+                    </p>
+                </div>
+
+                <div class="form-control">
+                    {{ form_label(form.extraInstructions, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
+                    {{ form_widget(form.extraInstructions, {attr: {class: 'textarea textarea-bordered w-full', rows: 3, placeholder: 'Ex: Cibler les développeurs débutants, inclure des exemples concrets...'}}) }}
+                    {{ form_errors(form.extraInstructions) }}
+                    <p class="text-xs text-base-content/60 mt-1">Facultatif — audience cible, ton souhaité, exemples spécifiques, etc.</p>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="flex items-center justify-between">
+                    <a href="{{ path('admin') }}" class="btn btn-outline gap-2">
+                        <i class="fa fa-arrow-left"></i>Retour
+                    </a>
+                    {{ form_widget(form.submit, {attr: {class: 'btn btn-primary gap-2'}}) }}
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <div class="alert mt-4 bg-base-100 border border-warning/40">
+            <i class="fa fa-clock text-warning"></i>
+            <span class="text-sm text-base-content/70">
+                <strong>Temps estimé :</strong> variable selon le modèle (peut dépasser 1 minute). Ne fermez pas la page.
+            </span>
+        </div>
+
+    </div>
+</div>
+
+<div id="ai-loader" class="hidden fixed inset-0 bg-black/70 z-[9999] flex flex-col items-center justify-center gap-5">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+    <div class="text-center">
+        <p class="text-white font-bold text-lg">Génération en cours…</p>
+        <p class="text-white/60 text-sm mt-1">Cela peut prendre plusieurs dizaines de secondes</p>
+    </div>
+</div>
+
+<script>
+(function () {
+    var loader = document.getElementById('ai-loader');
+    var form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function () {
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+        });
+    }
+})();
+</script>
+{% endblock %}

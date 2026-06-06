@@ -124,13 +124,16 @@ class Article implements DuplicatableInterface
         return $this;
     }
 
-    public function getPublishedAt(): \DateTimeInterface
+    public function getPublishedAt(): ?\DateTimeInterface
     {
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(\DateTimeInterface $publishedAt): static
+    public function setPublishedAt(?\DateTimeInterface $publishedAt): static
     {
+        if (null === $publishedAt && $this->isPublished) {
+            $publishedAt = new \DateTimeImmutable();
+        }
         $this->publishedAt = $publishedAt;
 
         return $this;
