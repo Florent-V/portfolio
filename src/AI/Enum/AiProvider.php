@@ -9,6 +9,8 @@ enum AiProvider: string
     case OPENROUTER = 'openrouter';
     case OLLAMA     = 'ollama';
     case NVIDIA     = 'nvidia';
+    case GEMINI     = 'gemini';
+    case MISTRAL    = 'mistral';
 
     public function label(): string
     {
@@ -16,6 +18,8 @@ enum AiProvider: string
             self::OPENROUTER => 'OpenRouter (Cloud)',
             self::OLLAMA     => 'Ollama (Cloud)',
             self::NVIDIA     => 'Nvidia NIM (Cloud)',
+            self::GEMINI     => 'Google Gemini (Cloud)',
+            self::MISTRAL    => 'Mistral AI (Cloud)',
         };
     }
 
