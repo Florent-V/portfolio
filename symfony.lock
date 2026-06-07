@@ -146,6 +146,18 @@
             "config/packages/ai.yaml"
         ]
     },
+    "symfony/ai-gemini-platform": {
+        "version": "0.9",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "0.1",
+            "ref": "a6953d134a46a78354003b4dddf682f03ef886b2"
+        },
+        "files": [
+            "config/packages/ai_gemini_platform.yaml"
+        ]
+    },
     "symfony/ai-generic-platform": {
         "version": "0.9",
         "recipe": {
@@ -156,6 +168,18 @@
         },
         "files": [
             "config/packages/ai_generic_platform.yaml"
+        ]
+    },
+    "symfony/ai-mistral-platform": {
+        "version": "0.9",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "0.1",
+            "ref": "2487d366905f51cc768093e51385be66c3d38f76"
+        },
+        "files": [
+            "config/packages/ai_mistral_platform.yaml"
         ]
     },
     "symfony/ai-open-router-platform": {
