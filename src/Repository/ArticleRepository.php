@@ -36,6 +36,19 @@ class ArticleRepository extends ServiceEntityRepository
         ;
     }
 
+    public function countPublished(): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->andWhere('a.isPublished = :isPublished')
+            ->andWhere('a.publishedAt <= :now')
+            ->setParameter('isPublished', true)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
     public function findOnePublishedBySlug(string $slug): ?Article
     {
         return $this->createQueryBuilder('a')
