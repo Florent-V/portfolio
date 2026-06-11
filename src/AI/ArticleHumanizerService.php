@@ -14,7 +14,7 @@ use Symfony\AI\Platform\Message\MessageBag;
 final readonly class ArticleHumanizerService
 {
     public function __construct(
-        private ArticleProviderRegistry $providerRegistry,
+        private AiProviderRegistry $providerRegistry,
         private PromptBuilder $promptBuilder,
         private AiArticleProcessor $processor,
         private LoggerInterface $logger,

@@ -2,6 +2,10 @@ ai:
     platform:
         openrouter:
             api_key: '%env(OPENROUTER_API_KEY)%'
+        gemini:
+            api_key: '%env(GEMINI_API_KEY)%'
+        mistral:
+            api_key: '%env(MISTRAL_API_KEY)%'
         generic:
             default:
                 base_url: '%env(GENERIC_BASE_URL)%'
@@ -31,4 +35,14 @@ ai:
         article_generator_nvidia:
             platform: 'ai.platform.generic.nvidia'
             model: '%env(AI_NVIDIA_MODEL)%'
+            tools: false
+
+        article_generator_gemini:
+            platform: 'ai.platform.gemini'
+            model: '%env(AI_GEMINI_MODEL)%'
+            tools: false
+
+        article_generator_mistral:
+            platform: 'ai.platform.mistral'
+            model: '%env(AI_MISTRAL_MODEL)%'
             tools: false

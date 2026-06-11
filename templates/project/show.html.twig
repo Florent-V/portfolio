@@ -1,6 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ project.title }} - {{ parent() }}{% endblock %} {# project.title from DB #}
+{% block title %}{{ project.title }} — Florent Vasseur{% endblock %}
+
+{% block meta_description %}{{ project.description|striptags|slice(0, 160) }}{% endblock %}
+
+{% block og_image %}
+    {% if project.mainImageName %}
+        <meta property="og:image" content="{{ app.request.schemeAndHttpHost }}{{ asset('uploads/images/projects/' ~ project.mainImageName) }}">
+        <meta property="og:image:alt" content="{{ project.title }}">
+        <meta name="twitter:image" content="{{ app.request.schemeAndHttpHost }}{{ asset('uploads/images/projects/' ~ project.mainImageName) }}">
+    {% endif %}
+{% endblock %}
+
+{% block json_ld %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": "{{ project.title|e('js') }}",
+    "description": "{{ project.description|striptags|slice(0, 300)|e('js') }}",
+    "url": "{{ project.slug ? url('app_project_show_by_slug', {slug: project.slug}) : url('app_project_show_by_id', {id: project.id}) }}",
+    "author": {
+        "@type": "Person",
+        "name": "Florent Vasseur",
+        "url": "{{ url('app_home') }}"
+    },
+    "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Accueil", "item": "{{ url('app_home') }}"},
+            {"@type": "ListItem", "position": 2, "name": "Projets", "item": "{{ url('app_project_index') }}"},
+            {"@type": "ListItem", "position": 3, "name": "{{ project.title|e('js') }}", "item": "{{ project.slug ? url('app_project_show_by_slug', {slug: project.slug}) : url('app_project_show_by_id', {id: project.id}) }}"}
+        ]
+    }{% if project.startDate %},
+    "dateCreated": "{{ project.startDate|date('Y-m-d') }}"{% endif %}{% if project.mainImageName %},
+    "image": "{{ app.request.schemeAndHttpHost }}{{ asset('uploads/images/projects/' ~ project.mainImageName) }}"{% endif %}{% if project.url %},
+    "sameAs": "{{ project.url }}"{% endif %}
+}
+</script>
+{% endblock %}
 
 {% block body %}
     <div
@@ -27,6 +65,7 @@
                                     <div class="carousel-slide w-full h-full flex-shrink-0 flex justify-center items-center bg-base-300/20">
                                         <img src="{{ asset('uploads/images/projects/' ~ project.mainImageName) }}"
                                              alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
+                                             loading="lazy"
                                              class="w-auto h-auto max-w-full max-h-full object-contain" />
                                     </div>
                                 {% endif %}
@@ -35,6 +74,7 @@
                                     <div class="carousel-slide w-full h-full flex-shrink-0 flex justify-center items-center bg-base-300/20">
                                         <img src="{{ asset('uploads/images/projects/gallery/' ~ image.imageName) }}"
                                              alt="{{ image.altText|default('common.project_gallery_image_alt'|trans({'%project_title%': project.title, '%index%': loop.index})) }}"
+                                             loading="lazy"
                                              class="w-auto h-auto max-w-full max-h-full object-contain" />
                                     </div>
                                 {% endfor %}
@@ -65,6 +105,7 @@
                     <figure class="h-64 md:h-96 lg:h-[30rem] w-full flex justify-center items-center bg-base-300/20" data-aos="zoom-in">
                         <img src="{{ asset('uploads/images/projects/' ~ project.mainImageName) }}"
                              alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
+                             loading="lazy"
                              class="w-auto h-auto max-w-full max-h-full object-contain">
                     </figure>
                 {% endif %}
@@ -93,7 +134,7 @@
                                 {% for tech in project.technologies %}
                                     <span class="badge badge-md lg:badge-lg badge-outline" data-aos="zoom-in" data-aos-delay="{{ 500 + loop.index0 * 50 }}">
                                     {% if tech.imageName %}
-                                        <img src="{{ asset('uploads/images/technologies/' ~ tech.imageName) }}" alt="{{ tech.name }}" class="h-4 w-4 mr-1.5 object-contain">
+                                        <img src="{{ asset('uploads/images/technologies/' ~ tech.imageName) }}" alt="{{ tech.name }}" loading="lazy" class="h-4 w-4 mr-1.5 object-contain">
                                     {% endif %}
                                         {{ tech.name }} {# From DB #}
                                 </span>

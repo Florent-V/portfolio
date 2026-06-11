@@ -20,7 +20,7 @@ final readonly class ArticleSummaryService
     use ExtractsAiContent;
 
     public function __construct(
-        private ArticleProviderRegistry $providerRegistry,
+        private AiProviderRegistry $providerRegistry,
         private PromptBuilder $promptBuilder,
         private EntityManagerInterface $entityManager,
     ) {
