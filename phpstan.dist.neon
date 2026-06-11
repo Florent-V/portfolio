@@ -12,6 +12,8 @@ parameters:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
     ignoreErrors:
             - '#Use invokable controller with __invoke\(\) method instead of named action method#'
+            - identifier: symfony.noControllerMethodInjection
+            - identifier: symfony.noClassLevelRoute
 
 includes:
     - vendor/symplify/phpstan-rules/config/symfony-rules.neon

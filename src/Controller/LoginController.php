@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -24,6 +25,16 @@ class LoginController extends AbstractController
             'last_username' => $lastUsername,
             'error'         => $error,
         ]);
+    }
+
+    #[Route(path: '/post-login', name: 'app_post_login')]
+    public function postLogin(): RedirectResponse
+    {
+        if ($this->isGranted('ROLE_SUPER_ADMIN')) {
+            return $this->redirectToRoute('admin');
+        }
+
+        return $this->redirectToRoute('app_home');
     }
 
     #[Route(path: '/logout', name: 'app_logout')]

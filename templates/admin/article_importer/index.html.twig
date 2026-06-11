@@ -1,0 +1,139 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Importer un article JSON{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-base-200 py-10">
+    <div class="max-w-3xl mx-auto px-4">
+
+        <div class="breadcrumbs text-sm mb-6">
+            <ul>
+                <li><a href="{{ path('admin') }}">Administration</a></li>
+                <li>Importer un article JSON</li>
+            </ul>
+        </div>
+
+        <div class="flex items-center gap-4 mb-8">
+            <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                <twig:ux:icon name="mingcute:file-import-line" height="32" width="32" />
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-base-content">Importer un article JSON</h1>
+                <p class="text-sm text-base-content/60">Importez un fichier généré par les fonctions IA</p>
+            </div>
+        </div>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div role="alert" class="alert {{ type == 'danger' ? 'alert-error' : (type == 'success' ? 'alert-success' : 'alert-info') }} mb-4">
+                    <i class="fa fa-{{ type == 'danger' ? 'circle-xmark' : (type == 'success' ? 'circle-check' : 'circle-info') }}"></i>
+                    <span>{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" class="btn btn-ghost btn-xs ml-auto">✕</button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body p-8 space-y-6">
+
+                {{ form_start(form, {attr: {id: 'import-form', enctype: 'multipart/form-data'}}) }}
+
+                {# Drop zone #}
+                <div id="drop-zone"
+                     class="border-2 border-dashed border-base-300 rounded-xl p-10 text-center cursor-pointer transition-all duration-200 hover:border-primary hover:bg-primary/5">
+                    <div class="text-5xl text-base-content/30 mb-4">
+                        <i class="fa fa-file-code"></i>
+                    </div>
+                    <p class="font-semibold text-base-content mb-1">Glissez-déposez votre fichier JSON ici</p>
+                    <p class="text-sm text-base-content/50 mb-4">ou cliquez pour sélectionner</p>
+
+                    {# Hidden file input #}
+                    <div class="hidden">{{ form_widget(form.jsonFile) }}</div>
+
+                    <button type="button"
+                            class="btn btn-outline btn-primary btn-sm gap-2"
+                            onclick="document.getElementById('{{ form.jsonFile.vars.id }}').click()">
+                        <i class="fa fa-folder-open"></i>Parcourir…
+                    </button>
+
+                    <p class="text-success font-semibold mt-3 hidden" id="file-name"></p>
+                    {{ form_errors(form.jsonFile) }}
+                </div>
+
+                {# JSON Preview #}
+                <div id="preview-container" class="hidden">
+                    <p class="font-medium mb-2 text-base-content">Aperçu du fichier</p>
+                    <pre id="json-preview"
+                         class="bg-neutral text-neutral-content font-mono text-xs rounded-xl p-4 max-h-64 overflow-y-auto whitespace-pre-wrap break-all"></pre>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="flex items-center justify-between">
+                    <a href="{{ path('admin') }}" class="btn btn-outline gap-2">
+                        <i class="fa fa-arrow-left"></i>Retour
+                    </a>
+                    {{ form_widget(form.submit, {disabled: true, attr: {id: 'submit-btn', class: 'btn btn-primary gap-2', disabled: 'disabled'}}) }}
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        <div class="alert mt-4 bg-base-100 border border-info/40">
+            <i class="fa fa-circle-info text-info"></i>
+            <span class="text-sm text-base-content/70 font-mono">
+                Format : <code>{ "title": "...", "slug": "...", "content_blocks": [...] }</code>
+            </span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function () {
+    const input      = document.getElementById('{{ form.jsonFile.vars.id }}');
+    const dropZone   = document.getElementById('drop-zone');
+    const fileName   = document.getElementById('file-name');
+    const submitBtn  = document.getElementById('submit-btn');
+    const preview    = document.getElementById('json-preview');
+    const previewCtr = document.getElementById('preview-container');
+
+    function handleFile(file) {
+        if (!file) return;
+        fileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' Ko)';
+        fileName.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.removeAttribute('disabled');
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try { preview.textContent = JSON.stringify(JSON.parse(e.target.result), null, 2); }
+            catch (_) { preview.textContent = e.target.result; }
+            previewCtr.classList.remove('hidden');
+        };
+        reader.readAsText(file);
+    }
+
+    input.addEventListener('change', function () { handleFile(this.files[0]); });
+
+    dropZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropZone.classList.add('border-primary', 'bg-primary/5');
+    });
+    dropZone.addEventListener('dragleave', function () {
+        dropZone.classList.remove('border-primary', 'bg-primary/5');
+    });
+    dropZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropZone.classList.remove('border-primary', 'bg-primary/5');
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            input.files = dt.files;
+            handleFile(file);
+        }
+    });
+})();
+</script>
+{% endblock %}

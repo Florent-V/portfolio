@@ -6,27 +6,39 @@ namespace App\Controller\Admin;
 
 use App\Entity\Article;
 use App\Entity\User;
+use App\Repository\TagRepository;
+use App\Service\Admin\ArticleFieldsConfigurationService;
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Asset;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\SlugField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Bundle\SecurityBundle\Security;
-use Vich\UploaderBundle\Form\Type\VichImageType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
+/**
+ * @extends AbstractCrudController<Article>
+ */
 class ArticleCrudController extends AbstractCrudController
 {
-    public function __construct(private readonly Security $security)
-    {
+    use AdminCrudControllerTrait;
+
+    public function __construct(
+        private readonly AdminUrlGenerator $adminUrlGenerator,
+        private readonly ArticleFieldsConfigurationService $fieldsService,
+        private readonly Security $security,
+        private readonly TagRepository $tagRepository,
+        private readonly EntityManagerInterface $em,
+    ) {
     }
 
     public static function getEntityFqcn(): string
@@ -34,33 +46,89 @@ class ArticleCrudController extends AbstractCrudController
         return Article::class;
     }
 
+    #[\Override]
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud
-            ->setEntityLabelInSingular('Article')
-            ->setEntityLabelInPlural('Articles')
-            ->setPageTitle(Crud::PAGE_INDEX, 'Gestion des articles')
-            ->setPageTitle(Crud::PAGE_EDIT, 'Modifier l\'article')
-            ->setPageTitle(Crud::PAGE_NEW, 'Créer un article')
-            ->setPageTitle(Crud::PAGE_DETAIL, 'Détail de l\'article')
-            ->setSearchFields(['title', 'content', 'slug', 'author.email', 'technologies.name'])
+        return $this->configureCommonCrud($crud, 'Article', 'Articles')
+            ->setSearchFields(['title', 'slug', 'author.email', 'tags.name'])
             ->setDefaultSort(['publishedAt' => 'DESC', 'createdAt' => 'DESC'])
-            ->setPaginatorPageSize(25)
-            ->showEntityActionsInlined()
-            ->setAutofocusSearch()
-            ->setTimezone('Europe/Paris')
-            ->setHelp(Crud::PAGE_INDEX, 'Gérez vos articles de blog et leur publication.'
-                . ' Associez-les à des technologies pour améliorer la navigation.');
+            ->setHelp(
+                Crud::PAGE_INDEX,
+                'Gérez vos articles de blog et leur publication. ' .
+                'Associez-leur des tags pour améliorer la navigation.'
+            );
     }
 
+    #[\Override]
+    public function configureAssets(Assets $assets): Assets
+    {
+        return $assets
+            ->addCssFile(Asset::fromEasyAdminAssetPackage('field-text-editor.css')->onlyOnForms())
+            ->addJsFile(Asset::fromEasyAdminAssetPackage('field-text-editor.js')->onlyOnForms());
+    }
+
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
-        return match ($pageName) {
-            Crud::PAGE_INDEX  => $this->getIndexFields(),
-            Crud::PAGE_DETAIL => $this->getDetailFields(),
-            Crud::PAGE_NEW, Crud::PAGE_EDIT => $this->getFormFields(),
-            default => [],
-        };
+        return $this->fieldsService->getFieldsForPage($pageName, $this->getContext());
+    }
+
+    /**
+     * @return FormBuilderInterface<mixed>
+     */
+    #[\Override]
+    public function createEditFormBuilder(
+        EntityDto $entityDto,
+        KeyValueStore $formOptions,
+        AdminContext $context,
+    ): FormBuilderInterface {
+        $builder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
+        $this->addTagsPreSubmitListener($builder);
+
+        return $builder;
+    }
+
+    /**
+     * @return FormBuilderInterface<mixed>
+     */
+    #[\Override]
+    public function createNewFormBuilder(
+        EntityDto $entityDto,
+        KeyValueStore $formOptions,
+        AdminContext $context,
+    ): FormBuilderInterface {
+        $builder = parent::createNewFormBuilder($entityDto, $formOptions, $context);
+        $this->addTagsPreSubmitListener($builder);
+
+        return $builder;
+    }
+
+    /**
+     * @param FormBuilderInterface<mixed> $builder
+     */
+    private function addTagsPreSubmitListener(FormBuilderInterface $builder): void
+    {
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event): void {
+            $data = $event->getData();
+            if (!isset($data['tags']) || !is_array($data['tags'])) {
+                return;
+            }
+
+            $resolvedIds = [];
+            foreach ($data['tags'] as $value) {
+                if (ctype_digit((string) $value)) {
+                    $resolvedIds[] = $value;
+                    continue;
+                }
+
+                $tag = $this->tagRepository->findOneByNameOrCreate(trim((string) $value));
+                $this->em->flush();
+                $resolvedIds[] = (string) $tag->getId();
+            }
+
+            $data['tags'] = $resolvedIds;
+            $event->setData($data);
+        });
     }
 
     public function createEntity(string $entityFqcn): Article
@@ -75,170 +143,68 @@ class ArticleCrudController extends AbstractCrudController
         return $article;
     }
 
-    /** @return FieldInterface[] */
-    private function getIndexFields(): array
-    {
-        return [
-            $this->createMainImageField()->setLabel('Image'),
-            $this->createTitleField(),
-            $this->createAuthorField(),
-            $this->createTechnologiesField(),
-            $this->createIsPublishedField(),
-            $this->createPublishedAtField(),
-            $this->createCreatedAtField(),
-        ];
-    }
-
-    /** @return FieldInterface[] */
-    private function getDetailFields(): array
-    {
-        return [
-            $this->createMainImageField()->setLabel('Image Principale'),
-            $this->createTitleField(),
-            $this->createSlugField(),
-            $this->createContentDetailField(),
-            $this->createAuthorField(),
-            $this->createTechnologiesField(),
-            $this->createIsPublishedField(),
-            $this->createPublishedAtField(),
-            $this->createCreatedAtField(),
-            $this->createUpdatedAtField(),
-            $this->createCreatedByField(),
-            $this->createUpdatedByField(),
-        ];
-    }
-
-    /** @return FieldInterface[] */
-    private function getFormFields(): array
-    {
-        return [
-            $this->createTitleField(),
-            $this->createSlugField(),
-            $this->createContentField(),
-            $this->createMainImageUploadField(),
-            $this->createAuthorField(),
-            $this->createTechnologiesField(),
-            $this->createIsPublishedField(),
-            $this->createPublishedAtField(),
-        ];
-    }
-
-    private function createTitleField(): TextField
-    {
-        return TextField::new('title', 'Titre')
-            ->setHelp('Titre de l\'article qui sera affiché en en-tête.');
-    }
-
-    private function createSlugField(): SlugField
-    {
-        return SlugField::new('slug', 'Slug')
-            ->setTargetFieldName('title')
-            ->setHelp('URL-friendly version du titre. Généré automatiquement si laissé vide.');
-    }
-
-    private function createContentField(): TextEditorField
-    {
-        return TextEditorField::new('content', 'Contenu')
-            ->setNumOfRows(20)
-            ->setHelp('Contenu principal de l\'article. Utilisez l\'éditeur pour formater le texte.');
-    }
-
-    private function createContentDetailField(): TextareaField
-    {
-        return TextareaField::new('content', 'Contenu')
-            ->renderAsHtml();
-    }
-
-    private function createAuthorField(): AssociationField
-    {
-        return AssociationField::new('author', 'Auteur')
-            ->setRequired(true)
-            ->setHelp('Auteur de l\'article. Défini automatiquement lors de la création.');
-    }
-
-    private function createTechnologiesField(): AssociationField
-    {
-        return AssociationField::new('technologies', 'Technologies')
-            ->setFormTypeOptions(['by_reference' => false])
-            ->setHelp('Technologies associées à cet article pour faciliter la recherche et la navigation.');
-    }
-
-    private function createMainImageField(): ImageField
-    {
-        return ImageField::new('mainImageName', 'Image')
-            ->setBasePath('/uploads/images/articles')
-            ->setHelp('Image principale affichée avec l\'article.');
-    }
-
-    private function createMainImageUploadField(): TextareaField
-    {
-        return TextareaField::new('mainImageFile', 'Image Principale')
-            ->setFormType(VichImageType::class)
-            ->setHelp('Image principale de l\'article (JPEG, PNG, WEBP). Max 5MB.')
-            ->setRequired(false);
-    }
-
-    private function createIsPublishedField(): BooleanField
-    {
-        return BooleanField::new('isPublished', 'Publié')
-            ->setHelp('Définit si l\'article est visible publiquement sur le site.');
-    }
-
-    private function createPublishedAtField(): DateTimeField
-    {
-        return DateTimeField::new('publishedAt', 'Date de publication')
-            ->setFormat('dd/MM/yyyy HH:mm')
-            ->setHelp('Date et heure de publication de l\'article.');
-    }
-
-    private function createCreatedAtField(): DateTimeField
-    {
-        return DateTimeField::new('createdAt', 'Créé le')
-            ->setFormat('dd/MM/yyyy HH:mm');
-    }
-
-    private function createUpdatedAtField(): DateTimeField
-    {
-        return DateTimeField::new('updatedAt', 'Mis à jour le')
-            ->setFormat('dd/MM/yyyy HH:mm');
-    }
-
-    private function createCreatedByField(): AssociationField
-    {
-        return AssociationField::new('createdBy', 'Créé par');
-    }
-
-    private function createUpdatedByField(): AssociationField
-    {
-        return AssociationField::new('updatedBy', 'Mis à jour par');
-    }
-
+    #[\Override]
     public function configureActions(Actions $actions): Actions
     {
-        return $actions
-            ->update(Crud::PAGE_INDEX, Action::NEW, fn (Action $action) => $action
-                ->setIcon('fa fa-newspaper')
-                ->setLabel('Nouvel Article')
-                ->setCssClass('btn btn-success'))
-            ->update(Crud::PAGE_INDEX, Action::EDIT, fn (Action $action) => $action
-                ->setIcon('fa fa-edit'))
-            ->update(Crud::PAGE_INDEX, Action::DELETE, fn (Action $action) => $action
-                ->setIcon('fa fa-trash'))
-            ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->update(Crud::PAGE_INDEX, Action::DETAIL, fn (Action $action) => $action
-                ->setIcon('fa fa-eye'));
+        $adminUrlGenerator = $this->adminUrlGenerator;
+
+        $viewContentElements = Action::new('viewContentElements', 'Blocs de contenu', 'fa fa-list')
+            ->linkToUrl(static function (Article $entity) use ($adminUrlGenerator): string {
+                return $adminUrlGenerator
+                    ->setController(ArticleContentCrudController::class)
+                    ->setAction('index')
+                    ->set('filters[article][comparison]', '=')
+                    ->set('filters[article][value]', (string) $entity->getId())
+                    ->generateUrl();
+            })
+            ->setHtmlAttributes(['title' => 'Voir les blocs de contenu de cet article']);
+
+        $generateSummary = Action::new('generateSummary', 'Résumé IA', 'fa fa-wand-magic-sparkles')
+            ->linkToUrl(
+                fn (Article $article) => $this->generateUrl(
+                    'admin_article_summarize',
+                    ['id' => $article->getId()]
+                )
+            )
+            ->addCssClass('btn btn-secondary btn-sm');
+
+        return $this->configureSoftDeleteActions(
+            $this->configureCommonActions($actions)
+        )
+            ->add(Crud::PAGE_INDEX, $viewContentElements)
+            ->add(Crud::PAGE_EDIT, $generateSummary)
+            ->add(Crud::PAGE_DETAIL, $generateSummary)
+            ->add(Crud::PAGE_INDEX, $generateSummary)
+            ->add(
+                Crud::PAGE_INDEX,
+                $this->buildDuplicateAction()
+            )
+            ->update(
+                Crud::PAGE_INDEX,
+                Action::NEW,
+                fn (Action $a) => $a
+                    ->setIcon('fa fa-newspaper')
+                    ->setLabel('Nouvel Article')
+                    ->setCssClass('btn btn-success')
+            );
     }
 
+    #[\Override]
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
             ->add('title')
             ->add('slug')
             ->add('author')
-            ->add('technologies')
+            ->add('tags')
             ->add('isPublished')
             ->add('publishedAt')
             ->add('createdAt')
             ->add('updatedAt');
+    }
+
+    protected function getAdminUrlGenerator(): AdminUrlGenerator
+    {
+        return $this->adminUrlGenerator;
     }
 }

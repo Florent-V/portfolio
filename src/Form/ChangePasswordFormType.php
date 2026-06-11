@@ -29,7 +29,9 @@ class ChangePasswordFormType extends AbstractType
                 'mapped'         => false,
                 'required'       => true,
                 'constraints'    => [
-                    new NotBlank(['message' => 'Veuillez entrer votre mot de passe actuel']),
+                    new NotBlank(
+                        message: 'Veuillez entrer votre mot de passe actuel'
+                    ),
                     new CurrentPassword(),
                 ],
                 'attr' => [
@@ -45,12 +47,14 @@ class ChangePasswordFormType extends AbstractType
                 ],
                 'first_options' => [
                     'constraints' => [
-                        new NotBlank(['message' => 'Veuillez entrer un mot de passe']),
-                        new Length([
-                            'min'        => 12,
-                            'minMessage' => 'Votre mot de passe doit contenir au moins {{ limit }} caractères',
-                            'max'        => 4096,
-                        ]),
+                        new NotBlank(
+                            message: 'Veuillez entrer un mot de passe'
+                        ),
+                        new Length(
+                            min: 12,
+                            max: 4096,
+                            minMessage: 'Votre mot de passe doit contenir au moins {{ limit }} caractères',
+                        ),
                         new PasswordStrength(),
                         new NotCompromisedPassword(),
                     ],

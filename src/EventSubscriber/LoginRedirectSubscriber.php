@@ -33,11 +33,11 @@ class LoginRedirectSubscriber implements EventSubscriberInterface
     public function onLoginSuccess(LoginSuccessEvent $event): void
     {
         if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
-            $response = new RedirectResponse($this->urlGenerator->generate('admin'));
-            $event->setResponse($response);
-        }
-        $response = new RedirectResponse($this->urlGenerator->generate('app_home'));
+            $event->setResponse(new RedirectResponse($this->urlGenerator->generate('admin')));
 
-        $event->setResponse($response);
+            return;
+        }
+
+        $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_home')));
     }
 }

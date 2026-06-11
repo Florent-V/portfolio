@@ -16,7 +16,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: AboutMeRepository::class)]
 #[Gedmo\Loggable]
@@ -79,8 +79,7 @@ class AboutMe
         mappedBy: 'aboutMe',
         cascade: ['persist', 'remove'],
         orphanRemoval: true
-    )
-    ]
+    )]
     #[ORM\OrderBy(['sortOrder' => 'ASC', 'name' => 'ASC'])]
     private Collection $socialLinks;
 

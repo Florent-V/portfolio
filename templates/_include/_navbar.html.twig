@@ -37,13 +37,15 @@
                 <div class="hidden lg:flex items-center gap-2">
                     <!-- Language Switcher Dropdown -->
                     <div class="dropdown dropdown-end mr-1 lg:mr-2">
-                        <label tabindex="0" class="btn btn-ghost btn-sm lg:btn-md p-0"
+                        <label tabindex="0" class="btn btn-ghost btn-sm lg:btn-md p-0 px-2"
                                title="{{ 'common.language_switcher.title'|trans }}">
                             {% set current_locale = app.request.locale %}
                             {% if current_locale == 'fr' %}
-                                <span class="fi fi-fr mr-0.5 sm:mr-1"></span><span class="hidden sm:inline">FR</span>
+                                <twig:ux:icon name="emojione-v1:flag-for-france" height="26" width="26" class="mr-2" />
+                                <span class="hidden sm:inline">FR</span>
                             {% elseif current_locale == 'en' %}
-                                <span class="fi fi-gb mr-0.5 sm:mr-1"></span><span class="hidden sm:inline">EN</span>
+                                <twig:ux:icon name="twemoji:flag-united-kingdom" height="26" width="26" class="mr-2"/>
+                                <span class="hidden sm:inline">EN</span>
                             {% else %}
                                 {# Fallback icon if locale is not fr or en #}
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -61,11 +63,12 @@
                         <ul tabindex="0"
                             class="dropdown-content z-[100] menu p-2 shadow bg-base-100 rounded-box w-40 mt-2"> {# Increased z-index #}
                             <li><a href="{{ path('app_switch_locale', {locale: 'fr'}) }}"
-                                   class="{{ app.request.locale == 'fr' ? 'font-bold text-primary' : '' }}"><span
-                                            class="fi fi-fr mr-2"></span> Français</a></li>
+                                   class="{{ app.request.locale == 'fr' ? 'font-bold text-primary' : '' }}">
+                                    <twig:ux:icon name="emojione-v1:flag-for-france" height="26" width="26" class="mr-2"/> Français
+                                </a></li>
                             <li><a href="{{ path('app_switch_locale', {locale: 'en'}) }}"
-                                   class="{{ app.request.locale == 'en' ? 'font-bold text-primary' : '' }}"><span
-                                            class="fi fi-gb mr-2"></span> English</a></li>
+                                   class="{{ app.request.locale == 'en' ? 'font-bold text-primary' : '' }}">
+                                    <twig:ux:icon name="twemoji:flag-united-kingdom" height="26" width="26" class="mr-2"/>English</a></li>
                         </ul>
                     </div>
 

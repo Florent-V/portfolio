@@ -1,9 +1,17 @@
 <?php
 
-$finder = PhpCsFixer\Finder::create()
+$finder = new PhpCsFixer\Finder()
     ->in(__DIR__)
-    ->exclude(['var', 'vendor', 'node_modules']) // Exclusions
-    ->notPath('src/Migrations/*') // Exclure les fichiers de migrations
+    ->exclude([
+        'var',
+        'vendor',
+        'node_modules'
+    ]) // Exclusions
+    ->notPath([
+        'src/Migrations/*',
+        'config/bundles.php',
+        'config/reference.php',
+    ]) // Exclure les fichiers de migrations
     ->name('*.php') // Fichiers concernés
     ->ignoreDotFiles(true)
     ->ignoreVCS(true);
