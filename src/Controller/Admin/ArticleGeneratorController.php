@@ -85,6 +85,10 @@ class ArticleGeneratorController extends AbstractController
                 );
             } catch (ArticleGenerationException $e) {
                 $this->addFlash('danger', \sprintf('Erreur de génération : %s', $e->getMessage()));
+
+                return $this->render('admin/article_generator/index.html.twig', [
+                    'form' => $form,
+                ], new Response(status: Response::HTTP_UNPROCESSABLE_ENTITY));
             }
         }
 
