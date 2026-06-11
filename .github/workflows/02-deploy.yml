@@ -67,18 +67,18 @@ jobs:
 
             - name: Transfer built assets to server
               run: |
-                  rsync -avzO --delete \
+                  rsync -rlvzO --delete --no-perms \
                     -e "ssh -p ${{ secrets.SSH_PORT }}" \
                     public/build/ \
                     ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/public/build/
 
-                  rsync -avzO \
+                  rsync -rlvzO --no-perms \
                     -e "ssh -p ${{ secrets.SSH_PORT }}" \
                     public/manifest.json \
                     public/service-worker.js \
                     ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/public/
 
-                  rsync -avzO --delete \
+                  rsync -rlvzO --delete --no-perms \
                     -e "ssh -p ${{ secrets.SSH_PORT }}" \
                     public/pwa/ \
                     ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/public/pwa/
