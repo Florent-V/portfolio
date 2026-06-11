@@ -98,7 +98,7 @@
     </div>
 </div>
 
-<div id="ai-loader" class="hidden fixed inset-0 bg-black/70 z-[9999] flex flex-col items-center justify-center gap-5">
+<div id="ai-loader" data-turbo-temporary class="hidden fixed inset-0 bg-black/70 z-[9999] flex-col items-center justify-center gap-5">
     <span class="loading loading-spinner loading-lg text-primary"></span>
     <div class="text-center">
         <p class="text-white font-bold text-lg">Génération en cours…</p>
@@ -109,13 +109,28 @@
 <script>
 (function () {
     var loader = document.getElementById('ai-loader');
+
+    function showLoader() {
+        loader.classList.remove('hidden');
+        loader.classList.add('flex');
+    }
+
+    function hideLoader() {
+        loader.classList.add('hidden');
+        loader.classList.remove('flex');
+    }
+
     var form = document.querySelector('form');
     if (form) {
-        form.addEventListener('submit', function () {
-            loader.classList.remove('hidden');
-            loader.classList.add('flex');
-        });
+        form.addEventListener('submit', showLoader);
     }
+
+    // Hide before Turbo caches the page snapshot (prevents stale visible loader on back navigation)
+    document.addEventListener('turbo:before-cache', hideLoader);
+    // Hide when Turbo renders a new page (handles error response re-render)
+    document.addEventListener('turbo:render', hideLoader);
+    // Fallback: hide on pageshow (browser bfcache restore)
+    window.addEventListener('pageshow', function (e) { if (e.persisted) hideLoader(); });
 })();
 </script>
 {% endblock %}
