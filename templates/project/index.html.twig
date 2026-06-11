@@ -1,6 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'project.all_projects'|trans }} - {{ parent() }}{% endblock %}
+{% block title %}Projets — Florent Vasseur{% endblock %}
+
+{% block meta_description %}Découvrez les projets web réalisés par Florent Vasseur : applications Symfony, APIs, dashboards et plus.{% endblock %}
+
+{% block json_ld %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Projets — Florent Vasseur",
+    "url": "{{ url('app_project_index') }}",
+    "author": {
+        "@type": "Person",
+        "name": "Florent Vasseur",
+        "url": "{{ url('app_home') }}"
+    }
+}
+</script>
+{% endblock %}
 
 {% block body %}
     <div
@@ -29,13 +47,14 @@
                             <figure class="relative overflow-hidden aspect-[4/3] bg-base-200">
                                 <img src="{{ project.mainImageName ? asset('uploads/images/projects/' ~ project.mainImageName) : 'https://picsum.photos/seed/' ~ project.id ~ '/600/400' }}"
                                      alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
+                                     loading="lazy"
                                      class="w-full h-full object-contain object-center project-image group-hover:scale-110 transition-transform duration-500" />
 
                                 <!-- Overlay with quick actions -->
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
                                         <div class="flex gap-2">
-                                            <a href="{{ path('app_project_show_by_id', {id: project.id}) }}"
+                                            <a href="{{ project.slug ? path('app_project_show_by_slug', {slug: project.slug}) : path('app_project_show_by_id', {id: project.id}) }}"
                                                class="btn btn-sm btn-primary">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
                                                      viewBox="0 0 24 24" stroke="currentColor">
@@ -110,7 +129,7 @@
                                     </div>
 
                                     <div class="flex gap-2">
-                                        <a href="{{ path('app_project_show_by_id', {id: project.id}) }}"
+                                        <a href="{{ project.slug ? path('app_project_show_by_slug', {slug: project.slug}) : path('app_project_show_by_id', {id: project.id}) }}"
                                            class="btn btn-primary btn-sm">
                                             {{ 'project.details'|trans }}
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none"

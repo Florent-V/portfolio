@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app.request.locale }}"
+      prefix="og: https://ogp.me/ns#">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,9 @@
 
         {# Meta tags pour PWA #}
         <meta name="theme-color" content="#4285f4">
-        <meta name="description" content="Description de votre application PWA">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="mobile-web-app-status-bar-style" content="black">
-        <meta name="mobile-web-app-title" content="SymfonyApp">
+        <meta name="mobile-web-app-title" content="Florent Vasseur">
 
         {# Manifest PWA #}
         <link rel="manifest" href="{{ asset('/manifest.json') }}">
@@ -30,7 +30,25 @@
             }
         </style>
 
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Florent Vasseur — Développeur Web{% endblock %}</title>
+        <meta name="description" content="{% block meta_description %}Portfolio de Florent Vasseur, développeur web full-stack spécialisé Symfony et PHP.{% endblock %}">
+        <link rel="canonical" href="{{ app.request.schemeAndHttpHost }}{{ app.request.pathInfo }}">
+
+        <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+        <meta property="og:url" content="{{ app.request.schemeAndHttpHost }}{{ app.request.pathInfo }}">
+        <meta property="og:title" content="{{ block('title') }}">
+        <meta property="og:description" content="{{ block('meta_description') }}">
+        <meta property="og:locale" content="{{ app.request.locale == 'fr' ? 'fr_FR' : 'en_US' }}">
+        <meta property="og:site_name" content="Florent Vasseur">
+        {% block og_image %}{% endblock %}
+
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ block('title') }}">
+        <meta name="twitter:description" content="{{ block('meta_description') }}">
+        {% block twitter_image %}{% endblock %}
+
+        {% block json_ld %}{% endblock %}
+
         <link rel="icon" type="image/png" href="{{ asset('build/images/icons/favicon.ico') }}"/>
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}

@@ -1,6 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'article.all_articles'|trans }} - {{ parent() }}{% endblock %}
+{% block title %}Blog — Florent Vasseur{% endblock %}
+
+{% block meta_description %}Articles et tutoriels sur Symfony, PHP et le développement web par Florent Vasseur.{% endblock %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ url('app_article_index') }}{% if page > 1 %}?page={{ page }}{% endif %}">
+    {% if page > 1 %}<link rel="prev" href="{{ url('app_article_index') }}{% if page > 2 %}?page={{ page - 1 }}{% endif %}">{% endif %}
+    {% if page < lastPage %}<link rel="next" href="{{ url('app_article_index') }}?page={{ page + 1 }}">{% endif %}
+{% endblock %}
+
+{% block json_ld %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Blog — Florent Vasseur",
+    "url": "{{ url('app_article_index') }}",
+    "author": {
+        "@type": "Person",
+        "name": "Florent Vasseur",
+        "url": "{{ url('app_home') }}"
+    }
+}
+</script>
+{% endblock %}
 
 {% block body %}
     <div class="bg-base-200 py-12 md:py-20 min-h-screen">
@@ -18,6 +42,7 @@
                                 <figure class="h-56 overflow-hidden">
                                     <img src="{{ asset('uploads/images/articles/' ~ article.mainImageName) }}"
                                          alt="{{ 'common.main_article_image_alt'|trans({'%title%': article.title}) }}"
+                                         loading="lazy"
                                          class="object-cover h-full w-full group-hover:opacity-80 transition-opacity duration-300"/>
                                 </figure>
                             {% else %}
@@ -68,6 +93,27 @@
                     <h3 class="text-2xl font-semibold mb-4">{{ 'article.no_articles'|trans }}</h3>
                     <p class="text-base-content-secondary">{{ 'article.come_back_soon_articles'|trans }}</p>
                 </div>
+            {% endif %}
+
+            {% if lastPage > 1 %}
+            <div class="flex justify-center mt-12" data-aos="fade-up">
+                <div class="join">
+                    {% if page > 1 %}
+                        <a href="{{ path('app_article_index', {page: page - 1}) }}" class="join-item btn">«</a>
+                    {% endif %}
+                    {% for p in 1..lastPage %}
+                        {% if p == 1 or p == lastPage or (p >= page - 2 and p <= page + 2) %}
+                            <a href="{{ path('app_article_index', {page: p}) }}"
+                               class="join-item btn{{ p == page ? ' btn-active btn-primary' : '' }}">{{ p }}</a>
+                        {% elseif p == page - 3 or p == page + 3 %}
+                            <span class="join-item btn btn-disabled">…</span>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page < lastPage %}
+                        <a href="{{ path('app_article_index', {page: page + 1}) }}" class="join-item btn">»</a>
+                    {% endif %}
+                </div>
+            </div>
             {% endif %}
 
             <div class="text-center mt-16" data-aos="fade-up" data-aos-delay="300">

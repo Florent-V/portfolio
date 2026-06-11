@@ -1,11 +1,39 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    {% if aboutMe.title is defined and aboutMe.title is not empty %}
-        {{ aboutMe.title|split(' - ')|first }} - Portfolio
+    {% if aboutMe is not null and aboutMe.firstName is not empty %}
+        {{ aboutMe.firstName }} {{ aboutMe.lastName }} — {{ aboutMe.title }}
     {% else %}
-        {{ 'common.default_portfolio_title'|trans }}
+        Florent Vasseur — Développeur Web Symfony
     {% endif %}
+{% endblock %}
+
+{% block meta_description %}{% if aboutMe is not null and aboutMe.description is not empty %}{{ aboutMe.description|striptags|slice(0, 160) }}{% else %}Portfolio de Florent Vasseur, développeur web full-stack spécialisé Symfony et PHP. Découvrez mes projets, mon expérience et contactez-moi.{% endif %}{% endblock %}
+
+{% block og_image %}
+    {% if aboutMe is not null and aboutMe.profilePictureName %}
+        <meta property="og:image" content="{{ app.request.schemeAndHttpHost }}{{ asset('uploads/images/about_me/' ~ aboutMe.profilePictureName) }}">
+        <meta property="og:image:alt" content="{{ aboutMe.firstName }} {{ aboutMe.lastName }}">
+        <meta name="twitter:image" content="{{ app.request.schemeAndHttpHost }}{{ asset('uploads/images/about_me/' ~ aboutMe.profilePictureName) }}">
+    {% endif %}
+{% endblock %}
+
+{% block json_ld %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{% if aboutMe is not null %}{{ aboutMe.firstName }} {{ aboutMe.lastName }}{% else %}Florent Vasseur{% endif %}",
+    "url": "{{ url('app_home') }}",
+    "jobTitle": "{% if aboutMe is not null %}{{ aboutMe.title }}{% else %}Développeur Web{% endif %}",
+    "image": "{% if aboutMe is not null and aboutMe.profilePictureName %}{{ app.request.schemeAndHttpHost }}{{ asset('uploads/images/about_me/' ~ aboutMe.profilePictureName) }}{% endif %}",
+    "sameAs": [
+        {% for social in (aboutMe is not null ? aboutMe.socialLinks : []) %}
+            {% if social.isActive %}"{{ social.url }}"{% if not loop.last %},{% endif %}{% endif %}
+        {% endfor %}
+    ]
+}
+</script>
 {% endblock %}
 
 {% block body %}
@@ -34,7 +62,8 @@
                                 <div class="relative mx-auto lg:mx-0 w-80 h-80 group">
                                     <div class="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-75 group-hover:opacity-100 transition duration-1000 animate-pulse"></div>
                                     <img src="{{ asset('uploads/images/about_me/' ~ aboutMe.profilePictureName) }}"
-                                         alt="{{ 'common.profile_picture'|trans }}"
+                                         alt="{{ aboutMe.firstName }} {{ aboutMe.lastName }} — {{ aboutMe.title }}"
+                                         fetchpriority="high"
                                          class="relative rounded-full shadow-2xl w-full h-full object-cover ring-4 ring-base-300 group-hover:ring-primary transition-all duration-500 transform group-hover:scale-105">
                                 </div>
                                 <!-- Badge flottant -->
@@ -204,7 +233,7 @@
                                             <li class="flex items-center">
                                                 {% if tech.imageName %}
                                                     <img src="{{ asset('uploads/images/technologies/' ~ tech.imageName) }}"
-                                                         alt="{{ tech.name }}" class="h-6 w-6 mr-2 object-contain">
+                                                         alt="{{ tech.name }}" loading="lazy" class="h-6 w-6 mr-2 object-contain">
                                                 {% else %}
                                                     <span class="h-6 w-6 mr-2 flex items-center justify-center text-accent">●</span>
                                                 {% endif %}
@@ -279,6 +308,7 @@
                                 <figure class="aspect-[4/3] overflow-hidden bg-base-200">
                                     <img src="{{ project.mainImageName ? asset('uploads/images/projects/' ~ project.mainImageName) : 'https://picsum.photos/seed/' ~ project.id ~ '/400/225' }}"
                                          alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
+                                         loading="lazy"
                                          class="w-full h-full object-contain object-center project-image" />
                                 </figure>
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>

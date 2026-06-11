@@ -1,0 +1,45 @@
+# Florent Vasseur — Portfolio Développeur Web
+
+> Développeur web fullstack passionné, spécialisé en PHP/Symfony et JavaScript. Ce portfolio présente mes projets, mes articles techniques et mon parcours professionnel. Je crée des applications web robustes, maintenables et performantes.
+
+Florent Vasseur est développeur web fullstack avec une expertise en PHP, Symfony, JavaScript et les technologies web modernes. Ce site est bilingue (français / anglais) et contient un blog technique, une vitrine de projets et les informations de contact.
+
+## Navigation principale
+
+- [Accueil](https://YOUR_DOMAIN.com/): Présentation, compétences techniques, projets récents, parcours professionnel et formulaire de contact.
+- [Articles](https://YOUR_DOMAIN.com/article): Blog technique — analyses, tutoriels et réflexions sur le développement web (PHP, Symfony, JavaScript, architecture logicielle).
+- [Projets](https://YOUR_DOMAIN.com/project): Vitrine des projets réalisés avec descriptions, technologies utilisées et captures d'écran.
+
+## Blog technique
+
+Les articles couvrent des sujets tels que : architecture Symfony, bonnes pratiques PHP, patterns de conception (Strategy, Registry, CQRS), tests automatisés (PHPUnit, Pest), SEO technique, intégrations d'IA (OpenAI, Gemini, Mistral, Ollama) et retours d'expérience sur des projets concrets.
+
+- [Liste des articles](https://YOUR_DOMAIN.com/article): Tous les articles publiés, paginés par 9.
+
+## Projets
+
+Chaque projet présente : description détaillée, technologies utilisées, images, et contexte de réalisation. Les projets couvrent des applications web Symfony, des outils internes et des expérimentations techniques.
+
+- [Liste des projets](https://YOUR_DOMAIN.com/project): Tous les projets publics.
+
+## Compétences techniques
+
+- **Backend** : PHP 8+, Symfony 6/7, Doctrine ORM, API Platform, Messenger, Scheduler
+- **Frontend** : JavaScript, TypeScript, Stimulus, Turbo (Hotwire), Tailwind CSS, DaisyUI
+- **Outils** : Webpack Encore, PHPUnit, Pest PHP, PHPStan, PHPCS, GrumPHP
+- **IA / LLM** : Intégration OpenAI (GPT), Google Gemini, Mistral AI, Ollama
+- **Infra** : Docker, GitHub Actions (CI/CD), PostgreSQL, MySQL
+
+## Contact
+
+- Email : vasseurflorent@gmail.com
+- GitHub : https://github.com/Florent-V
+- [Page de contact](https://YOUR_DOMAIN.com/#contact)
+
+## Informations techniques sur ce site
+
+Ce portfolio est une application Symfony avec contenu dynamique (articles et projets gérés via EasyAdmin). Les articles utilisent un système de blocs modulaires (paragraphe, image, code avec syntax highlighting). Le site est bilingue FR/EN avec changement de langue dynamique.
+
+## À propos de llms.txt
+
+Ce fichier suit le standard llms.txt (https://llmstxt.org/) pour faciliter l'indexation et la compréhension du site par les modèles de langage (LLM) et les moteurs de recherche IA.

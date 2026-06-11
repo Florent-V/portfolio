@@ -39,6 +39,10 @@ class Project implements DuplicatableInterface
     #[Assert\NotBlank]
     private ?string $title = null;
 
+    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    #[Gedmo\Slug(fields: ['title'])]
+    private ?string $slug = null;
+
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     private ?string $description = null;
@@ -116,6 +120,18 @@ class Project implements DuplicatableInterface
     public function setTitle(string $title): static
     {
         $this->title = $title;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
 
         return $this;
     }
