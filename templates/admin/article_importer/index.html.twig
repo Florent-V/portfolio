@@ -73,7 +73,7 @@
                     <a href="{{ path('admin') }}" class="btn btn-outline gap-2">
                         <i class="fa fa-arrow-left"></i>Retour
                     </a>
-                    {{ form_widget(form.submit, {disabled: true, attr: {id: 'submit-btn', class: 'btn btn-primary gap-2', disabled: 'disabled'}}) }}
+                    {{ form_widget(form.submit, {attr: {class: 'btn btn-primary gap-2', id: 'import-submit-btn', disabled: 'disabled'}}) }}
                 </div>
 
                 {{ form_end(form) }}
@@ -95,7 +95,7 @@
     const input      = document.getElementById('{{ form.jsonFile.vars.id }}');
     const dropZone   = document.getElementById('drop-zone');
     const fileName   = document.getElementById('file-name');
-    const submitBtn  = document.getElementById('submit-btn');
+    const submitBtn  = document.getElementById('import-submit-btn');
     const preview    = document.getElementById('json-preview');
     const previewCtr = document.getElementById('preview-container');
 

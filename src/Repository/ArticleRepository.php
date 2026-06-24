@@ -49,6 +49,16 @@ class ArticleRepository extends ServiceEntityRepository
         ;
     }
 
+    public function findOneBySlug(string $slug): ?Article
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.slug = :slug')
+            ->setParameter('slug', $slug)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
     public function findOnePublishedBySlug(string $slug): ?Article
     {
         return $this->createQueryBuilder('a')
