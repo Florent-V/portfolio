@@ -1,4 +1,5 @@
 /*Here we import all the css files we need for our app*/
 @import './base.css';
 @import './plugins.css';
+@import './article.css';
 

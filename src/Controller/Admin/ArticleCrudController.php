@@ -168,6 +168,16 @@ class ArticleCrudController extends AbstractCrudController
             )
             ->addCssClass('btn btn-secondary btn-sm');
 
+        $preview = Action::new('preview', 'Prévisualiser', 'fa fa-eye')
+            ->linkToUrl(
+                fn (Article $article) => $this->generateUrl(
+                    'admin_article_preview',
+                    ['slug' => $article->getSlug()]
+                )
+            )
+            ->setHtmlAttributes(['target' => '_blank'])
+            ->addCssClass('btn btn-info btn-sm');
+
         return $this->configureSoftDeleteActions(
             $this->configureCommonActions($actions)
         )
@@ -175,6 +185,9 @@ class ArticleCrudController extends AbstractCrudController
             ->add(Crud::PAGE_EDIT, $generateSummary)
             ->add(Crud::PAGE_DETAIL, $generateSummary)
             ->add(Crud::PAGE_INDEX, $generateSummary)
+            ->add(Crud::PAGE_EDIT, $preview)
+            ->add(Crud::PAGE_DETAIL, $preview)
+            ->add(Crud::PAGE_INDEX, $preview)
             ->add(
                 Crud::PAGE_INDEX,
                 $this->buildDuplicateAction()
