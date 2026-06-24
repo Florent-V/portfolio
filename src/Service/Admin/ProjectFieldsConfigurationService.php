@@ -53,6 +53,7 @@ class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationServi
             $this->createDateField('startDate', 'Date de début'),
             $this->createDateField('endDate', 'Date de fin'),
             $this->createBooleanField('published', 'Publié'),
+            $this->createTextField('slug', 'Slug')->hideOnForm(),
             Field::new('projectImages', 'Galerie d\'images')
                 ->setTemplatePath('admin/field/project_gallery.html.twig')
                 ->onlyOnDetail(),
@@ -71,7 +72,15 @@ class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationServi
      */
     protected function buildFormFields(?AdminContext $context = null): array
     {
-        return [
+        $fields = [];
+
+        if (null !== $context && Crud::PAGE_EDIT === $context->getCrud()->getCurrentPage()) {
+            $fields[] = $this->createTextField('slug', 'Slug')
+                ->setFormTypeOption('disabled', true)
+                ->setHelp('Généré automatiquement — non modifiable.');
+        }
+
+        return array_merge($fields, [
             $this->createTextField('title', 'Titre'),
             $this->createTextEditorField('description', 'Description')
                 ->setNumOfRows(15),
@@ -91,7 +100,7 @@ class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationServi
                 ->setRequired(false),
             $this->createBooleanField('published', 'Publié'),
             $this->createProjectImagesField(),
-        ];
+        ]);
     }
 
     private function createTechnologiesField(): AssociationField
