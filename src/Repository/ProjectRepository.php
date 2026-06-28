@@ -39,7 +39,6 @@ class ProjectRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p')
             ->join('p.tags', 't')
             ->andWhere('p.published = :published')
-            ->andWhere('p.slug IS NOT NULL')
             ->andWhere('t.id IN (:tagIds)')
             ->setParameter('published', true)
             ->setParameter('tagIds', $tagIds)
