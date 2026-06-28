@@ -70,6 +70,12 @@ class Article implements DuplicatableInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $mainImageName = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $mainImageWidth = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $mainImageHeight = null;
+
     #[ORM\Column]
     #[Assert\NotNull]
     #[Assert\Type(type: 'bool')]
@@ -196,6 +202,30 @@ class Article implements DuplicatableInterface
     public function setMainImageName(?string $mainImageName): static
     {
         $this->mainImageName = $mainImageName;
+
+        return $this;
+    }
+
+    public function getMainImageWidth(): ?int
+    {
+        return $this->mainImageWidth;
+    }
+
+    public function setMainImageWidth(?int $mainImageWidth): static
+    {
+        $this->mainImageWidth = $mainImageWidth;
+
+        return $this;
+    }
+
+    public function getMainImageHeight(): ?int
+    {
+        return $this->mainImageHeight;
+    }
+
+    public function setMainImageHeight(?int $mainImageHeight): static
+    {
+        $this->mainImageHeight = $mainImageHeight;
 
         return $this;
     }
