@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Admin;
 
 use App\Controller\Admin\TechnologyCrudController;
+use App\Entity\Project;
 use App\Form\ProjectImageFormType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
@@ -24,6 +25,7 @@ class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationServi
             $this->createImageField('mainImageName', 'Image', '/uploads/images/projects'),
             $this->createTextField('title', 'Titre'),
             $this->createTechnologiesField(),
+            $this->createTagsCountField(),
             $this->createDateField('startDate', 'Début'),
             $this->createDateField('endDate', 'Fin'),
             $this->createBooleanField('published', 'Publié'),
@@ -46,6 +48,7 @@ class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationServi
             $this->createTextAreaField('description', 'Description')
                 ->renderAsHtml(),
             $this->createTechnologiesField(),
+            $this->createTagsDetailField(),
             $this->createUrlField('url', 'URL du projet')
                 ->setHelp('URL publique du projet'),
             $this->createUrlField('repositoryUrl', 'URL du dépôt')
@@ -85,6 +88,7 @@ class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationServi
             $this->createTextEditorField('description', 'Description')
                 ->setNumOfRows(15),
             $this->createTechnologiesField(),
+            $this->createTagsField(),
             $this->createUrlField('url', 'URL du projet')
                 ->setHelp('URL publique du projet'),
             $this->createUrlField('repositoryUrl', 'URL du dépôt')
@@ -101,6 +105,38 @@ class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationServi
             $this->createBooleanField('published', 'Publié'),
             $this->createProjectImagesField(),
         ]);
+    }
+
+    private function createTagsField(): AssociationField
+    {
+        return $this->createAssociationField('tags', 'Tags')
+            ->setFormTypeOptions([
+                'by_reference' => false,
+                'attr'         => ['data-ea-autocomplete-allow-item-create' => 'true'],
+            ])
+            ->setHelp('Tags associés. Tapez pour rechercher ou créer un nouveau tag.');
+    }
+
+    private function createTagsDetailField(): AssociationField
+    {
+        return $this->createAssociationField('tags', 'Tags')
+            ->setTemplatePath('admin/fields/tags.html.twig')
+            ->onlyOnDetail();
+    }
+
+    private function createTagsCountField(): Field
+    {
+        return Field::new('tags', 'Tags')
+            ->formatValue(static function (mixed $value, object $entity): string {
+                if (!$entity instanceof Project) {
+                    return '0';
+                }
+                $count = $entity->getTags()->count();
+
+                return sprintf('%d tag%s', $count, $count > 1 ? 's' : '');
+            })
+            ->hideOnForm()
+            ->onlyOnIndex();
     }
 
     private function createTechnologiesField(): AssociationField
