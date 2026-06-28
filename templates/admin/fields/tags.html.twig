@@ -1,0 +1,10 @@
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{% if field.value is not empty %}
+    <div class="badges-list">
+        {% for tag in field.value %}
+            <span class="badge badge-primary mr-1">{{ tag.name }}</span>
+        {% endfor %}
+    </div>
+{% else %}
+    <span class="text-muted">—</span>
+{% endif %}
