@@ -56,7 +56,7 @@ class Article implements DuplicatableInterface
     /**
      * @var Collection<int, Tag>
      */
-    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'articles')]
+    #[ORM\ManyToMany(targetEntity: Tag::class)]
     private Collection $tags;
 
     #[Vich\UploadableField(mapping: 'article_image', fileNameProperty: 'mainImageName')]
