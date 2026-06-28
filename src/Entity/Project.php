@@ -39,7 +39,7 @@ class Project implements DuplicatableInterface
     #[Assert\NotBlank]
     private ?string $title = null;
 
-    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Gedmo\Slug(fields: ['title'])]
     private ?string $slug = null;
 
