@@ -39,7 +39,7 @@ class Project implements DuplicatableInterface
     #[Assert\NotBlank]
     private ?string $title = null;
 
-    #[ORM\Column(length: 255, unique: true, nullable: true)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Gedmo\Slug(fields: ['title'])]
     private ?string $slug = null;
 
@@ -76,6 +76,12 @@ class Project implements DuplicatableInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $mainImageName = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $mainImageWidth = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $mainImageHeight = null;
+
     /**
      * @var Collection<int, Technology>
      */
@@ -86,6 +92,14 @@ class Project implements DuplicatableInterface
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $published = false;
+
+    /**
+     * @var Collection<int, Tag>
+     */
+    #[ORM\ManyToMany(targetEntity: Tag::class)]
+    #[ORM\JoinTable(name: 'project_tag')]
+    #[ORM\OrderBy(['name' => 'ASC'])]
+    private Collection $tags;
 
     /**
      * @var Collection<int, ProjectImage>
@@ -103,6 +117,7 @@ class Project implements DuplicatableInterface
     {
         $this->technologies  = new ArrayCollection();
         $this->projectImages = new ArrayCollection();
+        $this->tags          = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
     }
@@ -218,6 +233,54 @@ class Project implements DuplicatableInterface
     public function setMainImageName(?string $mainImageName): static
     {
         $this->mainImageName = $mainImageName;
+
+        return $this;
+    }
+
+    public function getMainImageWidth(): ?int
+    {
+        return $this->mainImageWidth;
+    }
+
+    public function setMainImageWidth(?int $mainImageWidth): static
+    {
+        $this->mainImageWidth = $mainImageWidth;
+
+        return $this;
+    }
+
+    public function getMainImageHeight(): ?int
+    {
+        return $this->mainImageHeight;
+    }
+
+    public function setMainImageHeight(?int $mainImageHeight): static
+    {
+        $this->mainImageHeight = $mainImageHeight;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): static
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): static
+    {
+        $this->tags->removeElement($tag);
 
         return $this;
     }

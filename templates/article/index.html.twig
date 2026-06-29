@@ -42,6 +42,7 @@
                                 <figure class="h-56 overflow-hidden">
                                     <img src="{{ asset('uploads/images/articles/' ~ article.mainImageName) }}"
                                          alt="{{ 'common.main_article_image_alt'|trans({'%title%': article.title}) }}"
+                                         {% if article.mainImageWidth %}width="{{ article.mainImageWidth }}" height="{{ article.mainImageHeight }}"{% endif %}
                                          loading="lazy"
                                          class="object-cover h-full w-full group-hover:opacity-80 transition-opacity duration-300"/>
                                 </figure>

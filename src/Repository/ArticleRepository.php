@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\Article;
+use App\Entity\Tag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -71,5 +73,40 @@ class ArticleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult()
         ;
+    }
+
+    /**
+     * @param Collection<int, Tag>|Tag[] $tags
+     *
+     * @return Article[]
+     */
+    public function findPublishedByTags(iterable $tags, ?Article $exclude = null, int $limit = 5): array
+    {
+        $tagIds = [];
+        foreach ($tags as $tag) {
+            $tagIds[] = $tag->getId();
+        }
+
+        if ([] === $tagIds) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('a')
+            ->join('a.tags', 't')
+            ->andWhere('a.isPublished = :isPublished')
+            ->andWhere('a.publishedAt <= :now')
+            ->andWhere('t.id IN (:tagIds)')
+            ->setParameter('isPublished', true)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->setParameter('tagIds', $tagIds)
+            ->orderBy('a.publishedAt', 'DESC')
+            ->setMaxResults($limit)
+        ;
+
+        if (null !== $exclude && null !== $exclude->getId()) {
+            $qb->andWhere('a.id != :excludeId')->setParameter('excludeId', $exclude->getId());
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

@@ -46,7 +46,7 @@ class ArticleFieldsConfigurationService extends AbstractFieldsConfigurationServi
             $this->createTextField('title', 'Titre'),
             $this->createSlugField('title'),
             $this->createAuthorField(),
-            $this->createTagsField(),
+            $this->createTagsDetailField(),
             $this->createContentCountField(),
             Field::new('contentElements', 'Images des blocs de contenu')
                 ->setTemplatePath('admin/field/article_content_images.html.twig')
@@ -121,5 +121,12 @@ class ArticleFieldsConfigurationService extends AbstractFieldsConfigurationServi
                 'attr'         => ['data-ea-autocomplete-allow-item-create' => 'true'],
             ])
             ->setHelp('Tags associés. Tapez pour rechercher ou créer un nouveau tag.');
+    }
+
+    private function createTagsDetailField(): AssociationField
+    {
+        return $this->createAssociationField('tags', 'Tags')
+            ->setTemplatePath('admin/fields/tags.html.twig')
+            ->onlyOnDetail();
     }
 }
