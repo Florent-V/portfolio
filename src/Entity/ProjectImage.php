@@ -47,6 +47,12 @@ class ProjectImage
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageName = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $imageWidth = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $imageHeight = null;
+
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
     #[Assert\NotBlank]
     #[Assert\Type('int')]
@@ -89,6 +95,30 @@ class ProjectImage
     public function setImageName(?string $imageName): static
     {
         $this->imageName = $imageName;
+
+        return $this;
+    }
+
+    public function getImageWidth(): ?int
+    {
+        return $this->imageWidth;
+    }
+
+    public function setImageWidth(?int $imageWidth): static
+    {
+        $this->imageWidth = $imageWidth;
+
+        return $this;
+    }
+
+    public function getImageHeight(): ?int
+    {
+        return $this->imageHeight;
+    }
+
+    public function setImageHeight(?int $imageHeight): static
+    {
+        $this->imageHeight = $imageHeight;
 
         return $this;
     }

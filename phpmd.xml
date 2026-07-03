@@ -8,6 +8,9 @@
         Stefano PHPMD rulesets
     </description>
 
+    <exclude-pattern>*/Command/BackfillImageDimensionsCommand.php</exclude-pattern>
+    <exclude-pattern>*/Command/CleanupOrphanedImagesCommand.php</exclude-pattern>
+
     <rule ref="rulesets/unusedcode.xml">
         <exclude name="UnusedFormalParameter" />
     </rule>

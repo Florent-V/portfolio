@@ -46,6 +46,17 @@
         class="bg-base-200 py-12 md:py-20 min-h-screen"
     >
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+
+            <nav aria-label="Fil d'Ariane" class="max-w-4xl mx-auto mb-4 text-sm text-base-content/60">
+                <ol class="flex flex-wrap items-center gap-1">
+                    <li><a href="{{ path('app_home') }}" class="hover:text-primary transition-colors">Accueil</a></li>
+                    <li aria-hidden="true" class="mx-1">/</li>
+                    <li><a href="{{ path('app_project_index') }}" class="hover:text-primary transition-colors">Projets</a></li>
+                    <li aria-hidden="true" class="mx-1">/</li>
+                    <li aria-current="page" class="text-base-content font-medium truncate max-w-xs">{{ project.title }}</li>
+                </ol>
+            </nav>
+
             <article class="max-w-4xl mx-auto bg-base-100 shadow-xl rounded-lg overflow-hidden" data-aos="fade-up">
 
                 {# Main Image or Carousel Start #}
@@ -65,6 +76,7 @@
                                     <div class="carousel-slide w-full h-full flex-shrink-0 flex justify-center items-center bg-base-300/20">
                                         <img src="{{ asset('uploads/images/projects/' ~ project.mainImageName) }}"
                                              alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
+                                             {% if project.mainImageWidth %}width="{{ project.mainImageWidth }}" height="{{ project.mainImageHeight }}"{% endif %}
                                              loading="lazy"
                                              class="w-auto h-auto max-w-full max-h-full object-contain" />
                                     </div>
@@ -74,6 +86,7 @@
                                     <div class="carousel-slide w-full h-full flex-shrink-0 flex justify-center items-center bg-base-300/20">
                                         <img src="{{ asset('uploads/images/projects/gallery/' ~ image.imageName) }}"
                                              alt="{{ image.altText|default('common.project_gallery_image_alt'|trans({'%project_title%': project.title, '%index%': loop.index})) }}"
+                                             {% if image.imageWidth %}width="{{ image.imageWidth }}" height="{{ image.imageHeight }}"{% endif %}
                                              loading="lazy"
                                              class="w-auto h-auto max-w-full max-h-full object-contain" />
                                     </div>
@@ -105,6 +118,7 @@
                     <figure class="h-64 md:h-96 lg:h-[30rem] w-full flex justify-center items-center bg-base-300/20" data-aos="zoom-in">
                         <img src="{{ asset('uploads/images/projects/' ~ project.mainImageName) }}"
                              alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
+                             {% if project.mainImageWidth %}width="{{ project.mainImageWidth }}" height="{{ project.mainImageHeight }}"{% endif %}
                              loading="lazy"
                              class="w-auto h-auto max-w-full max-h-full object-contain">
                     </figure>
@@ -160,7 +174,32 @@
                         {% endif %}
                     </div>
 
-                    <div class="text-center border-t pt-6" data-aos="fade-up" data-aos-delay="600">
+                    {% if relatedArticles is defined and relatedArticles is not empty %}
+                        <div class="border-t pt-8 mt-8" data-aos="fade-up" data-aos-delay="650">
+                            <h2 class="text-xl font-semibold text-secondary mb-4">Articles liés</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {% for relatedArticle in relatedArticles %}
+                                    <a href="{{ path('app_article_show', {slug: relatedArticle.slug}) }}"
+                                       class="flex items-start gap-3 p-4 rounded-lg bg-base-200 hover:bg-base-300 transition-colors group">
+                                        {% if relatedArticle.mainImageName %}
+                                            <img src="{{ asset('uploads/images/articles/' ~ relatedArticle.mainImageName) }}"
+                                                 alt="{{ relatedArticle.title }}"
+                                                 loading="lazy"
+                                                 class="w-16 h-16 object-cover rounded shrink-0">
+                                        {% endif %}
+                                        <div class="min-w-0">
+                                            <p class="font-medium text-base-content group-hover:text-primary transition-colors line-clamp-2">{{ relatedArticle.title }}</p>
+                                            {% if relatedArticle.publishedAt %}
+                                                <p class="text-xs text-base-content/60 mt-1">{{ relatedArticle.publishedAt|date('d M Y') }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="text-center border-t pt-6 mt-6" data-aos="fade-up" data-aos-delay="700">
                         <a href="{{ path('app_project_index') }}" class="btn btn-ghost">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" /></svg>
                             {{ 'project.back_to_projects'|trans }}

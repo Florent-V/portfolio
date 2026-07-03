@@ -62,6 +62,12 @@ class AboutMe
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profilePictureName = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $profilePictureWidth = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $profilePictureHeight = null;
+
     #[ORM\Column(length: 255)]
     private ?string $firstName = null;
 
@@ -171,6 +177,30 @@ class AboutMe
     public function setProfilePictureName(?string $profilePictureName): static
     {
         $this->profilePictureName = $profilePictureName;
+
+        return $this;
+    }
+
+    public function getProfilePictureWidth(): ?int
+    {
+        return $this->profilePictureWidth;
+    }
+
+    public function setProfilePictureWidth(?int $profilePictureWidth): static
+    {
+        $this->profilePictureWidth = $profilePictureWidth;
+
+        return $this;
+    }
+
+    public function getProfilePictureHeight(): ?int
+    {
+        return $this->profilePictureHeight;
+    }
+
+    public function setProfilePictureHeight(?int $profilePictureHeight): static
+    {
+        $this->profilePictureHeight = $profilePictureHeight;
 
         return $this;
     }
