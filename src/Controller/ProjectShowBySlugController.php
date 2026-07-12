@@ -29,10 +29,12 @@ final class ProjectShowBySlugController extends AbstractController
         }
 
         $relatedArticles = $articleRepository->findPublishedByTags($project->getTags(), limit: 5);
+        $latestProjects  = $projectRepository->findLatestPublished($project, limit: 2);
 
         return $this->render('project/show.html.twig', [
             'project'         => $project,
             'relatedArticles' => $relatedArticles,
+            'latestProjects'  => $latestProjects,
         ]);
     }
 }

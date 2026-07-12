@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Enum\ArticleColumnSpan;
+use App\Enum\ArticleContentFormat;
 use App\Enum\ArticleContentType;
 use App\Repository\ArticleContentRepository;
 use Doctrine\DBAL\Types\Types;
@@ -28,6 +29,9 @@ class ArticleContent
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $content = null;
 
+    #[ORM\Column(type: 'string', enumType: ArticleContentFormat::class)]
+    private ArticleContentFormat $format = ArticleContentFormat::HTML;
+
     #[ORM\Column]
     private int $displayOrder = 0;
 
@@ -40,6 +44,12 @@ class ArticleContent
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $imageWidth = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $imageHeight = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $altText = null;
@@ -78,6 +88,18 @@ class ArticleContent
     public function setContent(?string $content): static
     {
         $this->content = $content;
+
+        return $this;
+    }
+
+    public function getFormat(): ArticleContentFormat
+    {
+        return $this->format;
+    }
+
+    public function setFormat(ArticleContentFormat $format): static
+    {
+        $this->format = $format;
 
         return $this;
     }
@@ -127,6 +149,30 @@ class ArticleContent
     public function setImageName(?string $imageName): static
     {
         $this->imageName = $imageName;
+
+        return $this;
+    }
+
+    public function getImageWidth(): ?int
+    {
+        return $this->imageWidth;
+    }
+
+    public function setImageWidth(?int $imageWidth): static
+    {
+        $this->imageWidth = $imageWidth;
+
+        return $this;
+    }
+
+    public function getImageHeight(): ?int
+    {
+        return $this->imageHeight;
+    }
+
+    public function setImageHeight(?int $imageHeight): static
+    {
+        $this->imageHeight = $imageHeight;
 
         return $this;
     }
