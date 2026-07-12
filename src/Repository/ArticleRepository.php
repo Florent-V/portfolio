@@ -109,4 +109,25 @@ class ArticleRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @return Article[]
+     */
+    public function findLatestPublished(?Article $exclude = null, int $limit = 2): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->andWhere('a.isPublished = :isPublished')
+            ->andWhere('a.publishedAt <= :now')
+            ->setParameter('isPublished', true)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('a.publishedAt', 'DESC')
+            ->setMaxResults($limit)
+        ;
+
+        if (null !== $exclude && null !== $exclude->getId()) {
+            $qb->andWhere('a.id != :excludeId')->setParameter('excludeId', $exclude->getId());
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -52,4 +52,23 @@ class ProjectRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @return Project[]
+     */
+    public function findLatestPublished(?Project $exclude = null, int $limit = 2): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.published = :published')
+            ->setParameter('published', true)
+            ->orderBy('p.startDate', 'DESC')
+            ->setMaxResults($limit)
+        ;
+
+        if (null !== $exclude && null !== $exclude->getId()) {
+            $qb->andWhere('p.id != :excludeId')->setParameter('excludeId', $exclude->getId());
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

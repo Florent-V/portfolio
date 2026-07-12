@@ -6,6 +6,7 @@ namespace App\Command;
 
 use App\Entity\AboutMe;
 use App\Entity\Article;
+use App\Entity\ArticleContent;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
 use Doctrine\ORM\EntityManagerInterface;
@@ -58,6 +59,13 @@ class BackfillImageDimensionsCommand extends Command
                 'dir'      => 'uploads/images/projects/gallery',
                 'setSize'  => fn (ProjectImage $e, int $w, int $h) => $e->setImageWidth($w)->setImageHeight($h),
                 'hasSize'  => fn (ProjectImage $e): bool => null !== $e->getImageWidth(),
+            ],
+            [
+                'entities' => $this->em->getRepository(ArticleContent::class)->findAll(),
+                'getFile'  => fn (ArticleContent $e): ?string => $e->getImageName(),
+                'dir'      => 'uploads/images/articles',
+                'setSize'  => fn (ArticleContent $e, int $w, int $h) => $e->setImageWidth($w)->setImageHeight($h),
+                'hasSize'  => fn (ArticleContent $e): bool => null !== $e->getImageWidth(),
             ],
             [
                 'entities' => $this->em->getRepository(AboutMe::class)->findAll(),

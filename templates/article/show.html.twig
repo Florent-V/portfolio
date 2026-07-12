@@ -104,7 +104,7 @@
                                 Points clés
                             </h3>
                             <div class="text-base-content text-sm [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-2 [&_strong]:text-primary">
-                                {{ element.content|raw }}
+                                {{ element|render_content }}
                             </div>
                         </div>
                     {% endfor %}
@@ -115,19 +115,21 @@
                             <div class="col-span-1 {{ spanClass }}">
                                 {% if element.type.value == 'paragraph' %}
                                     <div class="prose lg:prose-lg xl:prose-xl max-w-none text-base-content">
-                                        {{ element.content|raw }}
+                                        {{ element|render_content }}
                                     </div>
                                 {% elseif element.type.value == 'image' and element.imageName %}
                                     <figure>
                                         <img src="{{ asset('uploads/images/articles/' ~ element.imageName) }}"
                                              alt="{{ element.altText ?? '' }}"
+                                             {% if element.imageWidth and element.imageHeight %}width="{{ element.imageWidth }}" height="{{ element.imageHeight }}"{% endif %}
+                                             loading="lazy"
                                              class="w-full rounded-lg shadow-lg">
                                         {% if element.altText %}
                                             <figcaption class="text-center text-sm text-gray-500 mt-2">{{ element.altText }}</figcaption>
                                         {% endif %}
                                     </figure>
                                 {% elseif element.type.value == 'code' and element.content %}
-                                    <pre class="rounded-lg overflow-x-auto"><code class="language-{{ element.language ?? 'plaintext' }}">{{ element.content|replace({'</p>': '\n', '<br>': '\n', '<br/>': '\n', '<br />': '\n', '</div>': '\n'})|striptags|trim|raw }}</code></pre>
+                                    <pre class="rounded-lg overflow-x-auto"><code class="language-{{ element.language ?? 'plaintext' }}">{{ element.content|trim }}</code></pre>
                                 {% endif %}
                             </div>
                         {% endfor %}
@@ -163,6 +165,31 @@
                                             <p class="font-medium text-base-content group-hover:text-primary transition-colors line-clamp-2">{{ relatedProject.title }}</p>
                                             {% if relatedProject.startDate %}
                                                 <p class="text-xs text-base-content/60 mt-1">{{ relatedProject.startDate|date('Y') }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if latestArticles is defined and latestArticles is not empty %}
+                        <div class="border-t pt-8 mt-8" data-aos="fade-up" data-aos-delay="675">
+                            <h2 class="text-xl font-semibold text-secondary mb-4">À lire aussi</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {% for latestArticle in latestArticles %}
+                                    <a href="{{ path('app_article_show', {slug: latestArticle.slug}) }}"
+                                       class="flex items-start gap-3 p-4 rounded-lg bg-base-200 hover:bg-base-300 transition-colors group">
+                                        {% if latestArticle.mainImageName %}
+                                            <img src="{{ asset('uploads/images/articles/' ~ latestArticle.mainImageName) }}"
+                                                 alt="{{ latestArticle.title }}"
+                                                 loading="lazy"
+                                                 class="w-16 h-16 object-cover rounded shrink-0">
+                                        {% endif %}
+                                        <div class="min-w-0">
+                                            <p class="font-medium text-base-content group-hover:text-primary transition-colors line-clamp-2">{{ latestArticle.title }}</p>
+                                            {% if latestArticle.publishedAt %}
+                                                <p class="text-xs text-base-content/60 mt-1">{{ latestArticle.publishedAt|date('d M Y') }}</p>
                                             {% endif %}
                                         </div>
                                     </a>
