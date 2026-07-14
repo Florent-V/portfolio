@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Twig\Sanitizer;
+namespace App\Service\Sanitizer;
 
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\HtmlSanitizer\Visitor\AttributeSanitizer\AttributeSanitizerInterface;

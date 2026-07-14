@@ -63,7 +63,7 @@
                                     {% set excerpt = '' %}
                                     {% for element in article.contentElements %}
                                         {% if element.type.value == 'paragraph' and excerpt == '' %}
-                                            {% set excerpt = element.content|striptags %}
+                                            {% set excerpt = element|render_content|striptags %}
                                         {% endif %}
                                     {% endfor %}
                                     {{ excerpt|slice(0, 120) }}{% if excerpt|length > 120 %}...{% endif %}

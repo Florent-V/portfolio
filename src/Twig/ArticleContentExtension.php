@@ -6,7 +6,7 @@ namespace App\Twig;
 
 use App\Entity\ArticleContent;
 use App\Enum\ArticleContentFormat;
-use App\Twig\Sanitizer\ArticleClassAttributeSanitizer;
+use App\Service\Sanitizer\ArticleClassAttributeSanitizer;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Autolink\AutolinkExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
