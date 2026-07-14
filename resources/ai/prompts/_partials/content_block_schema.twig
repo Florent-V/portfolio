@@ -1,0 +1,47 @@
+Only two block types exist: "paragraph" and "code". Never use any other type.
+
+{% if format == 'markdown' %}
+Use "paragraph" for all text content. Each paragraph block is Markdown (CommonMark):
+- MANDATORY: every paragraph block must start with a "## Section Title" heading — including the introduction and conclusion.
+- Follow the heading with one or two paragraphs of prose, 3-5 substantial sentences each.
+- Inline formatting: use **bold** for key terms and important concepts, *emphasis* for nuance, `inline code` for code references.
+- Use "- item" or "1. item" lists when content is enumerable (3+ parallel items).
+- Use GFM tables (`| a | b |` header row + `|---|---|` delimiter row) when comparing 2+ items across shared criteria. Always include leading and trailing pipes on every row, and keep the delimiter row's column count identical to the header row.
+- `~~text~~` for strikethrough is supported — use sparingly, only for genuine "correction" framing (e.g. showing an outdated claim struck through).
+- Bare URLs (`www.example.com`, `https://example.com`) auto-link — no need to wrap them in `<...>` or `[text](url)` unless you want custom link text.
+- Never use raw HTML tags, `class` attributes, or Tailwind/CSS utility classes inside the content — write plain Markdown only, the app converts and styles it automatically.
+{% else %}
+Use "paragraph" for all text content. Each paragraph block is an HTML section:
+- MANDATORY: every paragraph block must start with an <h2> tag for the section title — including the introduction and conclusion.
+- Follow the <h2> with one or two <p> elements. Each <p> must contain 3-5 substantial sentences.
+- For long articles with dense sections, an optional <h3> may subdivide a section into sub-topics — never skip straight to <h3> without a parent <h2> in the same block.
+- Inline formatting inside <p>: use <strong> for key terms and important concepts, <em> for emphasis, <code> for inline code references.
+- Use a <table> (with <thead>, <tbody>, <tr>, <th>, <td>) when comparing 2+ items across shared criteria — same use case as the Markdown table, just as real tags instead of pipes.
+- Use ONLY these tags: <h2>, <h3>, <p>, <strong>, <em>, <code>, <ul>, <ol>, <li>, <blockquote>, <table>, <thead>, <tbody>, <tr>, <th>, <td>. No <div>, no <span>, no `style` attribute.
+- `class` is allowed ONLY with these exact Tailwind/DaisyUI utility classes, and nothing else: `text-primary` `text-secondary` `text-accent` `text-error` `text-warning` `text-success` `text-info` `font-bold` `italic` `underline` `uppercase` `tracking-wide` `text-sm` `text-base` `text-lg` `text-xl`. These are pre-compiled into the app's CSS specifically for this use — any other class name will not exist in the compiled stylesheet and will render with zero effect. Use them sparingly, only for genuine emphasis beyond what `<strong>`/`<em>` already give (e.g. `<strong class="text-primary">`), never as a substitute for the semantic tags above.
+{% endif %}
+
+Use "code" for code samples only. Content is raw source code — NO HTML and NO Markdown fences inside code blocks.
+
+{% if length_instruction is defined and length_instruction is not empty %}
+{{ length_instruction }}
+{% endif %}
+
+display_order must be sequential integers starting at 1, with NO gaps.
+
+Every content block object must include "format": "{{ format }}" — always this exact value, never mix formats within the same article.
+
+REQUIRED JSON SCHEMA:
+{
+  "title": "string — article title, clear and engaging",
+  "slug": "string — URL-friendly kebab-case version of the title (lowercase, hyphens only, no accents)",
+  "content_blocks": [
+    {
+      "type": "paragraph | code",
+      "content": "string — see format rules above",
+      "display_order": "integer starting at 1",
+      "language": "string | null — programming language identifier for code blocks (e.g. php, javascript, bash), null for paragraphs",
+      "format": "{{ format }}"
+    }
+  ]
+}
