@@ -9,6 +9,8 @@ use App\AI\DTO\ArticleGenerationRequest;
 use App\AI\Enum\AiProvider;
 use App\AI\Exception\ArticleGenerationException;
 use App\Entity\User;
+use App\Enum\ArticleContentFormat;
+use App\Enum\ArticleLength;
 use App\Enum\Role;
 use App\Form\Admin\ArticleGeneratorFormType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -39,30 +41,22 @@ class ArticleGeneratorController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var array{
-             *     provider: ?AiProvider,
-             *     topic: string,
-             *     language: string,
-             *     useWebSearch: ?bool,
-             *     extraInstructions: ?string
-             * } $data
-             */
-            $data = $form->getData();
-
             /** @var User $user */
             $user = $this->getUser();
 
-            $provider = $data['provider'] ?? AiProvider::OPENROUTER;
+            $provider = $form->get('provider')->getData() ?? AiProvider::OPENROUTER;
 
             $request->getSession()->save();
 
             $generationRequest = new ArticleGenerationRequest(
-                topic: $data['topic'],
-                language: $data['language'],
-                useWebSearch: $provider->supportsWebSearch() && (bool) ($data['useWebSearch'] ?? false),
-                extraInstructions: $data['extraInstructions'] ?? null,
+                topic: $form->get('topic')->getData(),
+                language: $form->get('language')->getData(),
+                useWebSearch: $provider->supportsWebSearch() && (bool) $form->get('useWebSearch')->getData(),
+                extraInstructions: $form->get('extraInstructions')->getData(),
                 author: $user,
                 provider: $provider,
+                length: $form->get('length')->getData() ?? ArticleLength::MEDIUM,
+                format: $form->get('format')->getData() ?? ArticleContentFormat::HTML,
             );
 
             try {

@@ -9,6 +9,7 @@ use App\AI\DTO\ArticleHumanizeRequest;
 use App\AI\Enum\AiProvider;
 use App\AI\Exception\ArticleGenerationException;
 use App\Entity\User;
+use App\Enum\ArticleContentFormat;
 use App\Enum\Role;
 use App\Form\Admin\ArticleHumanizerFormType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -39,24 +40,17 @@ class ArticleHumanizerController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var array{
-             *     provider: ?AiProvider,
-             *     language: string,
-             *     rawText: string
-             * } $data
-             */
-            $data = $form->getData();
-
             /** @var User $user */
             $user = $this->getUser();
 
             $request->getSession()->save();
 
             $humanizeRequest = new ArticleHumanizeRequest(
-                rawText: $data['rawText'],
-                language: $data['language'],
+                rawText: $form->get('rawText')->getData(),
+                language: $form->get('language')->getData(),
                 author: $user,
-                provider: $data['provider'] ?? AiProvider::OPENROUTER,
+                provider: $form->get('provider')->getData() ?? AiProvider::OPENROUTER,
+                format: $form->get('format')->getData()     ?? ArticleContentFormat::HTML,
             );
 
             try {

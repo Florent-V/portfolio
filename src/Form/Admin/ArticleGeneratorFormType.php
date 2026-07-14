@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Form\Admin;
 
 use App\AI\Enum\AiProvider;
+use App\Enum\ArticleContentFormat;
+use App\Enum\ArticleLength;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -59,6 +61,23 @@ final class ArticleGeneratorFormType extends AbstractType
                 'label'    => 'Activer la recherche web (OpenRouter uniquement)',
                 'required' => false,
                 'attr'     => ['class' => 'form-check-input'],
+            ])
+            ->add('format', EnumType::class, [
+                'class'        => ArticleContentFormat::class,
+                'label'        => 'Format du contenu',
+                'choice_label' => fn (ArticleContentFormat $format) => match ($format) {
+                    ArticleContentFormat::HTML     => 'HTML',
+                    ArticleContentFormat::MARKDOWN => 'Markdown',
+                },
+                'attr' => ['class' => 'form-select'],
+                'data' => ArticleContentFormat::HTML,
+            ])
+            ->add('length', EnumType::class, [
+                'class'        => ArticleLength::class,
+                'label'        => 'Longueur souhaitée',
+                'choice_label' => fn (ArticleLength $length) => $length->label(),
+                'attr'         => ['class' => 'form-select'],
+                'data'         => ArticleLength::MEDIUM,
             ])
             ->add('extraInstructions', TextareaType::class, [
                 'label'    => 'Instructions supplémentaires (optionnel)',

@@ -68,6 +68,19 @@
                     </p>
                 </div>
 
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div class="form-control">
+                        {{ form_label(form.format, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
+                        {{ form_widget(form.format, {attr: {class: 'select select-bordered w-full'}}) }}
+                        {{ form_errors(form.format) }}
+                    </div>
+                    <div class="form-control">
+                        {{ form_label(form.length, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
+                        {{ form_widget(form.length, {attr: {class: 'select select-bordered w-full'}}) }}
+                        {{ form_errors(form.length) }}
+                    </div>
+                </div>
+
                 <div class="form-control">
                     {{ form_label(form.extraInstructions, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
                     {{ form_widget(form.extraInstructions, {attr: {class: 'textarea textarea-bordered w-full', rows: 3, placeholder: 'Ex: Cibler les développeurs débutants, inclure des exemples concrets...'}}) }}
