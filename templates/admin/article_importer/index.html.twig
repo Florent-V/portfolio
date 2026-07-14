@@ -33,48 +33,36 @@
             {% endfor %}
         {% endfor %}
 
+        {% set jsonFileErrors = [] %}
+        {% for error in form.jsonFile.vars.errors %}
+            {% set jsonFileErrors = jsonFileErrors|merge([error.message]) %}
+        {% endfor %}
+
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body p-8 space-y-6">
 
                 {{ form_start(form, {attr: {id: 'import-form', enctype: 'multipart/form-data'}}) }}
 
-                {# Drop zone #}
-                <div id="drop-zone"
-                     class="border-2 border-dashed border-base-300 rounded-xl p-10 text-center cursor-pointer transition-all duration-200 hover:border-primary hover:bg-primary/5">
-                    <div class="text-5xl text-base-content/30 mb-4">
-                        <i class="fa fa-file-code"></i>
-                    </div>
-                    <p class="font-semibold text-base-content mb-1">Glissez-déposez votre fichier JSON ici</p>
-                    <p class="text-sm text-base-content/50 mb-4">ou cliquez pour sélectionner</p>
-
-                    {# Hidden file input #}
-                    <div class="hidden">{{ form_widget(form.jsonFile) }}</div>
-
-                    <button type="button"
-                            class="btn btn-outline btn-primary btn-sm gap-2"
-                            onclick="document.getElementById('{{ form.jsonFile.vars.id }}').click()">
-                        <i class="fa fa-folder-open"></i>Parcourir…
-                    </button>
-
-                    <p class="text-success font-semibold mt-3 hidden" id="file-name"></p>
-                    {{ form_errors(form.jsonFile) }}
+                <div class="hidden">
+                    {{ form_widget(form.jsonFile) }}
+                    {{ form_widget(form.submit) }}
                 </div>
 
-                {# JSON Preview #}
-                <div id="preview-container" class="hidden">
-                    <p class="font-medium mb-2 text-base-content">Aperçu du fichier</p>
-                    <pre id="json-preview"
-                         class="bg-neutral text-neutral-content font-mono text-xs rounded-xl p-4 max-h-64 overflow-y-auto whitespace-pre-wrap break-all"></pre>
+                <div {{ vue_component('JsonImport', {
+                    inputId: form.jsonFile.vars.id,
+                    submitId: form.submit.vars.id,
+                    initialErrors: jsonFileErrors,
+                }) }}>
+                    <div class="flex items-center justify-center p-10">
+                        <span class="loading loading-spinner loading-lg text-primary"></span>
+                    </div>
                 </div>
 
                 <div class="divider"></div>
 
-                <div class="flex items-center justify-between">
-                    <a href="{{ path('admin') }}" class="btn btn-outline gap-2">
-                        <i class="fa fa-arrow-left"></i>Retour
-                    </a>
-                    {{ form_widget(form.submit, {attr: {class: 'btn btn-primary gap-2', id: 'import-submit-btn', disabled: 'disabled'}}) }}
-                </div>
+                <a href="{{ path('admin') }}" class="btn btn-outline gap-2">
+                    <i class="fa fa-arrow-left"></i>Retour
+                </a>
 
                 {{ form_end(form) }}
             </div>
@@ -89,51 +77,4 @@
 
     </div>
 </div>
-
-<script>
-(function () {
-    const input      = document.getElementById('{{ form.jsonFile.vars.id }}');
-    const dropZone   = document.getElementById('drop-zone');
-    const fileName   = document.getElementById('file-name');
-    const submitBtn  = document.getElementById('import-submit-btn');
-    const preview    = document.getElementById('json-preview');
-    const previewCtr = document.getElementById('preview-container');
-
-    function handleFile(file) {
-        if (!file) return;
-        fileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' Ko)';
-        fileName.classList.remove('hidden');
-        submitBtn.disabled = false;
-        submitBtn.removeAttribute('disabled');
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            try { preview.textContent = JSON.stringify(JSON.parse(e.target.result), null, 2); }
-            catch (_) { preview.textContent = e.target.result; }
-            previewCtr.classList.remove('hidden');
-        };
-        reader.readAsText(file);
-    }
-
-    input.addEventListener('change', function () { handleFile(this.files[0]); });
-
-    dropZone.addEventListener('dragover', function (e) {
-        e.preventDefault();
-        dropZone.classList.add('border-primary', 'bg-primary/5');
-    });
-    dropZone.addEventListener('dragleave', function () {
-        dropZone.classList.remove('border-primary', 'bg-primary/5');
-    });
-    dropZone.addEventListener('drop', function (e) {
-        e.preventDefault();
-        dropZone.classList.remove('border-primary', 'bg-primary/5');
-        const file = e.dataTransfer.files[0];
-        if (file) {
-            const dt = new DataTransfer();
-            dt.items.add(file);
-            input.files = dt.files;
-            handleFile(file);
-        }
-    });
-})();
-</script>
 {% endblock %}
