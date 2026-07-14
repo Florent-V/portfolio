@@ -16,6 +16,11 @@ framework:
                 json_manifest_path: '%kernel.project_dir%/public/bundles/easyadmin/manifest.json'
                 base_path: '/bundles/easyadmin'
 
+    http_client:
+        default_options:
+            timeout: 180
+            max_duration: 180
+
 when@test:
     framework:
         test: true

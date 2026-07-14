@@ -10,6 +10,7 @@ use App\Entity\Article;
 use App\Entity\ArticleContent;
 use App\Entity\User;
 use App\Enum\ArticleColumnSpan;
+use App\Enum\ArticleContentFormat;
 use App\Enum\ArticleContentType;
 use App\Repository\ArticleRepository;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -41,6 +42,7 @@ final readonly class ArticleResponseMapper
         $block = new ArticleContent();
         $block->setType($this->resolveContentType($data->type));
         $block->setContent($data->content);
+        $block->setFormat($this->resolveContentFormat($data->format));
         $block->setDisplayOrder($data->displayOrder);
         $block->setColumnSpan(ArticleColumnSpan::FULL);
 
@@ -56,6 +58,14 @@ final readonly class ArticleResponseMapper
         return match ($type) {
             'code'  => ArticleContentType::CODE,
             default => ArticleContentType::PARAGRAPH,
+        };
+    }
+
+    private function resolveContentFormat(string $format): ArticleContentFormat
+    {
+        return match ($format) {
+            'markdown' => ArticleContentFormat::MARKDOWN,
+            default    => ArticleContentFormat::HTML,
         };
     }
 

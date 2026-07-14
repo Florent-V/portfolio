@@ -28,6 +28,7 @@ final class ArticleResponseParser
                 content: (string) $block['content'],
                 displayOrder: (int) $block['display_order'],
                 language: isset($block['language']) ? (string) $block['language'] : null,
+                format: isset($block['format']) ? (string) $block['format'] : 'html',
             ),
             $data['content_blocks'],
         );
@@ -48,14 +49,12 @@ final class ArticleResponseParser
     {
         $raw = trim($raw);
 
-        // Strip markdown code fences if the model wrapped the JSON anyway
         if (str_starts_with($raw, '```')) {
             $raw = (string) preg_replace('/^```[a-z]*\n?/i', '', $raw);
             $raw = rtrim($raw, '`');
             $raw = trim($raw);
         }
 
-        // Find the first { and last } to extract the JSON object
         $start = strpos($raw, '{');
         $end   = strrpos($raw, '}');
 
@@ -108,7 +107,12 @@ final class ArticleResponseParser
     {
         foreach (['title', 'slug', 'content_blocks'] as $field) {
             if (!isset($data[$field]) || ('' === $data[$field] && 'content_blocks' !== $field)) {
-                throw new ArticleGenerationException(\sprintf('AI response is missing required field "%s".', $field));
+                throw new ArticleGenerationException(
+                    sprintf(
+                        'AI response is missing required field "%s".',
+                        $field
+                    )
+                );
             }
         }
     }
@@ -119,7 +123,9 @@ final class ArticleResponseParser
     private function validateContentBlocks(mixed $blocks): void
     {
         if (!\is_array($blocks) || [] === $blocks) {
-            throw new ArticleGenerationException('AI response "content_blocks" must be a non-empty array.');
+            throw new ArticleGenerationException(
+                'AI response "content_blocks" must be a non-empty array.'
+            );
         }
 
         foreach ($blocks as $i => $block) {
@@ -141,6 +147,12 @@ final class ArticleResponseParser
         if (!\in_array($block['type'], ['paragraph', 'code'], true)) {
             throw new ArticleGenerationException(
                 \sprintf('Content block #%d has unsupported type "%s".', $i, $block['type']),
+            );
+        }
+
+        if (isset($block['format']) && !\in_array($block['format'], ['html', 'markdown'], true)) {
+            throw new ArticleGenerationException(
+                \sprintf('Content block #%d has unsupported format "%s".', $i, $block['format']),
             );
         }
     }
