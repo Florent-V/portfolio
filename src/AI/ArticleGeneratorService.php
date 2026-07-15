@@ -35,13 +35,15 @@ final readonly class ArticleGeneratorService
             : $this->providerRegistry->getModelName($request->provider);
 
         $systemPrompt = $this->promptBuilder->build('generator/system', [
-            'LANGUAGE_INSTRUCTION' => $this->buildLangInstruction($request->language),
+            'language_instruction' => $this->buildLangInstruction($request->language),
+            'format'               => $request->format->value,
+            'length_instruction'   => $request->length->promptInstruction(),
         ]);
 
         $userPrompt = $this->promptBuilder->build('generator/user', [
-            'TOPIC'              => $request->topic,
-            'EXTRA_INSTRUCTIONS' => $this->buildExtraBlock($request->extraInstructions),
-            'WEB_SEARCH_HINT'    => $useWebSearch
+            'topic'              => $request->topic,
+            'extra_instructions' => $this->buildExtraBlock($request->extraInstructions),
+            'web_search_hint'    => $useWebSearch
                 ? "\n\nUse your web search capabilities to find the most recent and accurate information on this topic."
                 : '',
         ]);
@@ -57,6 +59,8 @@ final readonly class ArticleGeneratorService
             'provider'       => $request->provider->value,
             'model'          => $model,
             'use_web_search' => $useWebSearch,
+            'length'         => $request->length->value,
+            'format'         => $request->format->value,
         ]);
 
         return $this->processor->process(

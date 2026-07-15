@@ -6,6 +6,7 @@ namespace App\EventSubscriber;
 
 use App\Entity\AboutMe;
 use App\Entity\Article;
+use App\Entity\ArticleContent;
 use App\Entity\Project;
 use App\Entity\ProjectImage;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -57,6 +58,9 @@ class ImageDimensionsSubscriber implements EventSubscriberInterface
                                                 ->setMainImageWidth($width)
                                                 ->setMainImageHeight($height),
             $entity instanceof ProjectImage => $entity
+                                                ->setImageWidth($width)
+                                                ->setImageHeight($height),
+            $entity instanceof ArticleContent => $entity
                                                 ->setImageWidth($width)
                                                 ->setImageHeight($height),
             $entity instanceof AboutMe => $entity

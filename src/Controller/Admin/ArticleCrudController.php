@@ -166,7 +166,7 @@ class ArticleCrudController extends AbstractCrudController
                     ['id' => $article->getId()]
                 )
             )
-            ->addCssClass('btn btn-secondary btn-sm');
+            ->addCssClass('btn btn-secondary');
 
         $preview = Action::new('preview', 'Prévisualiser', 'fa fa-eye')
             ->linkToUrl(
@@ -176,7 +176,7 @@ class ArticleCrudController extends AbstractCrudController
                 )
             )
             ->setHtmlAttributes(['target' => '_blank'])
-            ->addCssClass('btn btn-info btn-sm');
+            ->addCssClass('btn btn-info');
 
         return $this->configureSoftDeleteActions(
             $this->configureCommonActions($actions)

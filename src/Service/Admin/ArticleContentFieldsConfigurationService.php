@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Admin;
 
 use App\Enum\ArticleColumnSpan;
+use App\Enum\ArticleContentFormat;
 use App\Enum\ArticleContentType;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
@@ -47,8 +48,7 @@ class ArticleContentFieldsConfigurationService extends AbstractFieldsConfigurati
                 ->addCssClass('text-center')
                 ->hideOnForm(),
             $this->createTextField('altText', 'Texte alternatif'),
-            $this->createTextEditorField('content', 'Contenu')
-                ->setNumOfRows(8),
+            $this->createTextEditorField('content', 'Contenu'),
             $this->createTextField('language', 'Langage'),
             $this->updatedAtField(),
             $this->createIsDeletedField(),
@@ -64,22 +64,43 @@ class ArticleContentFieldsConfigurationService extends AbstractFieldsConfigurati
     {
         return [
             $this->createNumberField('displayOrder', 'Ordre')->setColumns(12),
-            $this->createTypeField()->setColumns(12),
-            $this->createColumnSpanField()->setColumns(12),
-            $this->createTextEditorField('content', 'Contenu')
-                ->setNumOfRows(8)
-                ->setHelp('Paragraphe : utilisez l\'éditeur. Code : collez votre code source.')
+            $this->createTypeField()
                 ->setColumns(12)
-                ->hideOnIndex(),
+                ->setFormTypeOption('attr.data-action', 'change->articleContentTypeToggle#update')
+                ->setFormTypeOption('attr.data-articleContentTypeToggle-target', 'typeSelect'),
+            $this->createColumnSpanField()->setColumns(12),
+            $this->createFormatField()
+                ->setColumns(12)
+                ->setHelp(
+                    'HTML : balises sémantiques (h2, p, strong, em, code, ul, ol, li, blockquote). Pas de style, '
+                    . 'pas de <div>/<span>. class autorisée uniquement avec ces utilitaires Tailwind/DaisyUI '
+                    . '(seuls compilés pour ce contenu) : text-primary/secondary/accent/error/warning/success/info, '
+                    . 'font-bold, italic, underline, uppercase, tracking-wide, text-sm/base/lg/xl — toute autre '
+                    . 'classe n\'existera pas dans le CSS compilé. '
+                    . 'Markdown : ## titres, **gras**, `code`, etc. Uniquement pour les blocs Paragraphe/Résumé.'
+                )
+                ->hideOnIndex()
+                ->setFormTypeOption('row_attr.data-articleContentTypeToggle-target', 'formatGroup'),
+            $this->createTextAreaField('content', 'Contenu')
+                ->setNumOfRows(8)
+                ->setHelp('Paragraphe : HTML ou Markdown selon le format choisi. Code : collez votre code source.')
+                ->setColumns(12)
+                ->hideOnIndex()
+                ->setFormTypeOption('row_attr.data-articleContentTypeToggle-target', 'contentGroup'),
             $this->createTextField('language', 'Langage (ex: php, javascript, bash)')
                 ->setColumns(12)
                 ->setHelp('Blocs Code uniquement.')
-                ->hideOnIndex(),
-            $this->createVichImageUploadField('imageFile', 'Image')->setColumns(12)->onlyOnForms(),
+                ->hideOnIndex()
+                ->setFormTypeOption('row_attr.data-articleContentTypeToggle-target', 'languageGroup'),
+            $this->createVichImageUploadField('imageFile', 'Image')
+                ->setColumns(12)
+                ->onlyOnForms()
+                ->setFormTypeOption('row_attr.data-articleContentTypeToggle-target', 'imageGroup'),
             $this->createTextField('altText', 'Texte alternatif')
                 ->setColumns(12)
                 ->setHelp('Description de l\'image pour l\'accessibilité.')
-                ->hideOnIndex(),
+                ->hideOnIndex()
+                ->setFormTypeOption('row_attr.data-articleContentTypeToggle-target', 'altTextGroup'),
         ];
     }
 
@@ -94,6 +115,19 @@ class ArticleContentFieldsConfigurationService extends AbstractFieldsConfigurati
                     ArticleContentType::PARAGRAPH => 'Paragraphe',
                     ArticleContentType::IMAGE     => 'Image',
                     ArticleContentType::CODE      => 'Code',
+                },
+            ]);
+    }
+
+    private function createFormatField(): ChoiceField
+    {
+        return ChoiceField::new('format', 'Format du contenu')
+            ->setFormType(EnumType::class)
+            ->setFormTypeOptions([
+                'class'        => ArticleContentFormat::class,
+                'choice_label' => static fn (ArticleContentFormat $f): string => match ($f) {
+                    ArticleContentFormat::HTML     => 'HTML',
+                    ArticleContentFormat::MARKDOWN => 'Markdown',
                 },
             ]);
     }

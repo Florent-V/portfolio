@@ -41,12 +41,12 @@ final readonly class ArticleSummaryService
             : 'Write the summary in English.';
 
         $systemPrompt = $this->promptBuilder->build('summarizer/system', [
-            'LANGUAGE_INSTRUCTION' => $langInstruction,
+            'language_instruction' => $langInstruction,
         ]);
 
         $userPrompt = $this->promptBuilder->build('summarizer/user', [
-            'TITLE'   => (string) $article->getTitle(),
-            'CONTENT' => $this->buildArticleContent($article),
+            'title'   => (string) $article->getTitle(),
+            'content' => $this->buildArticleContent($article),
         ]);
 
         $messages = new MessageBag(

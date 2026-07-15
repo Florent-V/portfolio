@@ -128,7 +128,7 @@ if (Encore.isProduction()) {
           },
         },
         {
-          urlPattern: /^\/.*/, // pour toutes les pages Symfony
+          urlPattern: /^\/(?!admin).*/, // pages Symfony publiques, jamais l'admin
           handler: 'NetworkFirst',
           options: {
             cacheName: 'pages',

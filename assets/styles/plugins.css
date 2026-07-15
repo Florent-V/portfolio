@@ -3,6 +3,13 @@
 @source "../../templates/";
 @source inline("alert-{danger,success,error,warning,info}");
 @source inline("bg-red-600 bg-white/10 backdrop-blur-sm");
+
+/* Safelist for AI/manually-written article HTML content (ArticleContent.content,
+   format=html): these classes never appear in a scanned .twig file — they only
+   ever exist inside database content — so Tailwind would otherwise drop them. */
+@source inline("text-{primary,secondary,accent,error,warning,success,info}");
+@source inline("text-{sm,base,lg,xl}");
+@source inline("font-bold italic underline uppercase tracking-wide");
 @plugin "@tailwindcss/typography";
 
 @plugin "daisyui" {

@@ -59,9 +59,12 @@ Pages publiques : Home (hero/about/expérience/skills/contact), `/projects/`, `/
 - Ajouter `<link rel="canonical" href="{{ app.request.uri }}">` (ou block surchargeable)
 - Chaque page enfant surcharge ces blocs
 
-#### ❌ 1.3 hreflang (bilingue FR/EN) — *non implémenté : locale session-based, pas d'URL par langue*
-- Ajouter dans `<head>` les balises `hreflang` pour chaque route disponible dans les deux langues
-- `x-default` pointe vers la version FR
+#### 🚫 1.3 hreflang (bilingue FR/EN) — *abandonné*
+**Décision (Juin 2026) :** hreflang nécessite des URLs différentes par langue (`/fr/`, `/en/` ou `?lang=fr`).
+Sans contenu dynamique traduit (titres projets, descriptions, articles), les balises hreflang n'ont aucune valeur pour Google — Google indexerait deux URLs avec le même contenu.
+Traduire le contenu dynamique (DB) représente des semaines de travail pour un portfolio ciblant principalement le marché français.
+**La traduction navigateur (Google Translate) suffit pour les visiteurs internationaux occasionnels.**
+> Réévaluer si le portfolio passe à une cible internationale explicite.
 
 ---
 
@@ -114,17 +117,27 @@ Pages publiques : Home (hero/about/expérience/skills/contact), `/projects/`, `/
 - URLs paginées : `/articles/?page=2` avec `rel="next"` / `rel="prev"` dans `<head>`
 - Éviter les pages vides dans le sitemap
 
-#### ❌ 3.3 Liens internes — *non implémenté*
-- Sur la home : lien "Voir tous mes projets" → `/projects/`
-- Sur chaque article : section "Projets liés" si des tags correspondent
-- Sur chaque projet : section "Articles liés" via tags communs
-- Fil d'Ariane visible (Breadcrumb HTML + schema)
+#### ✅ 3.3 Liens internes — *implémenté (Juin 2026)*
+- `Project` : nouvelle relation `ManyToMany` vers `Tag` (table `project_tag`, migration appliquée)
+- Tags exposés dans EasyAdmin (formulaire, recherche, filtres) avec auto-création à la volée
+- `ArticleRepository::findPublishedByTags()` + `ProjectRepository::findPublishedByTags()` (limit 5)
+- `ArticleShowController` → passe `relatedProjects` au template
+- `ProjectShowBySlugController` → passe `relatedArticles` au template
+- `article/show.html.twig` : section "Projets liés" (si tags communs)
+- `project/show.html.twig` : section "Articles liés" (si tags communs)
+- Breadcrumb HTML visible ajouté sur les deux pages (en plus du JSON-LD existant)
 
-#### ⚠️ 3.4 Core Web Vitals — *partiellement implémenté*
-- Auditer avec Lighthouse (LCP, CLS, FID/INP)
-- Images : ajouter `loading="lazy"` + `width`/`height` explicites sur toutes les `<img>`
-- Vérifier que AOS (animations on scroll) ne bloque pas le LCP
+> **Note :** les projets existants n'ont aucun tag → sections vides jusqu'à ajout manuel dans EasyAdmin.
+
+#### ✅ 3.4 Core Web Vitals — *implémenté (Juin 2026)*
+- `loading="lazy"` et `fetchpriority="high"` déjà en place
+- Champs `mainImageWidth`/`mainImageHeight` ajoutés sur `Project`, `Article`, `AboutMe`
+- Champs `imageWidth`/`imageHeight` ajoutés sur `ProjectImage`
+- `ImageDimensionsSubscriber` : écoute `vich_uploader.post_upload` → `getimagesize()` → stocke en base automatiquement
+- Templates mis à jour avec attributs `width`/`height` conditionnels sur tous les `<img>` (évite le CLS)
 - Minification CSS/JS déjà gérée par Webpack Encore ✓
+
+> **Note :** les images déjà uploadées n'ont pas de dimensions en base. Il faut les re-uploader depuis EasyAdmin pour déclencher le subscriber. Les nouvelles images sont traitées automatiquement.
 
 ---
 
@@ -185,7 +198,7 @@ Pages publiques : Home (hero/about/expérience/skills/contact), `/projects/`, `/
 
 ## État du code — Juin 2026
 
-### ✅ Implémenté (branch `feat/seo-improvements`)
+### ✅ Implémenté (phases 1-3 complètes)
 
 | Fichier | Description |
 |---|---|
@@ -194,19 +207,27 @@ Pages publiques : Home (hero/about/expérience/skills/contact), `/projects/`, `/
 | `templates/seo/sitemap.xml.twig` | Sitemap XML avec lastmod |
 | `templates/seo/robots.txt.twig` | Robots.txt pointant vers sitemap |
 | `templates/base.html.twig` | `lang=`, meta description dynamique, OG/Twitter/canonical/JSON-LD blocks |
-| `templates/home/index.html.twig` | Titre optimisé, meta, og:image, JSON-LD Person, fetchpriority LCP |
-| `templates/article/index.html.twig` | Titre, meta, JSON-LD CollectionPage, pagination UI, rel prev/next |
-| `templates/article/show.html.twig` | Titre, og:type article, og:image, JSON-LD Article + Breadcrumb |
+| `templates/home/index.html.twig` | Titre optimisé, meta, og:image, JSON-LD Person, fetchpriority LCP, width/height photo profil |
+| `templates/article/index.html.twig` | Titre, meta, JSON-LD CollectionPage, pagination UI, rel prev/next, width/height img |
+| `templates/article/show.html.twig` | Titre, og:type article, og:image, JSON-LD Article + Breadcrumb, breadcrumb HTML, section "Projets liés", width/height img |
 | `templates/project/index.html.twig` | Titre, meta, JSON-LD CollectionPage, lazy loading |
-| `templates/project/show.html.twig` | og:image, JSON-LD CreativeWork + Breadcrumb, lazy loading |
-| `src/Entity/Project.php` | Champ `slug` + `#[Gedmo\Slug(fields: ['title'])]` |
+| `templates/project/show.html.twig` | og:image, JSON-LD CreativeWork + Breadcrumb, breadcrumb HTML, section "Articles liés", lazy loading, width/height img |
+| `src/Entity/Project.php` | Champ `slug`, relation `tags` ManyToMany, champs `mainImageWidth`/`mainImageHeight` |
+| `src/Entity/Article.php` | Champs `mainImageWidth`/`mainImageHeight` |
+| `src/Entity/AboutMe.php` | Champs `profilePictureWidth`/`profilePictureHeight` |
+| `src/Entity/ProjectImage.php` | Champs `imageWidth`/`imageHeight` |
 | `src/Controller/ProjectIndexController.php` | Route `/projects/` |
 | `src/Controller/ProjectShowByIdController.php` | Redirection 301 `/projects/{id}` → `/projects/{slug}` |
-| `src/Controller/ProjectShowBySlugController.php` | Route `/projects/{slug}` |
-| `src/Repository/ArticleRepository.php` | `countPublished()` pour pagination |
+| `src/Controller/ProjectShowBySlugController.php` | Route `/projects/{slug}`, passe `relatedArticles` |
+| `src/Controller/ArticleShowController.php` | Route `/articles/{slug}`, passe `relatedProjects` |
+| `src/Controller/Admin/ProjectCrudController.php` | Tags dans EasyAdmin (formulaire, filtres, auto-création) |
+| `src/Service/Admin/ProjectFieldsConfigurationService.php` | Champ tags dans formulaire/détail projet |
+| `src/Repository/ArticleRepository.php` | `countPublished()`, `findPublishedByTags()` |
+| `src/Repository/ProjectRepository.php` | `findPublishedByTags()` |
+| `src/EventSubscriber/ImageDimensionsSubscriber.php` | Stocke width/height après upload VichUploader |
 | `src/Controller/ArticleIndexController.php` | Pagination 9 articles/page avec `?page=N` |
-| `src/Controller/ArticleShowController.php` | Route `/articles/{slug}` |
 | `migrations/Version20260608000000.php` | Ajout colonne `slug` sur table `project` |
+| `migrations/Version20260624225210.php` | Table `project_tag`, colonnes width/height sur project/article/about_me/project_image |
 
 ---
 
@@ -269,27 +290,33 @@ php bin/console doctrine:query:sql "UPDATE project SET slug = LOWER(REGEXP_REPLA
 
 ---
 
-## Reste à faire (code)
+## État des tâches code — Juin 2026
 
-### ❌ 1.3 hreflang
-**Prérequis :** migrer le système de locale de session-based vers URL-based (`/fr/`, `/en/`).
-Sans URL différente par langue, les balises hreflang n'ont aucune valeur pour Google.
-> Option pragmatique : ajouter un paramètre `?lang=fr` et un `LocaleSubscriber` qui lit ce paramètre — permet d'implémenter hreflang sans restructurer toutes les routes.
+| Tâche | Statut | Notes |
+|---|---|---|
+| 1.1 robots.txt + sitemap.xml | ✅ Fait | |
+| 1.2 base.html.twig refonte SEO | ✅ Fait | |
+| 1.3 hreflang | 🚫 Abandonné | Voir décision ci-dessus |
+| 2.1 Slugs projets | ✅ Fait | |
+| 2.2 JSON-LD Person (home) | ✅ Fait | |
+| 2.3 JSON-LD Article | ✅ Fait | |
+| 2.4 JSON-LD CreativeWork (project) | ✅ Fait | |
+| 2.5 JSON-LD BreadcrumbList | ✅ Fait | JSON-LD uniquement à l'origine |
+| 2.6 Alt text images | ✅ Fait | |
+| 3.1 Titles/meta descriptions | ✅ Fait | |
+| 3.2 Pagination articles | ✅ Fait | |
+| 3.3 Liens internes + breadcrumb HTML | ✅ Fait | Tags ajoutés sur Project, sections liées, breadcrumb visible |
+| 3.4 Core Web Vitals (dimensions img) | ✅ Fait | Subscriber VichUploader, re-upload requis pour images existantes |
 
-### ❌ 3.3 Liens internes
-Ce qui manque :
-- Section "Articles liés" sur `project/show.html.twig` — articles partageant un tag avec le projet
-- Section "Projets liés" sur `article/show.html.twig` — projets partageant un tag avec l'article
-- Breadcrumb HTML visible (actuellement breadcrumb uniquement en JSON-LD, pas affiché)
+## Actions manuelles restantes
 
-**Effort estimé :** ~3h
-- Ajouter méthode `findByTag()` dans `ArticleRepository` et `ProjectRepository`
-- Injecter les résultats depuis les contrôleurs `ArticleShowController` et `ProjectShowBySlugController`
-- Ajouter les sections HTML dans les templates
+### 🔴 Immédiat — contenu
+- **Ajouter des tags aux projets existants** via EasyAdmin > Projets > formulaire
+  → Sans tags sur les projets, les sections "Articles liés" / "Projets liés" restent vides
+- **Re-uploader les images existantes** (projets, articles, photo de profil) depuis EasyAdmin
+  → Pour remplir les colonnes `width`/`height` en base et activer les attributs CLS sur les `<img>`
 
-### ⚠️ 3.4 Core Web Vitals — dimensions explicites manquantes
-`loading="lazy"` et `fetchpriority="high"` sont en place.
-Ce qui reste :
-- Ajouter `width` et `height` explicites sur les `<img>` pour éviter le CLS (Cumulative Layout Shift)
-- Les dimensions ne peuvent pas être hardcodées en Twig sans connaître les dimensions réelles des images uploadées
-- **Solution recommandée :** stocker `width`/`height` dans les entités `Project`, `Article`, `AboutMe` lors de l'upload (via VichUploader listener) et les exposer dans les templates
+### 🟠 Post-déploiement
+- Google Search Console : soumettre le sitemap, surveiller la couverture d'indexation
+- Vérifier `/robots.txt` et `/sitemap.xml` en production
+- Mettre à jour les profils externes (GitHub bio, LinkedIn)

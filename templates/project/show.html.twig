@@ -199,6 +199,31 @@
                         </div>
                     {% endif %}
 
+                    {% if latestProjects is defined and latestProjects is not empty %}
+                        <div class="border-t pt-6 mt-6" data-aos="fade-up" data-aos-delay="675">
+                            <h2 class="text-xl font-semibold text-secondary mb-4">À découvrir aussi</h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                {% for latestProject in latestProjects %}
+                                    <a href="{{ path('app_project_show_by_slug', {slug: latestProject.slug}) }}"
+                                       class="flex items-start gap-3 p-4 rounded-lg bg-base-200 hover:bg-base-300 transition-colors group">
+                                        {% if latestProject.mainImageName %}
+                                            <img src="{{ asset('uploads/images/projects/' ~ latestProject.mainImageName) }}"
+                                                 alt="{{ latestProject.title }}"
+                                                 loading="lazy"
+                                                 class="w-16 h-16 object-cover rounded shrink-0">
+                                        {% endif %}
+                                        <div class="min-w-0">
+                                            <p class="font-medium text-base-content group-hover:text-primary transition-colors line-clamp-2">{{ latestProject.title }}</p>
+                                            {% if latestProject.startDate %}
+                                                <p class="text-xs text-base-content/60 mt-1">{{ latestProject.startDate|date('Y') }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
                     <div class="text-center border-t pt-6 mt-6" data-aos="fade-up" data-aos-delay="700">
                         <a href="{{ path('app_project_index') }}" class="btn btn-ghost">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18" /></svg>

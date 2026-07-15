@@ -11,6 +11,7 @@ final readonly class ContentBlockData
         public string $content,
         public int $displayOrder,
         public ?string $language = null,
+        public string $format = 'html',
     ) {
     }
 }

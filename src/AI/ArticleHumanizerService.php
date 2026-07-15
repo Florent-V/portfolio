@@ -30,13 +30,14 @@ final readonly class ArticleHumanizerService
         $model = $this->providerRegistry->getModelName($request->provider);
 
         $systemPrompt = $this->promptBuilder->build('humanizer/system', [
-            'LANGUAGE_INSTRUCTION' => 'fr' === $request->language
+            'language_instruction' => 'fr' === $request->language
                 ? 'The article must be written in French. Preserve the original language of any code blocks.'
                 : 'The article must be written in English. Preserve the original language of any code blocks.',
+            'format' => $request->format->value,
         ]);
 
         $userPrompt = $this->promptBuilder->build('humanizer/user', [
-            'RAW_TEXT' => $request->rawText,
+            'raw_text' => $request->rawText,
         ]);
 
         $messages = new MessageBag(
@@ -48,6 +49,7 @@ final readonly class ArticleHumanizerService
             'provider'     => $request->provider->value,
             'model'        => $model,
             'language'     => $request->language,
+            'format'       => $request->format->value,
             'raw_text_len' => \strlen($request->rawText),
         ]);
 

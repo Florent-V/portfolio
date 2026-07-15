@@ -38,7 +38,7 @@
 
                 {{ form_start(form) }}
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                     <div class="form-control">
                         {{ form_label(form.provider, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
                         {{ form_widget(form.provider, {attr: {class: 'select select-bordered w-full'}}) }}
@@ -48,6 +48,11 @@
                         {{ form_label(form.language, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
                         {{ form_widget(form.language, {attr: {class: 'select select-bordered w-full'}}) }}
                         {{ form_errors(form.language) }}
+                    </div>
+                    <div class="form-control">
+                        {{ form_label(form.format, null, {label_attr: {class: 'block font-medium mb-1 text-base-content'}}) }}
+                        {{ form_widget(form.format, {attr: {class: 'select select-bordered w-full'}}) }}
+                        {{ form_errors(form.format) }}
                     </div>
                 </div>
 

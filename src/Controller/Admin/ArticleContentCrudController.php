@@ -38,7 +38,8 @@ class ArticleContentCrudController extends AbstractCrudController
         return $this->configureCommonCrud($crud, 'Bloc de contenu', 'Blocs de contenu')
             ->setSearchFields(['article.title', 'language', 'altText'])
             ->setDefaultSort(['article' => 'ASC', 'displayOrder' => 'ASC'])
-            ->addFormTheme('@VichUploader/Form/fields.html.twig');
+            ->addFormTheme('@VichUploader/Form/fields.html.twig')
+            ->setFormOptions(['attr' => ['data-controller' => 'articleContentTypeToggle']]);
     }
 
     #[\Override]

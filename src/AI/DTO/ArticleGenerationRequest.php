@@ -6,6 +6,8 @@ namespace App\AI\DTO;
 
 use App\AI\Enum\AiProvider;
 use App\Entity\User;
+use App\Enum\ArticleContentFormat;
+use App\Enum\ArticleLength;
 
 final readonly class ArticleGenerationRequest
 {
@@ -16,6 +18,8 @@ final readonly class ArticleGenerationRequest
         public ?string $extraInstructions,
         public User $author,
         public AiProvider $provider = AiProvider::OPENROUTER,
+        public ArticleLength $length = ArticleLength::MEDIUM,
+        public ArticleContentFormat $format = ArticleContentFormat::HTML,
     ) {
     }
 }
