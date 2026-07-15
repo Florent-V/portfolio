@@ -31,10 +31,13 @@ display_order must be sequential integers starting at 1, with NO gaps.
 
 Every content block object must include "format": "{{ format }}" — always this exact value, never mix formats within the same article.
 
+Also generate "tags": an array of exactly 5 relevant tags for the article — short (1-3 words), lowercase, no accents, in the same language as the article content, capturing the main topics/technologies/themes covered.
+
 REQUIRED JSON SCHEMA:
 {
   "title": "string — article title, clear and engaging",
   "slug": "string — URL-friendly kebab-case version of the title (lowercase, hyphens only, no accents)",
+  "tags": ["string — exactly 5 relevant tags, short, lowercase"],
   "content_blocks": [
     {
       "type": "paragraph | code",

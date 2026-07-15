@@ -8,11 +8,13 @@ final readonly class GeneratedArticleData
 {
     /**
      * @param ContentBlockData[] $contentBlocks
+     * @param string[]           $tags
      */
     public function __construct(
         public string $title,
         public string $slug,
         public array $contentBlocks,
+        public array $tags = [],
     ) {
     }
 }

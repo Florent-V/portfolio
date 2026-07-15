@@ -10,6 +10,7 @@ use App\AI\DTO\GeneratedArticleData;
 use App\Entity\User;
 use App\Enum\ArticleContentFormat;
 use App\Repository\ArticleRepository;
+use App\Repository\TagRepository;
 use PHPUnit\Framework\TestCase;
 
 final class ArticleResponseMapperTest extends TestCase
@@ -19,7 +20,9 @@ final class ArticleResponseMapperTest extends TestCase
         $articleRepository = $this->createMock(ArticleRepository::class);
         $articleRepository->method('findOneBy')->willReturn(null);
 
-        $mapper = new ArticleResponseMapper($articleRepository);
+        $tagRepository = $this->createMock(TagRepository::class);
+
+        $mapper = new ArticleResponseMapper($articleRepository, $tagRepository);
 
         $data = new GeneratedArticleData(
             title: 'Titre',

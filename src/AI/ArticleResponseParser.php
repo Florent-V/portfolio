@@ -42,7 +42,25 @@ final class ArticleResponseParser
             title: (string) $data['title'],
             slug: (string) $data['slug'],
             contentBlocks: $contentBlocks,
+            tags: $this->extractTags($data),
         );
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return string[]
+     */
+    private function extractTags(array $data): array
+    {
+        if (!isset($data['tags']) || !\is_array($data['tags'])) {
+            return [];
+        }
+
+        $tags = array_map(static fn (mixed $tag): string => trim((string) $tag), $data['tags']);
+        $tags = array_values(array_unique(array_filter($tags, static fn (string $tag): bool => '' !== $tag)));
+
+        return \array_slice($tags, 0, 5);
     }
 
     private function extractJson(string $raw): string

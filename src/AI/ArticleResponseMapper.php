@@ -13,12 +13,14 @@ use App\Enum\ArticleColumnSpan;
 use App\Enum\ArticleContentFormat;
 use App\Enum\ArticleContentType;
 use App\Repository\ArticleRepository;
+use App\Repository\TagRepository;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 final readonly class ArticleResponseMapper
 {
     public function __construct(
         private ArticleRepository $articleRepository,
+        private TagRepository $tagRepository,
     ) {
     }
 
@@ -32,6 +34,10 @@ final readonly class ArticleResponseMapper
 
         foreach ($data->contentBlocks as $blockData) {
             $article->addContentElement($this->mapBlock($blockData));
+        }
+
+        foreach ($data->tags as $tagName) {
+            $article->addTag($this->tagRepository->findOneByNameOrCreate($tagName));
         }
 
         return $article;
