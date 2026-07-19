@@ -1,0 +1,184 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulateur Base ou Heures Creuses : quelle option est rentable ? — Florent Vasseur{% endblock %}
+
+{% block meta_description %}Simulateur gratuit pour comparer l'option Base et l'option Heures Pleines / Heures Creuses : seuil de rentabilité, comparaison sur votre consommation réelle et analyse de votre export CSV Enedis (Linky).{% endblock %}
+
+{% block json_ld %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "WebApplication",
+            "@id": "{{ url('app_simulator_hphc') }}#app",
+            "name": "Simulateur Base ou Heures Creuses",
+            "url": "{{ url('app_simulator_hphc') }}",
+            "description": "Comparateur gratuit entre l'option Base et l'option Heures Pleines / Heures Creuses : calcul du seuil de rentabilité, comparaison sur consommation réelle et analyse d'un export CSV Enedis (Linky).",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Web",
+            "browserRequirements": "Requires JavaScript",
+            "inLanguage": "fr",
+            "isAccessibleForFree": true,
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR"
+            },
+            "author": {
+                "@type": "Person",
+                "name": "Florent Vasseur",
+                "url": "{{ url('app_home') }}"
+            }
+        },
+        {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Accueil", "item": "{{ url('app_home') }}"},
+                {"@type": "ListItem", "position": 2, "name": "Simulateur Base ou Heures Creuses", "item": "{{ url('app_simulator_hphc') }}"}
+            ]
+        },
+        {
+            "@type": "FAQPage",
+            "itemListElement": [
+                {
+                    "@type": "Question",
+                    "name": "L'option Heures Creuses est-elle toujours rentable ?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Non. L'option HP/HC n'est rentable que si une part suffisante de votre consommation a lieu pendant les heures creuses, car le prix du kWh en heures pleines est plus élevé que le tarif Base. Le simulateur calcule ce seuil précisément à partir de vos tarifs."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Quels sont les tarifs réglementés EDF en juillet 2026 pour un compteur 6 kVA ?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "En juillet 2026, pour un compteur 6 kVA : option Base environ 0,1940 € TTC/kWh avec un abonnement d'environ 187,80 €/an ; option Heures Pleines/Heures Creuses environ 0,2065 €/kWh en heures pleines et 0,1579 €/kWh en heures creuses, pour un abonnement du même ordre. Ces valeurs sont pré-remplies dans le simulateur et restent modifiables."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Mes données de consommation sont-elles envoyées sur un serveur ?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Non. Le fichier CSV (export Enedis/Linky) est lu et analysé entièrement dans votre navigateur. Aucune donnée de consommation n'est transmise ni stockée sur un serveur."
+                    }
+                }
+            ]
+        }
+    ]
+}
+</script>
+{% endblock %}
+
+{% block body %}
+    <div class="bg-base-200 py-12 md:py-20 min-h-screen">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+
+            <nav aria-label="Fil d'Ariane" class="max-w-5xl mx-auto mb-4 text-sm text-base-content/60">
+                <ol class="flex flex-wrap items-center gap-1">
+                    <li><a href="{{ path('app_home') }}" class="hover:text-primary transition-colors">Accueil</a></li>
+                    <li aria-hidden="true" class="mx-1">/</li>
+                    <li aria-current="page" class="text-base-content font-medium truncate max-w-xs">Simulateur Base ou Heures Creuses</li>
+                </ol>
+            </nav>
+
+            <article class="max-w-5xl mx-auto bg-base-100 shadow-xl rounded-lg overflow-hidden" data-aos="fade-up">
+                <div class="p-6 md:p-8 lg:p-10">
+
+                    {# ---------- En-tête : titre + cadran décoratif ---------- #}
+                    <header class="flex flex-col-reverse sm:flex-row sm:items-center gap-6 mb-6">
+                        <div class="flex-1">
+                            <p class="text-xs font-bold text-secondary uppercase tracking-widest mb-2" data-aos="fade-left" data-aos-delay="100">Électricité · France · Outil gratuit</p>
+                            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3" data-aos="fade-left" data-aos-delay="150">Simulateur : option Base ou Heures Creuses ?</h1>
+                            <p class="text-base-content/70" data-aos="fade-left" data-aos-delay="200">
+                                Base ou Heures Pleines / Heures Creuses : on regarde le calcul, pas le pif.
+                                Trois façons de le faire — le seuil de rentabilité, votre consommation réelle,
+                                ou l'analyse complète de votre export CSV Enedis (Linky).
+                            </p>
+                        </div>
+                        {# Cadran 24 h décoratif : heures creuses (22h-06h) en info, heures pleines en warning #}
+                        <div class="shrink-0 self-center" aria-hidden="true" data-aos="zoom-in">
+                            <div class="w-28 h-28 md:w-32 md:h-32 rounded-full grid place-items-center"
+                                 style="background: conic-gradient(var(--color-info) 0deg 90deg, var(--color-warning) 90deg 330deg, var(--color-info) 330deg 360deg);">
+                                <div class="w-16 h-16 md:w-[4.5rem] md:h-[4.5rem] rounded-full bg-base-100 grid place-items-center text-xs font-bold text-base-content/60">24&nbsp;h</div>
+                            </div>
+                            <div class="flex justify-center gap-3 mt-2 text-xs text-base-content/60">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-warning inline-block"></span>HP</span>
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-info inline-block"></span>HC</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    {# ---------- Contexte tarifaire (style « Points clés » des articles) ---------- #}
+                    <div class="bg-base-200 border-l-4 border-primary rounded-lg p-5 mb-8" data-aos="fade-up" data-aos-delay="250">
+                        <h2 class="text-sm font-bold text-primary uppercase tracking-wide mb-3">Tarifs pré-remplis — EDF juillet 2026, compteur 6 kVA</h2>
+                        <ul class="text-sm text-base-content [&_strong]:text-primary list-disc pl-5 space-y-2">
+                            <li><strong>Option Base</strong> : environ 0,1940&nbsp;€/kWh, abonnement autour de 187,80&nbsp;€/an (soit ~15,65&nbsp;€/mois).</li>
+                            <li><strong>Option HP/HC</strong> : environ 0,2065&nbsp;€/kWh en heures pleines et 0,1579&nbsp;€/kWh en heures creuses, abonnement du même ordre.</li>
+                        </ul>
+                        <p class="text-sm text-base-content/70 mt-3">
+                            Toutes les valeurs restent modifiables : adaptez-les à votre contrat ou votre puissance souscrite.
+                            La logique du calcul est expliquée dans l'article
+                            <a class="link link-primary" href="{{ path('app_article_show', {slug: 'base-ou-heures-creuses-le-calcul-que-presque-personne-ne-fait'}) }}">Base ou heures creuses : le calcul que presque personne ne fait</a>.
+                        </p>
+                    </div>
+
+                    {# ---------- Simulateur (Vue) ---------- #}
+                    <div {{ vue_component('SimulatorHpHc') }}>
+                        <div class="flex items-center justify-center p-10">
+                            <span class="loading loading-spinner loading-lg text-primary"></span>
+                        </div>
+                        <noscript>
+                            <p class="alert alert-warning">Le simulateur nécessite JavaScript pour fonctionner.</p>
+                        </noscript>
+                    </div>
+
+                    {# ---------- FAQ visible (doit refléter le FAQPage JSON-LD) ---------- #}
+                    <section class="mt-12" data-aos="fade-up">
+                        <h2 class="text-lg md:text-xl font-semibold text-secondary mb-3">Questions fréquentes</h2>
+
+                        <div class="collapse collapse-arrow bg-base-200 mb-2">
+                            <input type="checkbox">
+                            <h3 class="collapse-title font-semibold text-base">L'option Heures Creuses est-elle toujours rentable ?</h3>
+                            <div class="collapse-content text-sm">
+                                <p>Non. L'option HP/HC n'est rentable que si une part suffisante de votre consommation a lieu
+                                pendant les heures creuses, car le prix du kWh en heures pleines est plus élevé que le tarif Base.
+                                Le simulateur calcule ce seuil précisément à partir de vos tarifs.</p>
+                            </div>
+                        </div>
+
+                        <div class="collapse collapse-arrow bg-base-200 mb-2">
+                            <input type="checkbox">
+                            <h3 class="collapse-title font-semibold text-base">Quels sont les tarifs réglementés EDF en juillet 2026 pour un compteur 6 kVA ?</h3>
+                            <div class="collapse-content text-sm">
+                                <p>Option Base : environ 0,1940&nbsp;€ TTC/kWh, abonnement autour de 187,80&nbsp;€/an.
+                                Option HP/HC : environ 0,2065&nbsp;€/kWh en heures pleines et 0,1579&nbsp;€/kWh en heures creuses,
+                                abonnement du même ordre. Ces valeurs sont pré-remplies dans le simulateur et restent modifiables.</p>
+                            </div>
+                        </div>
+
+                        <div class="collapse collapse-arrow bg-base-200 mb-2">
+                            <input type="checkbox">
+                            <h3 class="collapse-title font-semibold text-base">Mes données de consommation sont-elles envoyées sur un serveur ?</h3>
+                            <div class="collapse-content text-sm">
+                                <p>Non. Le fichier CSV (export Enedis/Linky) est lu et analysé entièrement dans votre navigateur.
+                                Aucune donnée de consommation n'est transmise ni stockée sur un serveur.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {# ---------- Lien retour article ---------- #}
+                    <div class="border-t border-base-300 pt-8 mt-8">
+                        <a href="{{ path('app_article_show', {slug: 'base-ou-heures-creuses-le-calcul-que-presque-personne-ne-fait'}) }}"
+                           class="btn btn-outline btn-secondary btn-md gap-2">
+                            <i class="fa fa-arrow-left"></i>
+                            Lire l'article : le calcul expliqué
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+{% endblock %}
