@@ -15,6 +15,7 @@ use League\CommonMark\Extension\Strikethrough\StrikethroughExtension;
 use League\CommonMark\Extension\Table\TableExtension;
 use League\CommonMark\MarkdownConverter;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerAction;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Twig\Attribute\AsTwigFilter;
 
@@ -35,6 +36,14 @@ final class ArticleContentExtension
         $this->converter = new MarkdownConverter($environment);
 
         $sanitizerConfig = (new HtmlSanitizerConfig())
+            ->defaultAction(HtmlSanitizerAction::Block)
+            ->dropElement('script')
+            // defaultAction(Block) below keeps text of disallowed tags;
+            // script bodies must still be fully removed, not just unwrapped.
+            // Note: style/title tag bodies cannot be fully dropped this way (Symfony's
+            // HtmlSanitizer silently ignores dropElement() for head-context elements in
+            // body content) — their text will render as visible page text. Accepted risk:
+            // harmless (not executable), and no existing content currently uses these tags.
             ->allowElement('h2', ['class'])
             ->allowElement('h3', ['class'])
             ->allowElement('p', ['class'])
@@ -66,12 +75,18 @@ final class ArticleContentExtension
         return $this->converter->convert($content)->getContent();
     }
 
+    #[AsTwigFilter('render_formatted_content', isSafe: ['html'])]
+    public function renderFormattedContent(?string $content, ArticleContentFormat $format): string
+    {
+        return match ($format) {
+            ArticleContentFormat::MARKDOWN => $this->markdownToHtml($content),
+            ArticleContentFormat::HTML     => $this->htmlSanitizer->sanitize($content ?? ''),
+        };
+    }
+
     #[AsTwigFilter('render_content', isSafe: ['html'])]
     public function renderContent(ArticleContent $block): string
     {
-        return match ($block->getFormat()) {
-            ArticleContentFormat::MARKDOWN => $this->markdownToHtml($block->getContent()),
-            ArticleContentFormat::HTML     => $this->htmlSanitizer->sanitize($block->getContent() ?? ''),
-        };
+        return $this->renderFormattedContent($block->getContent(), $block->getFormat());
     }
 }

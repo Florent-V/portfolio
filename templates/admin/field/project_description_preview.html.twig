@@ -1,0 +1,6 @@
+{% block field %}
+    {% set project = entity.getInstance() %}
+    <div class="prose">
+        {{ project.description|render_formatted_content(project.format) }}
+    </div>
+{% endblock %}
