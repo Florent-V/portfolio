@@ -29,7 +29,7 @@ class ArticleContent
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $content = null;
 
-    #[ORM\Column(type: 'string', enumType: ArticleContentFormat::class)]
+    #[ORM\Column(type: 'string', enumType: ArticleContentFormat::class, options: ['default' => 'html'])]
     private ArticleContentFormat $format = ArticleContentFormat::HTML;
 
     #[ORM\Column]

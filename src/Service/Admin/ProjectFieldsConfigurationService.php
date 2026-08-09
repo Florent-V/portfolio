@@ -6,13 +6,16 @@ namespace App\Service\Admin;
 
 use App\Controller\Admin\TechnologyCrudController;
 use App\Entity\Project;
+use App\Enum\ArticleContentFormat;
 use App\Form\ProjectImageFormType;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 
 class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationService
 {
@@ -45,8 +48,11 @@ class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationServi
                 '/uploads/images/projects'
             ),
             $this->createTextField('title', 'Titre'),
-            $this->createTextAreaField('description', 'Description')
-                ->renderAsHtml(),
+            $this->createFormatField()
+                ->onlyOnDetail(),
+            Field::new('description', 'Description')
+                ->setTemplatePath('admin/field/project_description_preview.html.twig')
+                ->onlyOnDetail(),
             $this->createTechnologiesField(),
             $this->createTagsDetailField(),
             $this->createUrlField('url', 'URL du projet')
@@ -80,23 +86,43 @@ class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationServi
         if (null !== $context && Crud::PAGE_EDIT === $context->getCrud()->getCurrentPage()) {
             $fields[] = $this->createTextField('slug', 'Slug')
                 ->setFormTypeOption('disabled', true)
+                ->setColumns(12)
                 ->setHelp('Généré automatiquement — non modifiable.');
         }
 
         return array_merge($fields, [
-            $this->createTextField('title', 'Titre'),
-            $this->createTextEditorField('description', 'Description')
-                ->setNumOfRows(15),
-            $this->createTechnologiesField(),
-            $this->createTagsField(),
+            $this->createTextField('title', 'Titre')
+                ->setColumns(12),
+            $this->createFormatField()
+                ->setColumns(12)
+                ->setHelp(
+                    'HTML : balises sémantiques (h2, p, strong, em, code, ul, ol, li, blockquote). Pas de style, '
+                    . 'pas de <div>/<span>. class autorisée uniquement avec ces utilitaires Tailwind/DaisyUI '
+                    . '(seuls compilés pour ce contenu) : text-primary/secondary/accent/error/warning/success/info, '
+                    . 'font-bold, italic, underline, uppercase, tracking-wide, text-sm/base/lg/xl — toute autre '
+                    . 'classe n\'existera pas dans le CSS compilé. '
+                    . 'Markdown : ## titres, **gras**, `code`, etc.'
+                    . ' Note : le Markdown n\'est pas filtré comme le HTML — évitez d\'y coller du HTML brut '
+                    . 'non fiable.'
+                ),
+            $this->createTextAreaField('description', 'Description')
+                ->setColumns(12)
+                ->setNumOfRows(20)
+                ->setHelp('Contenu en HTML ou Markdown selon le format choisi ci-dessus.'),
+            $this->createTechnologiesField()
+                ->setColumns(12),
+            $this->createTagsField()
+                ->setColumns(12),
             $this->createUrlField('url', 'URL du projet')
+                ->setColumns(12)
                 ->setHelp('URL publique du projet'),
             $this->createUrlField('repositoryUrl', 'URL du dépôt')
+                ->setColumns(12)
                 ->setHelp('GitHub, GitLab, etc.'),
             $this->createVichImageUploadField('mainImageFile', 'Image Principale')
                 ->setHelp('Image principale du projet (JPEG, PNG, WEBP). Max 5MB.')
                 ->setRequired(null !== $context && Crud::PAGE_NEW === $context->getCrud()->getCurrentPage())
-                ->setColumns(6),
+                ->setColumns(12),
             $this->createDateField('startDate', 'Date de début')
                 ->renderAsNativeWidget(),
             $this->createDateField('endDate', 'Date de fin')
@@ -144,14 +170,29 @@ class ProjectFieldsConfigurationService extends AbstractFieldsConfigurationServi
         return $this->createAssociationField('technologies', 'Technologies')
             ->setCrudController(TechnologyCrudController::class)
             ->setTemplatePath('admin/fields/project_technologies.html.twig')
-            ->setFormTypeOptions(['by_reference' => false]);
+            ->setFormTypeOptions(['by_reference' => false])
+            ->setColumns(12);
     }
 
     private function createProjectImagesField(): CollectionField
     {
         return CollectionField::new('projectImages', 'Galerie d\'images')
             ->setEntryType(ProjectImageFormType::class)
+            ->setColumns(12)
             ->setFormTypeOptions(['by_reference' => false])
             ->setHelp('Images supplémentaires pour la galerie du projet.');
+    }
+
+    private function createFormatField(): ChoiceField
+    {
+        return ChoiceField::new('format', 'Format de la description')
+            ->setFormType(EnumType::class)
+            ->setFormTypeOptions([
+                'class'        => ArticleContentFormat::class,
+                'choice_label' => static fn (ArticleContentFormat $f): string => match ($f) {
+                    ArticleContentFormat::HTML     => 'HTML',
+                    ArticleContentFormat::MARKDOWN => 'Markdown',
+                },
+            ]);
     }
 }
