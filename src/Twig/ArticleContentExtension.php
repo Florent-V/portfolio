@@ -47,6 +47,7 @@ final class ArticleContentExtension
             ->allowElement('h2', ['class'])
             ->allowElement('h3', ['class'])
             ->allowElement('p', ['class'])
+            ->allowElement('a', ['href', 'title', 'target', 'class'])
             ->allowElement('strong', ['class'])
             ->allowElement('em', ['class'])
             ->allowElement('code', ['class'])
@@ -72,7 +73,7 @@ final class ArticleContentExtension
             return '';
         }
 
-        return $this->converter->convert($content)->getContent();
+        return $this->htmlSanitizer->sanitize($this->converter->convert($content)->getContent());
     }
 
     #[AsTwigFilter('render_formatted_content', isSafe: ['html'])]
