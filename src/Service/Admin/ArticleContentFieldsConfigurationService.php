@@ -78,6 +78,8 @@ class ArticleContentFieldsConfigurationService extends AbstractFieldsConfigurati
                     . 'font-bold, italic, underline, uppercase, tracking-wide, text-sm/base/lg/xl — toute autre '
                     . 'classe n\'existera pas dans le CSS compilé. '
                     . 'Markdown : ## titres, **gras**, `code`, etc. Uniquement pour les blocs Paragraphe/Résumé.'
+                    . ' Note : le Markdown n\'est pas filtré comme le HTML — évitez d\'y coller du HTML brut '
+                    . 'non fiable.'
                 )
                 ->hideOnIndex()
                 ->setFormTypeOption('row_attr.data-articleContentTypeToggle-target', 'formatGroup'),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Entity\Trait\BlameableEntity;
+use App\Enum\ArticleContentFormat;
 use App\Repository\ProjectRepository;
 use App\Service\Admin\DuplicatableInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -46,6 +47,9 @@ class Project implements DuplicatableInterface
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank]
     private ?string $description = null;
+
+    #[ORM\Column(type: 'string', enumType: ArticleContentFormat::class, options: ['default' => 'html'])]
+    private ArticleContentFormat $format = ArticleContentFormat::HTML;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Assert\Type(\DateTime::class)]
@@ -159,6 +163,18 @@ class Project implements DuplicatableInterface
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getFormat(): ArticleContentFormat
+    {
+        return $this->format;
+    }
+
+    public function setFormat(ArticleContentFormat $format): static
+    {
+        $this->format = $format;
 
         return $this;
     }

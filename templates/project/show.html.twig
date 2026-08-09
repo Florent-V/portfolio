@@ -138,7 +138,7 @@
                     </div>
 
                     <div class="prose lg:prose-lg max-w-none mb-8 text-base-content" data-aos="fade-up" data-aos-delay="300">
-                        {{ project.description|raw }} {# From DB. Use |raw if HTML is intended #}
+                        {{ project.description|render_formatted_content(project.format) }}
                     </div>
 
                     {% if project.technologies is not empty %}
