@@ -1,0 +1,207 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Simulateur voiture électrique ou thermique : coûts et rentabilité — Florent Vasseur{% endblock %}
+
+{% block meta_description %}Simulateur gratuit pour comparer le coût réel d'une voiture électrique et d'une thermique : prix au kilomètre, coût d'énergie annuel, coût total de possession et point de rentabilité, avec graphiques.{% endblock %}
+
+{% block json_ld %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "WebApplication",
+            "@id": "{{ url('app_simulator_car_cost') }}#app",
+            "name": "Simulateur voiture électrique ou thermique",
+            "url": "{{ url('app_simulator_car_cost') }}",
+            "description": "Comparateur gratuit entre véhicule électrique et véhicule thermique : coût au kilomètre, coût d'énergie annuel, coût total de possession (achat, borne, entretien, assurance) et point d'inversion de rentabilité.",
+            "applicationCategory": "UtilitiesApplication",
+            "operatingSystem": "Web",
+            "browserRequirements": "Requires JavaScript",
+            "inLanguage": "fr",
+            "isAccessibleForFree": true,
+            "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "EUR"
+            },
+            "author": {
+                "@type": "Person",
+                "name": "Florent Vasseur",
+                "url": "{{ url('app_home') }}"
+            }
+        },
+        {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Accueil", "item": "{{ url('app_home') }}"},
+                {"@type": "ListItem", "position": 2, "name": "Simulateur voiture électrique ou thermique", "item": "{{ url('app_simulator_car_cost') }}"}
+            ]
+        },
+        {
+            "@type": "FAQPage",
+            "itemListElement": [
+                {
+                    "@type": "Question",
+                    "name": "Une voiture électrique est-elle vraiment moins chère à l'usage ?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "En rechargeant à domicile, le coût d'énergie d'une électrique est généralement deux à quatre fois inférieur à celui d'une thermique équivalente : environ 3 € aux 100 km contre 10 à 12 € en essence. L'écart se réduit si vous rechargez surtout sur bornes rapides, dont le kWh peut coûter le double du tarif domestique. Le simulateur pondère les deux selon vos habitudes."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Au bout de combien de temps une voiture électrique devient-elle rentable ?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Tout dépend du surcoût à l'achat et du kilométrage annuel. Le simulateur calcule le point d'inversion : l'année où les économies d'énergie, d'entretien et d'assurance ont absorbé le surcoût initial (achat, aides déduites, et borne de recharge). Plus vous roulez, plus ce point arrive tôt."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Le simulateur prend-il en compte les aides à l'achat ?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Oui. Un champ dédié permet de déduire du prix d'achat le bonus écologique, la prime à la conversion ou toute aide locale. Les montants varient selon le véhicule et votre situation : renseignez celui auquel vous avez droit."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Mes données sont-elles envoyées sur un serveur ?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Non. Tous les calculs sont réalisés dans votre navigateur. Aucune donnée saisie n'est transmise ni stockée sur un serveur."
+                    }
+                }
+            ]
+        }
+    ]
+}
+</script>
+{% endblock %}
+
+{% block body %}
+    <div class="bg-base-200 py-12 md:py-20 min-h-screen">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+
+            <nav aria-label="Fil d'Ariane" class="max-w-5xl mx-auto mb-4 text-sm text-base-content/60">
+                <ol class="flex flex-wrap items-center gap-1">
+                    <li><a href="{{ path('app_home') }}" class="hover:text-primary transition-colors">Accueil</a></li>
+                    <li aria-hidden="true" class="mx-1">/</li>
+                    <li aria-current="page" class="text-base-content font-medium truncate max-w-xs">Simulateur voiture électrique ou thermique</li>
+                </ol>
+            </nav>
+
+            <article class="max-w-5xl mx-auto bg-base-100 shadow-xl rounded-lg overflow-hidden" data-aos="fade-up">
+                <div class="p-6 md:p-8 lg:p-10">
+
+                    {# ---------- En-tête : titre + jauge décorative élec/thermique ---------- #}
+                    <header class="flex flex-col-reverse sm:flex-row sm:items-center gap-6 mb-6">
+                        <div class="flex-1">
+                            <p class="text-xs font-bold text-secondary uppercase tracking-widest mb-2" data-aos="fade-left" data-aos-delay="100">Automobile · France · Outil gratuit</p>
+                            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3" data-aos="fade-left" data-aos-delay="150">Voiture électrique ou thermique&nbsp;: laquelle coûte vraiment moins cher&nbsp;?</h1>
+                            <p class="text-base-content/70" data-aos="fade-left" data-aos-delay="200">
+                                Prix au kilomètre, coût d'énergie annuel, coût total de possession :
+                                on compare les deux motorisations chiffres en main, jusqu'au point
+                                où l'électrique devient rentable. Valeurs de démo : Tesla Model 3
+                                contre Peugeot 508, toutes modifiables.
+                            </p>
+                        </div>
+                        {# Jauge décorative : part élec (info) vs thermique (warning) #}
+                        <div class="shrink-0 self-center" aria-hidden="true" data-aos="zoom-in">
+                            <div class="w-28 h-28 md:w-32 md:h-32 rounded-full grid place-items-center"
+                                 style="background: conic-gradient(var(--color-info) 0deg 200deg, var(--color-warning) 200deg 360deg);">
+                                <div class="w-16 h-16 md:w-[4.5rem] md:h-[4.5rem] rounded-full bg-base-100 grid place-items-center text-xs font-bold text-base-content/60">€/km</div>
+                            </div>
+                            <div class="flex justify-center gap-3 mt-2 text-xs text-base-content/60">
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-info inline-block"></span>Élec</span>
+                                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-warning inline-block"></span>Thermique</span>
+                            </div>
+                        </div>
+                    </header>
+
+                    {# ---------- Contexte (style « Points clés » des articles) ---------- #}
+                    <div class="bg-base-200 border-l-4 border-primary rounded-lg p-5 mb-8" data-aos="fade-up" data-aos-delay="250">
+                        <h2 class="text-sm font-bold text-primary uppercase tracking-wide mb-3">Valeurs de démo — France 2026, recharge à domicile</h2>
+                        <ul class="text-sm text-base-content [&_strong]:text-primary list-disc pl-5 space-y-2">
+                            <li><strong>Électrique</strong> : Tesla Model 3 Propulsion, 14,4&nbsp;kWh/100&nbsp;km, kWh domestique à 0,22&nbsp;€, borne rapide à 0,45&nbsp;€.</li>
+                            <li><strong>Thermique</strong> : Peugeot 508 PureTech 130, 6,3&nbsp;L/100&nbsp;km, SP95-E10 à 1,90&nbsp;€/L.</li>
+                            <li><strong>Coût global</strong> : achat, aides, borne, entretien et assurance sont pris en compte pour situer le point de rentabilité.</li>
+                        </ul>
+                        <p class="text-sm text-base-content/70 mt-3">
+                            Toutes les valeurs restent modifiables : adaptez-les à vos véhicules et vos tarifs.
+                            Le retour d'expérience complet est raconté dans l'article
+                            <a class="link link-primary" href="{{ path('app_article_show', {slug: 'un-mois-en-tesla-model-3-confessions-d-un-petrolhead-passe-a-l-electrique'}) }}">Un mois en Tesla Model 3 : confessions d'un petrolhead passé à l'électrique</a>.
+                        </p>
+                    </div>
+
+                    {# ---------- Simulateur (Vue) ---------- #}
+                    <div {{ vue_component('SimulatorCarCost') }}>
+                        <div class="flex items-center justify-center p-10">
+                            <span class="loading loading-spinner loading-lg text-primary"></span>
+                        </div>
+                        <noscript>
+                            <p class="alert alert-warning">Le simulateur nécessite JavaScript pour fonctionner.</p>
+                        </noscript>
+                    </div>
+
+                    {# ---------- FAQ visible (doit refléter le FAQPage JSON-LD) ---------- #}
+                    <section class="mt-12" data-aos="fade-up">
+                        <h2 class="text-lg md:text-xl font-semibold text-secondary mb-3">Questions fréquentes</h2>
+
+                        <div class="collapse collapse-arrow bg-base-200 mb-2">
+                            <input type="checkbox">
+                            <h3 class="collapse-title font-semibold text-base">Une voiture électrique est-elle vraiment moins chère à l'usage ?</h3>
+                            <div class="collapse-content text-sm">
+                                <p>En rechargeant à domicile, le coût d'énergie d'une électrique est généralement deux à
+                                quatre fois inférieur à celui d'une thermique équivalente : environ 3&nbsp;€ aux 100&nbsp;km
+                                contre 10 à 12&nbsp;€ en essence. L'écart se réduit si vous rechargez surtout sur bornes
+                                rapides, dont le kWh peut coûter le double du tarif domestique. Le simulateur pondère
+                                les deux selon vos habitudes.</p>
+                            </div>
+                        </div>
+
+                        <div class="collapse collapse-arrow bg-base-200 mb-2">
+                            <input type="checkbox">
+                            <h3 class="collapse-title font-semibold text-base">Au bout de combien de temps une voiture électrique devient-elle rentable ?</h3>
+                            <div class="collapse-content text-sm">
+                                <p>Tout dépend du surcoût à l'achat et du kilométrage annuel. Le simulateur calcule le
+                                point d'inversion : l'année où les économies d'énergie, d'entretien et d'assurance ont
+                                absorbé le surcoût initial (achat, aides déduites, et borne de recharge). Plus vous roulez,
+                                plus ce point arrive tôt.</p>
+                            </div>
+                        </div>
+
+                        <div class="collapse collapse-arrow bg-base-200 mb-2">
+                            <input type="checkbox">
+                            <h3 class="collapse-title font-semibold text-base">Le simulateur prend-il en compte les aides à l'achat ?</h3>
+                            <div class="collapse-content text-sm">
+                                <p>Oui. Un champ dédié permet de déduire du prix d'achat le bonus écologique, la prime à
+                                la conversion ou toute aide locale. Les montants varient selon le véhicule et votre
+                                situation : renseignez celui auquel vous avez droit.</p>
+                            </div>
+                        </div>
+
+                        <div class="collapse collapse-arrow bg-base-200 mb-2">
+                            <input type="checkbox">
+                            <h3 class="collapse-title font-semibold text-base">Mes données sont-elles envoyées sur un serveur ?</h3>
+                            <div class="collapse-content text-sm">
+                                <p>Non. Tous les calculs sont réalisés dans votre navigateur.
+                                Aucune donnée saisie n'est transmise ni stockée sur un serveur.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {# ---------- Lien retour article ---------- #}
+                    <div class="border-t border-base-300 pt-8 mt-8">
+                        <a href="{{ path('app_article_show', {slug: 'un-mois-en-tesla-model-3-confessions-d-un-petrolhead-passe-a-l-electrique'}) }}"
+                           class="btn btn-outline btn-secondary btn-md gap-2">
+                            <i class="fa fa-arrow-left"></i>
+                            Lire l'article : un mois en Tesla Model 3
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+{% endblock %}
