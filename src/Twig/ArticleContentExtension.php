@@ -55,6 +55,7 @@ final class ArticleContentExtension
             ->allowElement('ol', ['class'])
             ->allowElement('li', ['class'])
             ->allowElement('blockquote', ['class'])
+            ->allowElement('del', ['class'])
             ->allowElement('table', ['class'])
             ->allowElement('thead', ['class'])
             ->allowElement('tbody', ['class'])
