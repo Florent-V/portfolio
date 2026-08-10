@@ -1,13 +1,13 @@
 import { asNum } from './format'
 
-// Valeurs de démo : Tesla Model 3 Propulsion vs Peugeot 508 PureTech 130
-// (tarifs France 2026, recharge majoritairement à domicile).
+// Valeurs de démo : Tesla Model 3 Propulsion vs Renault Mégane IV 1.3 TCe 160
+// RS Line (tarifs France 2026, recharge majoritairement à domicile).
 export const DEMO = {
   evConso: 14.4, // kWh/100 km, usage mixte
   evPrixDomicile: 0.22, // €/kWh à domicile
   evPrixBorne: 0.45, // €/kWh en borne rapide
   evPartDomicile: 90, // % des recharges faites à domicile
-  iceConso: 6.3, // L/100 km, usage mixte
+  iceConso: 6.5, // L/100 km, conso réelle constatée (WLTP annoncé : 6,1)
   icePrix: 1.9, // €/L SP95-E10
   kmAn: 15000, // km/an, moyenne française
   evAchat: 39990,
@@ -15,8 +15,8 @@ export const DEMO = {
   evBorne: 1200, // wallbox installée
   evEntretien: 350, // €/an
   evAssurance: 950, // €/an
-  iceAchat: 39900,
-  iceEntretien: 750, // €/an (révisions, vidanges, distribution…)
+  iceAchat: 35000,
+  iceEntretien: 600, // €/an (révisions, vidanges…)
   iceAssurance: 800, // €/an
 }
 
