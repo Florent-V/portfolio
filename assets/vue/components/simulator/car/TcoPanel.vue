@@ -93,7 +93,7 @@ const chartLabels = computed(() => result.value.rows.map((r) => r.year))
             Coûts fixes — thermique
           </h2>
           <p class="text-xs text-base-content/50 mb-2">
-            Démo : Peugeot 508 PureTech 130
+            Démo : Renault Mégane IV 1.3 TCe 160 RS Line
           </p>
           <div class="grid sm:grid-cols-2 gap-4">
             <PriceField
