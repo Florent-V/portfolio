@@ -93,7 +93,8 @@
 
                                 <!-- Description -->
                                 <p class="text-sm text-base-content/80 mb-4 line-clamp-3 leading-relaxed">
-                                    {{ project.description|striptags|slice(0, 120) }}{% if project.description|striptags|length > 120 %}...{% endif %}
+                                    {% set excerpt = project.description|render_formatted_content(project.format)|striptags %}
+                                    {{ excerpt|slice(0, 120) }}{% if excerpt|length > 120 %}...{% endif %}
                                 </p>
 
                                 <!-- Technologies with Icons -->
