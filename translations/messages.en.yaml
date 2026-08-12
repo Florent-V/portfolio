@@ -47,6 +47,9 @@ project:
   live: Live
   open_source: Open Source
   portfolio_complete: Portfolio complete
+  tooltip_view_details: View details
+  tooltip_visit_site: Visit site
+  tooltip_details_page: Go to full project page
   no_projects: No projects
   no_projects_description: No projects available at the moment.
   discover_posts: Find my technical analyses, tutorials, and thoughts here.
