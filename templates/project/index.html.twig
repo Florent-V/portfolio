@@ -41,17 +41,19 @@
             {% if projects is not empty %}
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 md:my-8">
                     {% for project in projects %}
-                        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 group border border-base-300 hover:border-primary/20"
+                        <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105 group border border-base-300 hover:border-primary/20 hover:z-20 focus-within:z-20"
                              data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
                             <!-- Image Section with Overlay -->
-                            <figure class="relative overflow-hidden aspect-[4/3] bg-base-200">
-                                <img src="{{ project.mainImageName ? asset('uploads/images/projects/' ~ project.mainImageName) : 'https://picsum.photos/seed/' ~ project.id ~ '/600/400' }}"
-                                     alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
-                                     loading="lazy"
-                                     class="w-full h-full object-contain object-center project-image group-hover:scale-110 transition-transform duration-500" />
+                            <div class="relative aspect-[4/3] bg-base-200">
+                                <figure class="absolute inset-0 overflow-hidden">
+                                    <img src="{{ project.mainImageName ? asset('uploads/images/projects/' ~ project.mainImageName) : 'https://picsum.photos/seed/' ~ project.id ~ '/600/400' }}"
+                                         alt="{{ 'common.main_project_image_alt'|trans({'%title%': project.title}) }}"
+                                         loading="lazy"
+                                         class="w-full h-full object-contain object-center project-image group-hover:scale-110 transition-transform duration-500" />
+                                </figure>
 
-                                <!-- Overlay with quick actions -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <!-- Overlay with quick actions (sibling of figure so tooltips aren't clipped by the card's figure overflow-hidden) -->
+                                <div class="absolute inset-0 rounded-t-[var(--radius-box)] bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                     <div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
                                         <div class="flex gap-2">
                                             <div class="tooltip tooltip-top" data-tip="{{ 'project.tooltip_view_details'|trans|default('Voir les détails') }}">
@@ -86,7 +88,7 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                            </figure>
+                            </div>
 
                             <!-- Content Section -->
                             <div class="card-body p-6">
