@@ -168,6 +168,15 @@ class ArticleCrudController extends AbstractCrudController
             )
             ->addCssClass('btn btn-secondary');
 
+        $exportJson = Action::new('exportJson', 'Exporter en JSON', 'fa fa-file-export')
+            ->linkToUrl(
+                fn (Article $article) => $this->generateUrl(
+                    'admin_article_export_json',
+                    ['id' => $article->getId()]
+                )
+            )
+            ->setHtmlAttributes(['title' => 'Exporter cet article au format JSON']);
+
         $preview = Action::new('preview', 'Prévisualiser', 'fa fa-eye')
             ->linkToUrl(
                 fn (Article $article) => $this->generateUrl(
@@ -188,6 +197,8 @@ class ArticleCrudController extends AbstractCrudController
             ->add(Crud::PAGE_EDIT, $preview)
             ->add(Crud::PAGE_DETAIL, $preview)
             ->add(Crud::PAGE_INDEX, $preview)
+            ->add(Crud::PAGE_DETAIL, $exportJson)
+            ->add(Crud::PAGE_INDEX, $exportJson)
             ->add(
                 Crud::PAGE_INDEX,
                 $this->buildDuplicateAction()
