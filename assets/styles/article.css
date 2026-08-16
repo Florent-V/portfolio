@@ -88,6 +88,19 @@
     font-weight: 700;
 }
 
+.prose blockquote::after {
+    content: '\201D';
+    position: absolute;
+    right: 0.75rem;
+    bottom: -0.75rem;
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--color-primary);
+    opacity: 0.4;
+    font-style: normal;
+    font-weight: 700;
+}
+
 .prose blockquote p {
     margin: 0;
 }
