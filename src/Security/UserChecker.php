@@ -6,7 +6,6 @@ namespace App\Security;
 
 use App\Entity\User as AppUser;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
@@ -36,7 +35,6 @@ readonly class UserChecker implements UserCheckerInterface
                 'app_verify_email',
                 $user,
                 (new TemplatedEmail())
-                    ->from(new Address('no-reply@f5t.fr', 'Portfolio Bot'))
                     ->to($user->getEmail())
                     ->subject('Portfolio : Confirmez votre Email')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
