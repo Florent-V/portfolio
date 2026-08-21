@@ -38,14 +38,6 @@
     margin-top: 1.5rem;
 }
 
-/* First paragraph — slightly larger lead text */
-.prose > p:first-of-type {
-    font-size: 1.1em;
-    line-height: 1.75;
-    color: var(--color-base-content);
-    opacity: 0.9;
-}
-
 /* Links — animated underline */
 .prose a {
     color: var(--color-secondary);

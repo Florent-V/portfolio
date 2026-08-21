@@ -3,6 +3,6 @@ framework:
         dsn: '%env(MAILER_DSN)%'
         message_bus: false
         envelope:
-            sender: 'admin-portfolio@f5t.com'
+            sender: '%env(MAILER_FROM_EMAIL)%'
         headers:
-            From: 'Portfolio <admin-portfolio@f5t.com>'
+            From: '%env(MAILER_FROM_NAME)% <%env(MAILER_FROM_EMAIL)%>'

@@ -6,12 +6,12 @@ namespace App\Controller;
 
 use App\Form\ContactFormType;
 use App\Service\HomePageDataService;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class HomeController extends AbstractController
@@ -32,16 +32,17 @@ final class HomeController extends AbstractController
         if ($contactForm->isSubmitted() && $contactForm->isValid()) {
             $formData = $contactForm->getData();
 
-            $email = (new Email())
-                ->from($formData['email'])
+            $email = (new TemplatedEmail())
+                ->replyTo($formData['email'])
                 ->to($this->getParameter('app.admin_email'))
                 ->subject('Nouveau message de contact Portfolio: ' . $formData['subject'])
-                ->html($this->renderView('emails/contact_email.html.twig', [
+                ->htmlTemplate('emails/contact_email.html.twig')
+                ->context([
                     'name'         => $formData['name'],
                     'sender_email' => $formData['email'],
                     'subject'      => $formData['subject'],
                     'message'      => $formData['message'],
-                ]));
+                ]);
 
             try {
                 $mailer->send($email);

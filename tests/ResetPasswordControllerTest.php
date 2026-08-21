@@ -65,7 +65,7 @@ class ResetPasswordControllerTest extends WebTestCase
 
         self::assertCount(1, $messages = $this->getMailerMessages());
 
-        self::assertEmailAddressContains($messages[0], 'from', 'no-reply@f5t.fr');
+        self::assertEmailAddressContains($messages[0], 'from', 'no-reply@mydomain.fr');
         self::assertEmailAddressContains($messages[0], 'to', 'me@example.com');
         self::assertEmailTextBodyContains($messages[0], 'This link will expire in 1 hour.');
 
