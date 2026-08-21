@@ -21,19 +21,26 @@ class ContactFormType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label'       => 'Votre Nom',
+                'label' => 'Votre Nom',
+                'attr'  => [
+                    'required'  => true,
+                    'minlength' => 2,
+                ],
                 'constraints' => [
                     new NotBlank(
                         message: 'Veuillez entrer votre nom.',
                     ),
                     new Length(
-                        min:        2,
+                        min: 2,
                         minMessage: 'Votre nom doit comporter au moins {{ limit }} caractères.',
                     ),
                 ],
             ])
             ->add('email', EmailType::class, [
-                'label'       => 'Votre Email',
+                'label' => 'Votre Email',
+                'attr'  => [
+                    'required' => true,
+                ],
                 'constraints' => [
                     new NotBlank(
                         message: 'Veuillez entrer votre adresse email.',
@@ -44,25 +51,33 @@ class ContactFormType extends AbstractType
                 ],
             ])
             ->add('subject', TextType::class, [
-                'label'       => 'Sujet',
+                'label' => 'Sujet',
+                'attr'  => [
+                    'required'  => true,
+                    'minlength' => 5,
+                ],
                 'constraints' => [
                     new NotBlank(
                         message: 'Veuillez entrer un sujet.',
                     ),
                     new Length(
-                        min:         5,
+                        min: 5,
                         minMessage: 'Le sujet doit comporter au moins {{ limit }} caractères.',
                     ),
                 ],
             ])
             ->add('message', TextareaType::class, [
-                'label'       => 'Votre Message',
+                'label' => 'Votre Message',
+                'attr'  => [
+                    'required'  => true,
+                    'minlength' => 10,
+                ],
                 'constraints' => [
                     new NotBlank(
                         message: 'Veuillez entrer votre message.',
                     ),
                     new Length(
-                        min:       10,
+                        min: 10,
                         minMessage: 'Votre message doit comporter au moins {{ limit }} caractères.',
                     ),
                 ],
