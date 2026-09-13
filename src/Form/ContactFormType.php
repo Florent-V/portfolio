@@ -6,6 +6,7 @@ namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -81,6 +82,18 @@ class ContactFormType extends AbstractType
                         minMessage: 'Votre message doit comporter au moins {{ limit }} caractères.',
                     ),
                 ],
+            ])
+            // Honeypot anti-bot : champ masqué visuellement, un humain ne le remplit jamais.
+            ->add('website', TextType::class, [
+                'label'    => false,
+                'required' => false,
+                'mapped'   => false,
+            ])
+            // Time-trap anti-bot : jeton signé contenant l'heure d'affichage du formulaire.
+            ->add('renderedAt', HiddenType::class, [
+                'label'    => false,
+                'required' => false,
+                'mapped'   => false,
             ]);
     }
 

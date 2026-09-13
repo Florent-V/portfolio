@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Exception\ContactRateLimitExceededException;
 use App\Form\ContactFormType;
 use App\Service\ContactFormHandler;
 use App\Service\HomePageDataService;
@@ -27,10 +28,26 @@ final class HomeController extends AbstractController
         $pageData = $this->homePageDataService->getDataForHomepage();
 
         $contactForm = $this->createForm(ContactFormType::class);
+        $contactForm->get('renderedAt')->setData($contactFormHandler->generateTimestampToken());
         $contactForm->handleRequest($request);
 
         if ($contactForm->isSubmitted() && $contactForm->isValid()) {
-            $this->sendContactMessage($contactFormHandler, $contactForm->getData());
+            try {
+                $this->sendContactMessage(
+                    $contactFormHandler,
+                    $contactForm->getData(),
+                    $request,
+                    $contactForm->get('website')->getData(),
+                    $contactForm->get('renderedAt')->getData()
+                );
+            } catch (ContactRateLimitExceededException) {
+                $this->addFlash(
+                    'error',
+                    'Trop de tentatives d\'envoi. Veuillez réessayer dans quelques minutes.'
+                );
+
+                return $this->redirectToRoute('app_home', ['_fragment' => 'contact']);
+            }
 
             return $this->redirectToRoute('app_home', ['_fragment' => 'contact']);
         }
@@ -63,9 +80,14 @@ final class HomeController extends AbstractController
     /**
      * @param array{name: string, email: string, subject: string, message: string} $formData
      */
-    private function sendContactMessage(ContactFormHandler $contactFormHandler, array $formData): void
-    {
-        if ($contactFormHandler->send($formData)) {
+    private function sendContactMessage(
+        ContactFormHandler $contactFormHandler,
+        array $formData,
+        Request $request,
+        ?string $honeypot,
+        ?string $timestampToken,
+    ): void {
+        if ($contactFormHandler->send($formData, $request, $honeypot, $timestampToken)) {
             $this->addFlash(
                 'success',
                 'Votre message a bien été envoyé ! Je vous répondrai dès que possible.'

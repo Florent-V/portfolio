@@ -62,6 +62,7 @@ class DashboardController extends AbstractDashboardController
             ...$this->portfolioContentMenuItems(),
             ...$this->skillsAndExperienceMenuItems(),
             ...$this->aiMenuItems(),
+            ...$this->securityMenuItems(),
             ...($this->isGranted('ROLE_SUPER_ADMIN') ? $this->administrationMenuItems() : []),
         ];
     }
@@ -180,6 +181,19 @@ class DashboardController extends AbstractDashboardController
                 'Importer un JSON',
                 'fa fa-file-import',
                 'admin_article_json_import'
+            ),
+        ];
+    }
+
+    /** @return array<MenuItemInterface> */
+    private function securityMenuItems(): array
+    {
+        return [
+            MenuItem::section('Sécurité'),
+            MenuItem::linkTo(
+                ContactMessageLogCrudController::class,
+                'Messages de contact',
+                'fa fa-shield-alt'
             ),
         ];
     }

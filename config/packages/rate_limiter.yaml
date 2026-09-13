@@ -1,0 +1,13 @@
+framework:
+    rate_limiter:
+        # Une seule IP : max 3 messages par heure (fenêtre glissante = pas de rafale en bord de fenêtre)
+        contact_form_ip:
+            policy: sliding_window
+            limit: 3
+            interval: '1 hour'
+
+        # Tout le formulaire de contact confondu : max 20 messages par heure
+        contact_form_global:
+            policy: sliding_window
+            limit: 20
+            interval: '1 hour'
