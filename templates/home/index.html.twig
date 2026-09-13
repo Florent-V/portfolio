@@ -454,6 +454,10 @@
                 <div class="max-w-2xl mx-auto card bg-base-100 shadow-xl" data-aos="zoom-in" data-aos-delay="200">
                     <div class="card-body">
                         {{ form_start(contactForm, {attr: {action: path('app_home') ~ '#contact'}}) }}
+                        {{ form_widget(contactForm.renderedAt) }}
+                        <div style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true">
+                            {{ form_widget(contactForm.website, {attr: {tabindex: '-1', autocomplete: 'off'}}) }}
+                        </div>
                         <div class="form-control mb-4">
                             {{ form_label(contactForm.name, 'form.contact.name'|trans) }}
                             {{ form_widget(contactForm.name, {
