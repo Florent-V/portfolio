@@ -21,6 +21,8 @@ class LoginControllerTest extends WebTestCase
         $userRepository = $em->getRepository(User::class);
 
         // Remove any existing users from the test database
+        $em->createQuery('DELETE FROM App\\Entity\\ResetPasswordRequest')->execute();
+
         foreach ($userRepository->findAll() as $user) {
             $em->remove($user);
         }
@@ -31,7 +33,11 @@ class LoginControllerTest extends WebTestCase
         /** @var UserPasswordHasherInterface $passwordHasher */
         $passwordHasher = $container->get('security.user_password_hasher');
 
-        $user = (new User())->setEmail('email@example.com');
+        $user = (new User())
+            ->setEmail('email@example.com')
+            ->setUserName('test-user')
+            ->setIsVerified(true)
+        ;
         $user->setPassword($passwordHasher->hashPassword($user, 'password'));
 
         $em->persist($user);
@@ -53,7 +59,7 @@ class LoginControllerTest extends WebTestCase
         $this->client->followRedirect();
 
         // Ensure we do not reveal if the user exists or not.
-        self::assertSelectorTextContains('.alert-danger', 'Invalid credentials.');
+        self::assertSelectorTextContains('.alert-danger', 'Les identifiants sont incorrects.');
 
         // Denied - Can't login with invalid password.
         $this->client->request('GET', '/login');
@@ -68,7 +74,7 @@ class LoginControllerTest extends WebTestCase
         $this->client->followRedirect();
 
         // Ensure we do not reveal the user exists but the password is wrong.
-        self::assertSelectorTextContains('.alert-danger', 'Invalid credentials.');
+        self::assertSelectorTextContains('.alert-danger', 'Les identifiants sont incorrects.');
 
         // Success - Login with valid credentials is allowed.
         $this->client->submitForm('Sign in', [

@@ -60,11 +60,11 @@ une première exécution sur GitHub) :
 | Check | Workflow | Ce qui le fait échouer | État au 2026-10-25 (exécution locale) |
 | --- | --- | --- | --- |
 | `PHP quality` | CI | `composer validate --strict`, install depuis le lock, PHPCS PSR-12, PHP CS Fixer, PHPStan niv. 6, PHPMD, Twig CS Fixer, `lint:container`, `lint:twig`, `lint:yaml` | ✅ vert |
-| `PHP tests (MySQL)` | CI | création BDD de test, migrations, `doctrine:schema:validate`, PHPUnit | ❌ 2 tests en erreur (préexistant, voir 5) |
+| `PHP tests (MySQL)` | CI | création BDD de test, migrations, `doctrine:schema:validate`, PHPUnit | ✅ vert (corrigé, voir 5) |
 | `JS lint & build` | CI | `npm ci`, ESLint sans `--fix` (erreurs bloquantes, warnings non), `encore production`, présence de `manifest.json`, `entrypoints.json`, `service-worker.js` | ✅ vert (6 warnings ESLint) |
 | `Workflow lint (actionlint, zizmor)` | CI | erreurs actionlint/shellcheck, findings zizmor (persona par défaut) | ✅ vert |
-| `Composer audit` | Security audit | toute advisory sur `composer.lock`, tout paquet abandonné | ❌ 23 advisories sur 8 paquets (préexistant) |
-| `npm audit` | Security audit | advisory de sévérité ≥ high dans `package-lock.json` | ❌ 3 critical, 19 high (préexistant) |
+| `Composer audit` | Security audit | toute advisory sur `composer.lock`, tout paquet abandonné | ✅ vert (corrigé, voir 5) |
+| `npm audit` | Security audit | advisory de sévérité ≥ high dans `package-lock.json` | ✅ vert (8 moderate restants, sous le seuil, voir 5) |
 | `Dependency review` | Dependency review | dépendance ajoutée/modifiée par la PR avec une vulnérabilité ≥ moderate | s'exécute sur PR uniquement |
 | `CodeQL (javascript-typescript)`, `CodeQL (actions)` | CodeQL | échec de l'analyse (pas les alertes, voir plus bas) | non exécuté localement |
 | `Semgrep (PHP, new findings)` | Semgrep | résultat WARNING/ERROR **introduit par la PR** (`--baseline-commit`) | ✅ 0 nouveau résultat |
@@ -82,7 +82,15 @@ Les jobs du déploiement (`Deploy to Production`) ne sont pas des checks de PR.
   `public/build`, donc `--omit=dev` donnerait une fausse image. Les « moderate » restent
   visibles dans les alertes Dependabot sans bloquer.
 - **Dependency review** : `moderate` et plus, car seules les dépendances introduites par
-  la PR sont évaluées.
+  la PR sont évaluées. Exceptions nominatives (`allow-ghsas`), **à revoir avant le
+  2027-01-31** ou dès qu'une version de Semgrep lève ces épinglages : `semgrep==1.182.1`
+  (dernière version) impose `mcp==1.29.0` (GHSA-84m7-p3x7-pcfv, serveur MCP HTTP jamais
+  lancé en CI) et `opentelemetry-api~=1.37.0` (GHSA-xcq7-p3pf-p88h, parsing de
+  `tracestate` reçu, aucune entrée externe ici). Aucune version corrigée n'est
+  compatible. Les alertes Dependabot correspondantes (manifeste
+  `.github/ci-tools/semgrep/requirements.txt`) sont à fermer avec *Vulnerable code is
+  not actually used*, et les PR de sécurité Dependabot pour ces paquets échoueront
+  (conflit avec l'épinglage de Semgrep).
 - **Semgrep** : sur PR, seuls les nouveaux résultats WARNING/ERROR bloquent ; les
   résultats existants restent visibles dans Code scanning et font échouer l'analyse
   complète (push/planifiée) tant qu'ils ne sont pas corrigés ou triés. Aucune règle
@@ -208,10 +216,11 @@ et *rebase merging*, cocher **Always suggest updating pull request branches** et
     - *Add checks* (source *GitHub Actions*), **après une première exécution** :
       `PHP quality`, `JS lint & build`, `Workflow lint (actionlint, zizmor)`,
       `Dependency review`, `CodeQL (javascript-typescript)`, `CodeQL (actions)`,
-      `Semgrep (PHP, new findings)`.
-    - À ajouter **une fois revenus au vert** (section 5) : `PHP tests (MySQL)`,
-      `Composer audit`, `npm audit`. Tant qu'ils échouent, les rendre obligatoires
-      bloquerait toute fusion, y compris les PR de correction des dépendances.
+      `Semgrep (PHP, new findings)`, `PHP tests (MySQL)`, `Composer audit`,
+      `npm audit`.
+    - `Composer audit` et `npm audit` peuvent repasser au rouge sans changement de
+      code (nouvelle advisory) et bloquer alors toutes les PR : corriger en priorité
+      (section 7), ou retirer temporairement le check du ruleset en le notant.
   - ☑ **Block force pushes**
   - ☑ **Require code scanning results** : outil `CodeQL`, *Security alerts* :
     **High or higher**, *Alerts* : **Errors**. Ne pas y ajouter Semgrep : ses résultats
@@ -232,17 +241,23 @@ Owners*, ☑ *Require approval of the most recent reviewable push*. Créer alors
 `.github/CODEOWNERS` avec les mainteneurs (ou une équipe), au moins sur `/.github/`, les
 manifestes de dépendances, `config/` et `src/Security/`.
 
-## 5. Problèmes préexistants révélés (non corrigés ici)
+## 5. Problèmes préexistants révélés
 
-Ils ne viennent pas de cette mise en place. Ils empêchent de rendre certains checks
-obligatoires tant qu'ils ne sont pas traités.
+Ils ne venaient pas de cette mise en place. Les trois premiers ont été corrigés dans la
+PR #65 pour que les checks correspondants puissent être rendus obligatoires.
+
+| Problème | Correction |
+| --- | --- |
+| `composer audit` : 23 advisories sur 8 paquets (`easycorp/easyadmin-bundle`, `league/commonmark`, `squizlabs/php_codesniffer`, `symfony/ux-live-component`, `symfony/ux-icons`, `symfony/http-foundation`, `symfony/yaml`, `symfony/expression-language`) | `composer update … --with-dependencies` ciblé, Symfony reste en 7.4.*, `symfony/ux-*` montés ensemble en 2.36 ; contraintes de `composer.json` relevées par `bump-after-update` ; `config/reference.php` régénéré |
+| `npm audit` : 38 vulnérabilités (3 critical, 19 high), dont `vue`, `postcss`, `webpack-dev-server`/`websocket-driver` | `npm audit fix` (sans `--force`) ; `copy-webpack-plugin` monté en 14 (seul changement cassant : Node ≥ 20.9) pour `serialize-javascript` (high). **Restent 8 moderate** (`uuid` via `webpack-notifier`/`sockjs`, `postcss-selector-parser` via `@tailwindcss/typography`) : le seul « correctif » proposé est une rétrogradation, ils sont sous le seuil `high` et à suivre via Dependabot |
+| PHPUnit : 2 tests en échec (`user_name` NOT NULL non renseigné, textes attendus en anglais alors que l'interface est en français, `MAILER_DSN` SMTP en test) ; `phpunit.xml.dist` au format PHPUnit 9, ce qui fait sortir PHPUnit 12 en code 1 | tests alignés sur l'interface réelle, nettoyage des `ResetPasswordRequest` avant les utilisateurs, `MAILER_DSN=null://null` dans `.env.test`, `phpunit.xml.dist` migré (`<source>`, suppression du listener et de l'attribut obsolètes) |
+
+Restent **non corrigés** (hors périmètre) :
 
 | Problème | Impact | Piste |
 | --- | --- | --- |
-| `composer audit` : 23 advisories, dont high pour `easycorp/easyadmin-bundle` (<4.29.16), `league/commonmark` (<2.10), `squizlabs/php_codesniffer` (<3.13.6), plus `symfony/ux-live-component`, `symfony/ux-icons`, `symfony/http-foundation`, `symfony/yaml`, `symfony/expression-language` | `Composer audit` rouge | `composer update` ciblé (PR dédiée), Dependabot security updates |
-| `npm audit` : 38 vulnérabilités (3 critical, 19 high), dont **`vue`** (embarqué dans le bundle), `postcss`, `webpack-dev-server`/`websocket-driver` | `npm audit` rouge | `npm audit fix` dans une PR dédiée, puis build + tests |
-| PHPUnit : `LoginControllerTest::testLogin` et `ResetPasswordControllerTest::testResetPasswordController` échouent (`user_name` NOT NULL non renseigné par les tests) ; `phpunit.xml.dist` non conforme au schéma PHPUnit 12 (avertissement) | `PHP tests (MySQL)` rouge | adapter les tests et migrer la configuration (`phpunit --migrate-configuration`) |
 | Semgrep (analyse complète) : 11 résultats | `Semgrep (PHP, full scan)` rouge, alertes Code scanning | voir le tri ci-dessous |
+| `src/Security/UserChecker.php` appelle la route `app_verify_email`, qui n'existe plus : un utilisateur non vérifié qui se connecte obtient une erreur 500 au lieu du mail d'activation. `LoginControllerTest` utilise donc un utilisateur vérifié | aucun check rouge, bug applicatif | recréer la route de vérification ou retirer l'envoi |
 
 Tri initial des résultats Semgrep :
 

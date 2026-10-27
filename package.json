@@ -12,7 +12,7 @@
         "@symfony/ux-vue": "file:vendor/symfony/ux-vue/assets",
         "@symfony/webpack-encore": "^6.0.0",
         "@tailwindcss/typography": "^0.5.16",
-        "copy-webpack-plugin": "^13.0.0",
+        "copy-webpack-plugin": "^14.0.0",
         "core-js": "^3.38.0",
         "daisyui": "^5.0.9",
         "eslint": "^9.23.0",

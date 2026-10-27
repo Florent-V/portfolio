@@ -23,3 +23,8 @@ jobs:
         with:
           fail-on-severity: moderate
           comment-summary-in-pr: never
+          # Scoped exceptions (review by 2027-01-31, see docs/ci-security.md):
+          # transitive deps pinned by semgrep==1.182.1 (CI-only tool, offline scan).
+          # GHSA-84m7-p3x7-pcfv: mcp 1.29.0, MCP HTTP server never started.
+          # GHSA-xcq7-p3pf-p88h: opentelemetry-api 1.37.0, no untrusted tracestate input.
+          allow-ghsas: GHSA-84m7-p3x7-pcfv, GHSA-xcq7-p3pf-p88h
