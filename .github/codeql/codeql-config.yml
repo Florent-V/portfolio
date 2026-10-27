@@ -1,0 +1,17 @@
+name: portfolio-codeql
+
+queries:
+  - uses: security-extended
+
+# Code tiers ou généré exclu de l'analyse. vendor/, node_modules/, public/build/,
+# public/bundles/ et var/ ne sont pas versionnés (absents du checkout) mais
+# restent listés pour le cas où un build serait ajouté avant l'analyse.
+# Ne pas utiliser `paths:` : cela restreindrait aussi l'analyse « actions ».
+paths-ignore:
+  - assets/vendor
+  - vendor
+  - node_modules
+  - public/build
+  - public/bundles
+  - public/service-worker.js
+  - var

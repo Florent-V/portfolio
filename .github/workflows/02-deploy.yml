@@ -5,6 +5,9 @@ on:
         branches: [prod]
     workflow_dispatch:
 
+permissions:
+    contents: read
+
 concurrency:
     group: deploy-production
     cancel-in-progress: false
@@ -16,13 +19,20 @@ jobs:
     deploy:
         name: Deploy to Production
         runs-on: ubuntu-latest
+        timeout-minutes: 30
+        # Créé automatiquement au premier run s'il n'existe pas ; y déplacer les
+        # secrets SSH_* / DEPLOY_PATH et restreindre à la branche prod
+        # (docs/ci-security.md).
+        environment: production
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+              with:
+                  persist-credentials: false
 
             - name: Setup PHP
-              uses: shivammathur/setup-php@v2
+              uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
               with:
                   php-version: '8.4'
                   extensions: pdo_mysql, intl, zip
@@ -31,10 +41,10 @@ jobs:
 
             - name: Get Composer cache directory
               id: composer-cache
-              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+              run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v4
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -44,7 +54,7 @@ jobs:
               run: composer install --no-dev --optimize-autoloader --no-progress --no-interaction --no-scripts
 
             - name: Setup Node.js
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
               with:
                   node-version: '24'
                   cache: 'npm'
@@ -58,7 +68,7 @@ jobs:
                   NODE_ENV: production
 
             - name: Setup SSH agent
-              uses: webfactory/ssh-agent@v0.9.0
+              uses: webfactory/ssh-agent@e83874834305fe9a4a2997156cb26c5de65a8555 # v0.10.0
               with:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -86,6 +96,27 @@ jobs:
             - name: Run deploy script on server
               run: |
                   ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "bash ~/deploy-portfolio.sh"
+
+            - name: Transfer systemd unit files (staging copy, no root needed)
+              run: |
+                  rsync -rlvzO --delete --no-perms \
+                    -e "ssh -p ${{ secrets.SSH_PORT }}" \
+                    deploy/systemd/ \
+                    ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/deploy/systemd/
+
+            - name: Restart known Messenger workers
+              run: |
+                  ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} '
+                    for unit_file in ${{ secrets.DEPLOY_PATH }}/deploy/systemd/*.service; do
+                      unit_name=$(basename "$unit_file")
+                      if systemctl list-unit-files "$unit_name" --no-legend | grep -q "$unit_name"; then
+                        echo "Restarting $unit_name"
+                        sudo systemctl restart "$unit_name"
+                      else
+                        echo "Skipping $unit_name: not installed yet (see docs/contact-security-and-workers.md to install it)"
+                      fi
+                    done
+                  '
 
             - name: Notify success
               if: success()
