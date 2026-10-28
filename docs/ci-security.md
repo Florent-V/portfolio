@@ -26,8 +26,7 @@ tant que les réglages de la section 4 n'ont pas été faits.
 | `.github/workflows/security-audit.yml` | `composer audit` et `npm audit`, sur PR/push et **chaque jour**. |
 | `.github/workflows/dependency-review.yml` | Bloque les PR qui ajoutent une dépendance vulnérable. |
 | `.github/workflows/codeql.yml` + `.github/codeql/codeql-config.yml` | CodeQL JavaScript/Vue et GitHub Actions, sur PR/push et chaque lundi. |
-| `.github/workflows/semgrep.yml` | Semgrep CE pour le PHP, local au runner, sur PR/push et chaque lundi. |
-| `.github/ci-tools/{semgrep,zizmor}/requirements.{in,txt}` | Versions épinglées avec empreintes (pip `--require-hashes`). |
+| `.github/ci-tools/zizmor/requirements.{in,txt}` | Version de zizmor épinglée avec empreintes (pip `--require-hashes`). |
 | `.github/workflows/02-deploy.yml` | Durci : actions épinglées, `permissions: contents: read`, `persist-credentials: false`, timeout, environment `production`. |
 
 Le workflow de démonstration `test.yml` a été supprimé : il s'exécutait sur chaque push
@@ -39,13 +38,13 @@ avec une action non épinglée et ne testait rien.
   avec la version en commentaire ; Dependabot (`github-actions`) met à jour le SHA et
   le commentaire.
 - `permissions: {}` au niveau workflow, droits accordés par job (`contents: read`,
-  plus `security-events: write` pour CodeQL et l'envoi SARIF de Semgrep uniquement).
+  plus `security-events: write` pour CodeQL uniquement).
 - `persist-credentials: false` sur tous les checkouts, `timeout-minutes` sur tous les
   jobs, `concurrency` (annulation des runs obsolètes sur les PR uniquement ; jamais
   pour le déploiement).
 - Pas de `pull_request_target` ni `workflow_run`, aucun secret dans les jobs de
-  validation, aucune donnée de l'événement interpolée dans un `run:` (la SHA de base
-  de Semgrep passe par `env:`), aucun commentaire publié sur les PR.
+  validation, aucune donnée de l'événement interpolée dans un `run:`, aucun
+  commentaire publié sur les PR.
 - Pas de filtre `paths:` sur les déclencheurs : un check requis ne reste jamais
   « en attente ».
 - `actionlint` (avec shellcheck) et `zizmor --offline` vérifient les workflows en CI.
@@ -67,8 +66,6 @@ une première exécution sur GitHub) :
 | `npm audit` | Security audit | advisory de sévérité ≥ high dans `package-lock.json` | ✅ vert (8 moderate restants, sous le seuil, voir 5) |
 | `Dependency review` | Dependency review | dépendance ajoutée/modifiée par la PR avec une vulnérabilité ≥ moderate | s'exécute sur PR uniquement |
 | `CodeQL (javascript-typescript)`, `CodeQL (actions)` | CodeQL | échec de l'analyse (pas les alertes, voir plus bas) | non exécuté localement |
-| `Semgrep (PHP, new findings)` | Semgrep | résultat WARNING/ERROR **introduit par la PR** (`--baseline-commit`) | ✅ 0 nouveau résultat |
-| `Semgrep (PHP, full scan)` | Semgrep | tout résultat WARNING/ERROR (push, planifié) ; SARIF envoyé à Code scanning | ❌ 11 résultats (préexistant) — **ne pas le rendre requis** (ne tourne pas sur PR) |
 
 Les jobs du déploiement (`Deploy to Production`) ne sont pas des checks de PR.
 
@@ -82,26 +79,17 @@ Les jobs du déploiement (`Deploy to Production`) ne sont pas des checks de PR.
   `public/build`, donc `--omit=dev` donnerait une fausse image. Les « moderate » restent
   visibles dans les alertes Dependabot sans bloquer.
 - **Dependency review** : `moderate` et plus, car seules les dépendances introduites par
-  la PR sont évaluées. Exceptions nominatives (`allow-ghsas`), **à revoir avant le
-  2027-01-31** ou dès qu'une version de Semgrep lève ces épinglages : `semgrep==1.182.1`
-  (dernière version) impose `mcp==1.29.0` (GHSA-84m7-p3x7-pcfv, serveur MCP HTTP jamais
-  lancé en CI) et `opentelemetry-api~=1.37.0` (GHSA-xcq7-p3pf-p88h, parsing de
-  `tracestate` reçu, aucune entrée externe ici). Aucune version corrigée n'est
-  compatible. Les alertes Dependabot correspondantes (manifeste
-  `.github/ci-tools/semgrep/requirements.txt`) sont à fermer avec *Vulnerable code is
-  not actually used*, et les PR de sécurité Dependabot pour ces paquets échoueront
-  (conflit avec l'épinglage de Semgrep).
-- **Semgrep** : sur PR, seuls les nouveaux résultats WARNING/ERROR bloquent ; les
-  résultats existants restent visibles dans Code scanning et font échouer l'analyse
-  complète (push/planifiée) tant qu'ils ne sont pas corrigés ou triés. Aucune règle
-  n'est exclue globalement.
+  la PR sont évaluées. Aucune exception (`allow-ghsas`) n'est configurée.
 - **CodeQL** : un check CodeQL vert signifie seulement que l'analyse a abouti, **pas
   qu'il n'y a pas d'alerte**. Pour bloquer les alertes, utiliser la règle de ruleset
   « Require code scanning results » (section 4.5).
 
 ### Couverture réelle des scanners
 
-- **CodeQL ne prend pas en charge PHP.** Il analyse le JavaScript (`assets/`,
+- **Le code PHP n'est analysé par aucun scanner de sécurité.** CodeQL ne prend pas
+  en charge PHP, et Semgrep CE a été retiré (choix du mainteneur). Le PHP reste couvert
+  par PHPStan (niveau 6), les lints et les tests, qui ne cherchent pas de failles.
+- **CodeQL** analyse le JavaScript (`assets/`,
   `webpack.config.js`, etc.) et les workflows GitHub Actions. `assets/vendor/`
   (Stimulus/Turbo vendorés) et les répertoires générés sont exclus.
 - **Fichiers `.vue`** (vérifié avec CodeQL CLI 2.27.3, `codeql database create
@@ -110,17 +98,6 @@ Les jobs du déploiement (`Deploy to Production`) ne sont pas des checks de PR.
   interpolations `{{ }}`. Les directives (`:attr`, `v-model`, `@event`, 162 occurrences)
   ne sont **pas** extraites de façon fiable : leur logique n'est pas entièrement
   couverte. Aucun `v-html`/`innerHTML` n'est présent dans `assets/` aujourd'hui.
-- **Semgrep CE** : règles `php/lang`, `php/symfony`, `php/doctrine` de
-  `semgrep/semgrep-rules` (42 règles) sur `src config public bin migrations tests`
-  (fichiers suivis par git). Les templates Twig ne sont pas analysés.
-  - Exécution locale (`--metrics=off`, `SEMGREP_SEND_METRICS=off`, sans jeton, sans
-    Semgrep Cloud/AppSec Platform) ; Semgrep 1.182.1 (LGPL-2.1) installé avec
-    empreintes.
-  - **Licence des règles** : *Semgrep Rules License v1.0* : usage pour ses propres
-    besoins internes autorisé, **redistribution interdite**. Les règles ne sont donc
-    pas copiées dans ce dépôt public ; elles sont téléchargées au moment du job depuis
-    un SHA épinglé (`SEMGREP_RULES_SHA`). Si ce cadre ne convient pas (usage
-    commercial pour des tiers…), remplacer par des règles maison.
 - **Trivy** : non ajouté, le projet ne construit aucune image Docker (pas de
   Dockerfile ; le déploiement se fait par rsync + script SSH). Si une image de
   production est ajoutée un jour : scanner l'image finale construite dans le même job,
@@ -159,8 +136,6 @@ pas versionné.
 **Settings → Advanced Security → Code scanning** : garder la configuration
 **avancée** (workflow `codeql.yml`). **Ne pas activer « Default setup »** : il est
 incompatible avec un workflow CodeQL avancé, dont l'envoi de résultats échoue alors.
-Les résultats Semgrep apparaissent dans le même onglet (catégorie `semgrep-php`) après
-le premier push sur `prod`/`develop`.
 
 ### 4.3 Permissions GitHub Actions
 
@@ -216,15 +191,13 @@ et *rebase merging*, cocher **Always suggest updating pull request branches** et
     - *Add checks* (source *GitHub Actions*), **après une première exécution** :
       `PHP quality`, `JS lint & build`, `Workflow lint (actionlint, zizmor)`,
       `Dependency review`, `CodeQL (javascript-typescript)`, `CodeQL (actions)`,
-      `Semgrep (PHP, new findings)`, `PHP tests (MySQL)`, `Composer audit`,
-      `npm audit`.
+      `PHP tests (MySQL)`, `Composer audit`, `npm audit`.
     - `Composer audit` et `npm audit` peuvent repasser au rouge sans changement de
       code (nouvelle advisory) et bloquer alors toutes les PR : corriger en priorité
       (section 7), ou retirer temporairement le check du ruleset en le notant.
   - ☑ **Block force pushes**
   - ☑ **Require code scanning results** : outil `CodeQL`, *Security alerts* :
-    **High or higher**, *Alerts* : **Errors**. Ne pas y ajouter Semgrep : ses résultats
-    ne sont envoyés que sur push/planifié, la règle attendrait indéfiniment sur les PR.
+    **High or higher**, *Alerts* : **Errors**.
 - **Merge queue** : ne pas l'activer. Les workflows ne déclarent pas l'événement
   `merge_group`, les checks requis resteraient en attente.
 
@@ -251,25 +224,14 @@ PR #65 pour que les checks correspondants puissent être rendus obligatoires.
 | `composer audit` : 23 advisories sur 8 paquets (`easycorp/easyadmin-bundle`, `league/commonmark`, `squizlabs/php_codesniffer`, `symfony/ux-live-component`, `symfony/ux-icons`, `symfony/http-foundation`, `symfony/yaml`, `symfony/expression-language`) | `composer update … --with-dependencies` ciblé, Symfony reste en 7.4.*, `symfony/ux-*` montés ensemble en 2.36 ; contraintes de `composer.json` relevées par `bump-after-update` ; `config/reference.php` régénéré |
 | `npm audit` : 38 vulnérabilités (3 critical, 19 high), dont `vue`, `postcss`, `webpack-dev-server`/`websocket-driver` | `npm audit fix` (sans `--force`) ; `copy-webpack-plugin` monté en 14 (seul changement cassant : Node ≥ 20.9) pour `serialize-javascript` (high). **Restent 8 moderate** (`uuid` via `webpack-notifier`/`sockjs`, `postcss-selector-parser` via `@tailwindcss/typography`) : le seul « correctif » proposé est une rétrogradation, ils sont sous le seuil `high` et à suivre via Dependabot |
 | PHPUnit : 2 tests en échec (`user_name` NOT NULL non renseigné, textes attendus en anglais alors que l'interface est en français, `MAILER_DSN` SMTP en test) ; `phpunit.xml.dist` au format PHPUnit 9, ce qui fait sortir PHPUnit 12 en code 1 | tests alignés sur l'interface réelle, nettoyage des `ResetPasswordRequest` avant les utilisateurs, `MAILER_DSN=null://null` dans `.env.test`, `phpunit.xml.dist` migré (`<source>`, suppression du listener et de l'attribut obsolètes) |
+| PHPUnit en CI : erreur 500 sur les pages rendues, `public/build/entrypoints.json` absent (le job PHP ne construit pas les assets ; en local le build existait) | `webpack_encore.strict_mode: false` sous `when@test` (option prévue par la recette, commentée) ; sans effet en dev/prod |
 
 Restent **non corrigés** (hors périmètre) :
 
 | Problème | Impact | Piste |
 | --- | --- | --- |
-| Semgrep (analyse complète) : 11 résultats | `Semgrep (PHP, full scan)` rouge, alertes Code scanning | voir le tri ci-dessous |
+| Redirection ouverte dans `src/Controller/LocaleController.php:32` : `str_starts_with($referer, 'https://' . $host)` accepte `https://<host>.attaquant.tld/…` (relevé par Semgrep avant son retrait) | aucun check, faille de faible gravité | comparer l'hôte de l'URL analysée (`parse_url`) ou rediriger vers une route interne |
 | `src/Security/UserChecker.php` appelle la route `app_verify_email`, qui n'existe plus : un utilisateur non vérifié qui se connecte obtient une erreur 500 au lieu du mail d'activation. `LoginControllerTest` utilise donc un utilisateur vérifié | aucun check rouge, bug applicatif | recréer la route de vérification ou retirer l'envoi |
-
-Tri initial des résultats Semgrep :
-
-| Règle | Emplacement | Qualification |
-| --- | --- | --- |
-| `symfony-non-literal-redirect` | `src/Controller/LocaleController.php:32` | **Vrai positif (faible).** Le contrôle `str_starts_with($referer, 'https://' . $host)` accepte `https://<host>.attaquant.tld/…` : redirection ouverte. Comparer l'hôte de l'URL analysée (`parse_url`) ou rediriger vers une route interne. |
-| `symfony-non-literal-redirect` (9×) | `src/Controller/Admin/*` (`AdminCrudControllerTrait`, `DashboardController`, `Article*Controller`) | Faux positifs : URL générée par `AdminUrlGenerator` (routeur EasyAdmin), sans donnée utilisateur. |
-| `unlink-use` | `src/Command/CleanupOrphanedImagesCommand.php:112` | Faux positif : commande console, chemin issu d'un `DirectoryIterator` sur un répertoire d'upload configuré. |
-
-Pour les faux positifs, la suppression doit rester ciblée et justifiée :
-`// nosemgrep: <id-de-règle> -- <raison>` sur la ligne, ou *Dismiss → False positive*
-dans Code scanning. Ne pas exclure la règle ni le répertoire.
 
 Remarque : MySQL 8.0 (production, `compose.yaml`, CI) est en fin de support ;
 planifier la montée de version avec la production.
@@ -310,8 +272,7 @@ planifier la montée de version avec la production.
 | Élément | Où | Mise à jour |
 | --- | --- | --- |
 | Actions (SHA) | workflows | Dependabot `github-actions` |
-| Semgrep, zizmor | `.github/ci-tools/*/requirements.txt` | Dependabot `pip` ; à la main : `uvx --python 3.12 --from pip-tools pip-compile --generate-hashes --allow-unsafe --strip-extras --no-emit-index-url --output-file requirements.txt requirements.in` |
-| Règles Semgrep | `SEMGREP_RULES_SHA` (`semgrep.yml`) | à la main, après relecture du diff du dépôt `semgrep/semgrep-rules` |
+| zizmor | `.github/ci-tools/zizmor/requirements.txt` | Dependabot `pip` ; à la main : `uvx --python 3.12 --from pip-tools pip-compile --generate-hashes --allow-unsafe --strip-extras --no-emit-index-url --output-file requirements.txt requirements.in` |
 | actionlint | `ACTIONLINT_VERSION` (CI) | à la main (module Go, vérifié par `sum.golang.org`) |
 | MySQL de test | `services.mysql.image` (digest) | à la main, avec la production |
 
@@ -319,8 +280,7 @@ planifier la montée de version avec la production.
 
 - **Dépôt public (situation actuelle)** : minutes Actions des runners standard,
   CodeQL/Code scanning, Dependency review, Dependabot et Secret scanning sont gratuits.
-  Aucun service payant n'est utilisé ; Semgrep et zizmor tournent localement sans
-  compte.
+  Aucun service payant n'est utilisé ; zizmor tourne localement sans compte.
 - Les workflows planifiés d'un dépôt public sont **désactivés par GitHub après 60 jours
   sans activité** : les réactiver dans l'onglet Actions si besoin.
 - **Si le dépôt devient privé** (forfait Free/Pro, sans GitHub Code Security ni Secret
@@ -330,8 +290,6 @@ planifier la montée de version avec la production.
   | --- | --- |
   | Dependabot (alertes, security updates, version updates), Dependency graph | ✅ gratuit |
   | Jobs CI, `composer audit`, `npm audit`, actionlint, zizmor | ✅ fonctionnent, mais consomment le quota de minutes Actions (limité par mois) |
-  | Semgrep CE (scan) | ✅ local, sans compte ; usage interne conforme à la licence des règles |
-  | Semgrep : envoi SARIF vers Code scanning | ❌ refusé sans Code Security : retirer l'étape `Upload SARIF to code scanning` (le job reste bloquant via `--error`) |
   | CodeQL (`codeql.yml`) | ❌ Code scanning payant, et la licence de CodeQL CLI interdit l'analyse de code non open source sans licence : supprimer le workflow |
   | Dependency review | ❌ payant : supprimer le workflow ; `npm audit`/`composer audit` restent |
   | Règle « Require code scanning results » | ❌ payant |
@@ -356,5 +314,4 @@ APP_ENV=test php bin/console doctrine:schema:validate && php bin/phpunit
 Références : [options Dependabot](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference),
 [règles des rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets),
 [langages CodeQL](https://codeql.github.com/docs/codeql-overview/supported-languages-and-frameworks/),
-[Dependency review](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependency-review),
-[Semgrep Rules License](https://semgrep.dev/legal/rules-license).
+[Dependency review](https://docs.github.com/en/code-security/concepts/supply-chain-security/dependency-review).

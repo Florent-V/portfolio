@@ -40,6 +40,7 @@ framework:
 #        # Available in version 1.2
 #        cache: true
 
-#when@test:
-#    webpack_encore:
-#        strict_mode: false
+# Tests run without built assets (CI does not run npm build in the PHP job).
+when@test:
+    webpack_encore:
+        strict_mode: false

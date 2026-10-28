@@ -134,11 +134,9 @@ updates:
         update-types: [minor, patch]
 
   # ---------------------------------------------------------------- Outils CI (pip)
-  # Semgrep CE et zizmor installés avec --require-hashes depuis ces fichiers
-  # générés par pip-compile.
+  # zizmor installé avec --require-hashes depuis ce fichier généré par pip-compile.
   - package-ecosystem: pip
     directories:
-      - /.github/ci-tools/semgrep
       - /.github/ci-tools/zizmor
     schedule:
       interval: weekly
