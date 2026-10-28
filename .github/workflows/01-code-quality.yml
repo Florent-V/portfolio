@@ -1,70 +1,235 @@
-# This is a basic workflow to help you get started with Actions
+# CI : qualité PHP, tests Symfony/Doctrine sur MySQL, lint + build Webpack Encore,
+# lint des workflows. Aucun secret n'est utilisé : seules des valeurs de test.
+# Pas de filtre de chemins : chaque check requis s'exécute sur chaque PR.
+# Voir docs/ci-security.md (noms des checks à rendre obligatoires).
 name: CI
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
 on:
   push:
-    branches: [ develop, prod ]
+    branches: [develop, prod]
   pull_request:
-    branches: [ develop, prod ]
+    branches: [develop, prod]
+  workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  PHP_VERSION: "8.4"
+  # Même version que le job de build du workflow Deploy.
+  NODE_VERSION: "24"
+  COMPOSER_NO_INTERACTION: "1"
+
 jobs:
-  # This workflow contains a single job called "build"
-  code-quality:
-    # The type of runner that the job will run on
-    name: Code Quality Checks
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+  php-quality:
+    name: PHP quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v4
-
-      - name: 🛠️ Set up PHP
-        uses: shivammathur/setup-php@v2
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          php-version: 8.4
-          extensions: mbstring, intl, xdebug
-          coverage: xdebug
+          persist-credentials: false
 
-      - name: 🔧 Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: checks_directory
+      - name: Forbidden files check
         run: |
           if [ -d "./.idea" ]; then echo "Forbidden PHPStorm folder (.idea/) found ! Please, ignore in .gitignore"; exit 2; fi
           if [ -d "./.vscode" ]; then echo "Forbidden VScode folder (.vscode) found ! Please, ignore in .gitignore"; exit 2; fi
-          if [ $(find ./ -name .DS_Store) ]; then echo "Forbidden MacOS boring file (.DS_Store) found ! Please, ignore in .gitignore"; exit 2; fi
+          if [ -n "$(find . -name .DS_Store -not -path './.git/*')" ]; then echo "Forbidden MacOS file (.DS_Store) found ! Please, ignore in .gitignore"; exit 2; fi
           if [ -d "./vendor" ]; then echo "Forbidden external libs folder (vendor/) found !"; exit 2; fi
 
-      - name: 🏗️ Install dependencies (PHP)
+      - name: Set up PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: intl, mbstring, pdo_mysql, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer downloads
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Validate composer.json / composer.lock
+        run: composer validate --strict --no-check-publish
+
+      # Installe exactement composer.lock ; les scripts Symfony (cache:clear)
+      # génèrent var/cache/dev, utilisé par PHPStan (phpstan.dist.neon).
+      - name: Install PHP dependencies (from composer.lock)
         run: composer install --no-progress --prefer-dist
 
-      - name: 📦 Install dependencies (JS)
-        run: npm install
-
-      - name: 🔍 Run PHP Code Sniffer (PSR-12)
+      - name: PHP_CodeSniffer (PSR-12)
         run: vendor/bin/phpcs --standard=PSR12 src/ --ignore=src/DataFixtures/
 
-      - name: 🔧 Run PHP CS Fixer
+      - name: PHP CS Fixer
         run: vendor/bin/php-cs-fixer fix --dry-run --diff
 
-      - name: 🔎 Run PHPStan
-        run: vendor/bin/phpstan analyse src --xdebug --level 6 --configuration=phpstan.dist.neon
+      - name: PHPStan
+        run: vendor/bin/phpstan analyse src --level 6 --configuration=phpstan.dist.neon --no-progress
 
-      - name: 🛠️ Run PHP Mess Detector
+      - name: PHP Mess Detector
         run: vendor/bin/phpmd src text phpmd.xml
 
-      - name: 🔍 Run ESLint
-        run: npm run lint
+      - name: Twig CS Fixer
+        run: vendor/bin/twig-cs-fixer lint templates/
 
-      - name: 🔍 Run GrumPHP (orchestration)
-        run: php ./vendor/bin/grumphp run
+      - name: Symfony lint (container, Twig, YAML)
+        run: |
+          php bin/console lint:container
+          php bin/console lint:twig templates/
+          php bin/console lint:yaml config/ --parse-tags
 
-#      - name: phpunit
-#        run: bin/phpunit
+  php-tests:
+    name: PHP tests (MySQL)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    services:
+      # Même version que compose.yaml et que serverVersion de DATABASE_URL.
+      mysql:
+        image: mysql:8.0.33@sha256:ea68e51ffe9b96fef6076f1218af11301aeaf13c6201e0ec9aaef5791d5ddc5d
+        env:
+          MYSQL_ROOT_PASSWORD: ci-test-only
+          MYSQL_DATABASE: app
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pci-test-only --silent"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    env:
+      APP_ENV: test
+      # Valeurs de test uniquement, interpolées dans DATABASE_URL (.env).
+      DB_USER: root
+      DB_PASSWORD: ci-test-only
+      DB_NAME: app
+      DB_PORT: "3306"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: intl, mbstring, pdo_mysql, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Composer downloads
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install PHP dependencies (from composer.lock)
+        run: composer install --no-progress --prefer-dist
+
+      - name: Create test database and run migrations
+        run: |
+          php bin/console doctrine:database:create --if-not-exists
+          php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+
+      - name: Validate Doctrine mapping and schema
+        run: php bin/console doctrine:schema:validate
+
+      - name: PHPUnit
+        run: php bin/phpunit
+
+  js-build:
+    name: JS lint & build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: intl, mbstring, zip
+          coverage: none
+          tools: composer:v2
+
+      # package.json référence @symfony/ux-* via file:vendor/symfony/…/assets :
+      # vendor/ doit exister avant `npm ci` (même séquence que le déploiement).
+      - name: Install PHP dependencies (needed by file:vendor/… npm packages)
+        run: composer install --no-dev --no-scripts --no-progress --prefer-dist
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install JS dependencies (from package-lock.json)
+        run: npm ci --no-audit --no-fund
+
+      # `npm run lint` passe --fix (corrige au lieu d'échouer) : en CI on lance
+      # le même ESLint/la même cible sans --fix. Les warnings restent non bloquants.
+      - name: ESLint (JS + Vue SFC)
+        run: npx --no-install eslint "assets/**/*.{js,vue}"
+
+      - name: Production build (Webpack Encore, Vue loader)
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Check build output
+        run: |
+          test -s public/build/manifest.json
+          test -s public/build/entrypoints.json
+          test -s public/service-worker.js
+
+  workflow-lint:
+    name: Workflow lint (actionlint, zizmor)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      ACTIONLINT_VERSION: v1.7.12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Module Go épinglé, vérifié par go.sum / sum.golang.org.
+      - name: actionlint
+        run: go run "github.com/rhysd/actionlint/cmd/actionlint@${ACTIONLINT_VERSION}" -color
+
+      - name: Install zizmor (pinned, hash-checked)
+        run: |
+          python3 -m venv "$RUNNER_TEMP/zizmor"
+          "$RUNNER_TEMP/zizmor/bin/pip" install --disable-pip-version-check --require-hashes -r .github/ci-tools/zizmor/requirements.txt
+
+      # Mode hors ligne : aucun jeton, aucun appel réseau.
+      - name: zizmor
+        run: '"$RUNNER_TEMP/zizmor/bin/zizmor" --offline --format plain .github/workflows'

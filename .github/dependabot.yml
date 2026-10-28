@@ -1,0 +1,154 @@
+version: 2
+
+updates:
+  # ---------------------------------------------------------------- Composer
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Paris
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore(deps)
+      prefix-development: chore(deps-dev)
+    cooldown:
+      semver-major-days: 14
+      semver-minor-days: 5
+      semver-patch-days: 3
+    groups:
+      # Composants Symfony contraints à « 7.4.* » (extra.symfony.require) :
+      # ils doivent bouger ensemble. Les paquets Symfony versionnés à part
+      # (UX, AI, bundles 2.x/3.x, flex, maker…) sont exclus.
+      symfony:
+        patterns: ["symfony/*"]
+        exclude-patterns:
+          - "symfony/ux-*"
+          - "symfony/ai-*"
+          - "symfony/stimulus-bundle"
+          - "symfony/webpack-encore-bundle"
+          - "symfony/monolog-bundle"
+          - "symfony/maker-bundle"
+          - "symfony/flex"
+        update-types: [minor, patch]
+      # Passage de Symfony 7.4 à 8.x : une seule PR, revue manuellement
+      # (nécessite aussi de modifier extra.symfony.require).
+      symfony-major:
+        patterns: ["symfony/*"]
+        exclude-patterns:
+          - "symfony/ux-*"
+          - "symfony/ai-*"
+          - "symfony/stimulus-bundle"
+          - "symfony/webpack-encore-bundle"
+          - "symfony/monolog-bundle"
+          - "symfony/maker-bundle"
+          - "symfony/flex"
+        update-types: [major]
+      # Symfony UX : les paquets npm @symfony/ux-* sont liés en file:vendor/…,
+      # la PR peut nécessiter un `npm install` pour rafraîchir package-lock.json.
+      symfony-ux:
+        patterns: ["symfony/ux-*", "symfony/stimulus-bundle", "symfony/webpack-encore-bundle"]
+        update-types: [minor, patch]
+      # Symfony AI est en 0.x : une montée « mineure » peut casser l'API.
+      symfony-ai:
+        patterns: ["symfony/ai-*"]
+        update-types: [minor, patch]
+      doctrine:
+        patterns: ["doctrine/*", "gedmo/*", "stof/*"]
+        update-types: [minor, patch]
+      php-dev-tools:
+        patterns: ["*"]
+        dependency-type: development
+        update-types: [minor, patch]
+      php-minor-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  # ---------------------------------------------------------------- npm
+  # npm est le gestionnaire utilisé (package-lock.json v3, `npm ci` au déploiement).
+  # Les dépendances @symfony/ux-* (file:vendor/…) ne sont pas gérées par
+  # Dependabot npm : elles suivent les paquets Composer symfony/ux-*.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Paris
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore(deps)
+      prefix-development: chore(deps-dev)
+    cooldown:
+      semver-major-days: 14
+      semver-minor-days: 5
+      semver-patch-days: 3
+    groups:
+      # Vue et son compilateur SFC doivent rester à la même version.
+      vue:
+        patterns: ["vue", "@vue/*", "vue-loader"]
+        update-types: [minor, patch]
+      # Webpack Encore fixe des plages de peerDependencies pour webpack,
+      # webpack-cli, les loaders et Babel : on les met à jour ensemble.
+      webpack-encore:
+        patterns:
+          - "@symfony/webpack-encore"
+          - "webpack"
+          - "webpack-*"
+          - "*-loader"
+          - "copy-webpack-plugin"
+          - "workbox-*"
+          - "@babel/*"
+          - "core-js"
+          - "regenerator-runtime"
+          - "sass"
+        update-types: [minor, patch]
+      css:
+        patterns: ["tailwindcss", "@tailwindcss/*", "daisyui", "postcss"]
+        update-types: [minor, patch]
+      lint:
+        patterns: ["eslint", "@eslint/*", "eslint-*", "prettier", "globals"]
+        update-types: [minor, patch]
+      npm-minor-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  # ---------------------------------------------------------------- GitHub Actions
+  # Met à jour les SHA épinglés et le commentaire de version associé.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Paris
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(ci)
+    cooldown:
+      default-days: 5
+    groups:
+      github-actions:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  # ---------------------------------------------------------------- Outils CI (pip)
+  # zizmor installé avec --require-hashes depuis ce fichier généré par pip-compile.
+  - package-ecosystem: pip
+    directories:
+      - /.github/ci-tools/zizmor
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Paris
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: chore(ci)
+    cooldown:
+      default-days: 5
+    groups:
+      ci-tools:
+        patterns: ["*"]
+        update-types: [minor, patch]

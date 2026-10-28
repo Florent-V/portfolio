@@ -232,6 +232,9 @@ Le projet supporte le français et l'anglais :
 - Upload de fichiers sécurisé
 - Système de rôles granulaire
 
+CI, Dependabot, analyses de sécurité (CodeQL, audits) et protection de la
+branche `prod` : voir [docs/ci-security.md](docs/ci-security.md).
+
 ## 📈 Performance
 
 - Assets optimisés avec Webpack Encore
