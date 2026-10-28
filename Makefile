@@ -67,6 +67,8 @@ help:
 	@echo "  ${GREEN}mailpit-open${RESET}       - Ouvrir l'interface Mailpit dans le navigateur"
 	@echo "  ${GREEN}mailpit-logs${RESET}       - Afficher les logs de Mailpit"
 	@echo ""
+	@echo "  ${GREEN}prod-deploy${RESET}        - Sur le serveur : git pull, composer, build des assets, migrations, cache"
+	@echo ""
 
 # -------------- ⚙️ Installation et configuration ⚙️ --------------
 
@@ -220,13 +222,17 @@ mailpit-logs:
 
 # -------------- 🚀 Environnement de production 🚀 --------------
 
+# Sur le serveur (sans Docker ni Symfony CLI) : mise à jour depuis la branche suivie.
+# npm ci installe aussi les devDependencies : Webpack Encore en fait partie.
 prod-deploy:
 	@echo "${BLUE}Déploiement en production...${RESET}"
-	$(COMPOSER) install --no-dev --optimize-autoloader
-	$(NPM) ci --production
+	git pull --ff-only
+	APP_ENV=prod $(COMPOSER) install --no-dev --optimize-autoloader --no-interaction
+	$(NPM) ci
 	$(NPM) run build
-	$(CONSOLE) cache:clear --env=prod
-	$(CONSOLE) d:m:m --no-interaction --no-debug
+	APP_ENV=prod php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+	APP_ENV=prod php bin/console cache:clear
+	@echo "${GREEN}Déploiement terminé. Rechargez PHP-FPM si OPcache ne revalide pas les fichiers.${RESET}"
 
 # Pour éviter les conflits avec des fichiers du même nom
 .PHONY: help setup install update start stop restart up down db-status db-create db-drop db-reset db-migrate db-fixtures db-recreate migration-generate migration-migrate assets-build assets-dev assets-watch assets-dev-server cache-clear tests lint grumphp-run grumphp-git prod-deploy mailpit-open mailpit-logs
