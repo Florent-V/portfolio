@@ -2,7 +2,11 @@
 # ----------------------------------------------------------
 
 # Variables de configuration
-DOCKER_COMPOSE = docker compose
+# Docker Compose ne lit que .env par défaut (placeholders versionnés) : on lui passe aussi
+# .env.local, qui contient les vrais secrets et prend le dessus (même ordre que Symfony).
+ENV_FILES = --env-file .env $(if $(wildcard .env.local),--env-file .env.local)
+DOCKER_COMPOSE = docker compose $(ENV_FILES)
+DB_CONTAINER = portfolio-db-local
 SYMFONY = symfony
 CONSOLE = $(SYMFONY) console
 COMPOSER = composer
@@ -117,7 +121,7 @@ up:
 
 prod-up:
 	@echo "${BLUE}Démarrage des services Docker (DB, mailer) en production...${RESET}"
-	$(DOCKER_COMPOSE) -f docker-compose.yml up -d
+	$(DOCKER_COMPOSE) -f compose.yaml up -d
 
 down:
 	@echo "${BLUE}Arrêt des services Docker...${RESET}"
@@ -235,16 +239,18 @@ prod-deploy:
 	@echo "${GREEN}Déploiement terminé. Rechargez PHP-FPM si OPcache ne revalide pas les fichiers.${RESET}"
 
 # Pour éviter les conflits avec des fichiers du même nom
-.PHONY: help setup install update start stop restart up down db-status db-create db-drop db-reset db-migrate db-fixtures db-recreate migration-generate migration-migrate assets-build assets-dev assets-watch assets-dev-server cache-clear tests lint grumphp-run grumphp-git prod-deploy mailpit-open mailpit-logs
+.PHONY: help setup install update start stop restart up down db-status db-create db-drop db-reset db-migrate db-fixtures db-recreate migration-generate migration-migrate assets-build assets-dev assets-watch assets-dev-server cache-clear tests lint grumphp-run grumphp-git prod-deploy prod-up mailpit-open mailpit-logs db-root db-secure
 
 ## MySQL
-db-root: ## Ouvre une session MySQL en root dans le conteneur kopeck-db-local
-	docker exec -it portfolio-db-local mysql -u root -p
+# Les identifiants sont lus dans l'environnement du conteneur (issus de .env.local au
+# démarrage) : rien n'est relu depuis .env et aucun mot de passe n'apparaît dans `ps`.
+db-root: ## Ouvre une session MySQL en root dans le conteneur
+	docker exec -it $(DB_CONTAINER) sh -c 'MYSQL_PWD="$$MYSQL_ROOT_PASSWORD" exec mysql -u root'
 
-db-secure: ## Supprime root et donne tous les droits à db_user (⚠️ danger en prod)
-	docker exec -i portfolio-db-local mysql -u root -p$$(grep MYSQL_ROOT_PASSWORD .env | cut -d '=' -f2) -e "\
-	DROP USER IF EXISTS 'root'@'%'; \
-	DROP USER IF EXISTS 'root'@'localhost'; \
-	CREATE USER IF NOT EXISTS 'db_user'@'%' IDENTIFIED BY 'db_password'; \
-	GRANT ALL PRIVILEGES ON *.* TO 'db_user'@'%' WITH GRANT OPTION; \
-	FLUSH PRIVILEGES;"
+db-secure: ## Supprime root et donne tous les droits à DB_USER (⚠️ danger en prod)
+	docker exec -i $(DB_CONTAINER) sh -c 'MYSQL_PWD="$$MYSQL_ROOT_PASSWORD" exec mysql -u root -e "\
+	CREATE USER IF NOT EXISTS '"'"'$$MYSQL_USER'"'"'@'"'"'%'"'"' IDENTIFIED BY '"'"'$$MYSQL_PASSWORD'"'"'; \
+	GRANT ALL PRIVILEGES ON *.* TO '"'"'$$MYSQL_USER'"'"'@'"'"'%'"'"' WITH GRANT OPTION; \
+	DROP USER IF EXISTS '"'"'root'"'"'@'"'"'%'"'"'; \
+	DROP USER IF EXISTS '"'"'root'"'"'@'"'"'localhost'"'"'; \
+	FLUSH PRIVILEGES;"'

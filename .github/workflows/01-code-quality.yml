@@ -100,7 +100,7 @@ jobs:
     services:
       # Même version que compose.yaml et que serverVersion de DATABASE_URL.
       mysql:
-        image: mysql:8.0.33@sha256:ea68e51ffe9b96fef6076f1218af11301aeaf13c6201e0ec9aaef5791d5ddc5d
+        image: mysql:8.4.13@sha256:a0225d1ea6631c8bc2385dc4c2faba17bbf1834ecf369e1659a9a382bd8d5dd7
         env:
           MYSQL_ROOT_PASSWORD: ci-test-only
           MYSQL_DATABASE: app
