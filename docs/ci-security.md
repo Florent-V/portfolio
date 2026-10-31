@@ -14,7 +14,7 @@ tant que les réglages de la section 4 n'ont pas été faits.
 | JavaScript | **npm** (`package-lock.json` v3), Node 24 (déploiement et CI) |
 | Front | Vue 3.5 (`vue-loader` 17), Webpack 5 via **Webpack Encore 6**, Stimulus/Turbo, Tailwind 4 |
 | Particularité | `@symfony/ux-*` est installé depuis `file:vendor/symfony/ux-*/assets` : il faut `composer install` **avant** `npm ci`. |
-| Base de test | MySQL `8.0.33` (même version que `compose.yaml` et `serverVersion` de `DATABASE_URL`) |
+| Base de test | MySQL `8.4.13` (même version que `compose.yaml` et `serverVersion` de `DATABASE_URL`) |
 | Docker | `compose.yaml` / `compose.override.yaml` pour le dev local uniquement (MySQL, Mailpit). **Aucun Dockerfile** : aucune image n'est construite. |
 
 ## 2. Ce qui est installé dans le dépôt
@@ -104,7 +104,7 @@ Les jobs du déploiement (`Deploy to Production`) ne sont pas des checks de PR.
   bloquer HIGH/CRITICAL, exceptions dans `.trivyignore.yaml` avec `expired_at` et
   justification, sans `--ignore-unfixed` global.
 - **Dependabot Docker** : non activé. Les images de `compose.yaml` servent au dev local
-  et MySQL doit rester aligné sur la production (`8.0.33`), comme l'image de service
+  et MySQL doit rester aligné sur la production (`8.4.13`), comme l'image de service
   de la CI (épinglée par digest). Les mettre à jour à la main avec la production.
 
 ## 4. Réglages à faire dans GitHub
