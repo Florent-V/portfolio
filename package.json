@@ -54,5 +54,10 @@
         "postcss": "^8.5.3",
         "postcss-loader": "^8.1.1",
         "tailwindcss": "^4.0.14"
+    },
+    "overrides": {
+        "@tailwindcss/typography": {
+            "postcss-selector-parser": "^6.1.5"
+        }
     }
 }
