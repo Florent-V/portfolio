@@ -66,9 +66,6 @@ updates:
         update-types: [minor, patch]
 
   # ---------------------------------------------------------------- npm
-  # npm est le gestionnaire utilisé (package-lock.json v3, `npm ci` au déploiement).
-  # Les dépendances @symfony/ux-* (file:vendor/…) ne sont pas gérées par
-  # Dependabot npm : elles suivent les paquets Composer symfony/ux-*.
   - package-ecosystem: npm
     directory: /
     schedule:

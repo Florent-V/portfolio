@@ -56,6 +56,7 @@
         "tailwindcss": "^4.0.14"
     },
     "overrides": {
+        "minimatch": "^11.0.3",
         "@tailwindcss/typography": {
             "postcss-selector-parser": "^6.1.5"
         }
