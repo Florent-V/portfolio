@@ -80,7 +80,7 @@ jobs:
         run: vendor/bin/phpstan analyse src --level 6 --configuration=phpstan.dist.neon --no-progress
 
       - name: PHP Mess Detector
-        run: vendor/bin/phpmd src text phpmd.xml
+        run: vendor/bin/phpmd analyze src --format text --ruleset phpmd.xml
 
       - name: Twig CS Fixer
         run: vendor/bin/twig-cs-fixer lint templates/

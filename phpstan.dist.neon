@@ -8,12 +8,21 @@ parameters:
     excludePaths:
         - tests/
         - src/DataFixtures/
+    # symplify/phpstan-rules ≥ 14.19 s'enregistre via extension-installer :
+    # on n'active que les règles Symfony (comportement précédent).
+    symplify:
+        naming: false
+        complexity: false
+        configurable: false
+        static: false
+        modern: false
+        symfony: true
+        symfonyConfig: false
+        doctrine: false
+        collections: false
+        phpunit: false
     symfony:
         containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
     ignoreErrors:
-            - '#Use invokable controller with __invoke\(\) method instead of named action method#'
-            - identifier: symfony.noControllerMethodInjection
             - identifier: symfony.noClassLevelRoute
-
-includes:
-    - vendor/symplify/phpstan-rules/config/symfony-rules.neon
+            - identifier: symplify.preferInterfaceInConstructor

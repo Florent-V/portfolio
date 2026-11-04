@@ -115,6 +115,9 @@ class Social implements DuplicatableInterface
         return $this;
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.BooleanGetMethodName")
+     */
     public function getIsActive(): bool
     {
         return $this->isActive;

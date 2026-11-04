@@ -190,7 +190,13 @@ cache-clear:
 	@echo "${BLUE}Vidage du cache...${RESET}"
 	$(CONSOLE) cache:clear
 
-setup-db-test:
+db-grant-test: ## Donne à DB_USER les droits sur la base <DB_NAME>_test (utilisée par doctrine dbname_suffix)
+	@echo "${BLUE}Droits sur la base de test pour l'utilisateur applicatif...${RESET}"
+	docker exec -i $(DB_CONTAINER) sh -c 'MYSQL_PWD="$$MYSQL_ROOT_PASSWORD" exec mysql -u root -e "\
+	GRANT ALL PRIVILEGES ON \`$${MYSQL_DATABASE}_test\`.* TO '"'"'$$MYSQL_USER'"'"'@'"'"'%'"'"'; \
+	FLUSH PRIVILEGES;"'
+
+setup-db-test: db-grant-test
 	@echo "${BLUE}Configuration de la base de données pour les tests...${RESET}"
 	$(CONSOLE) doctrine:database:create --env=test --if-not-exists
 	$(CONSOLE) doctrine:migrations:migrate --env=test --no-interaction
@@ -239,7 +245,7 @@ prod-deploy:
 	@echo "${GREEN}Déploiement terminé. Rechargez PHP-FPM si OPcache ne revalide pas les fichiers.${RESET}"
 
 # Pour éviter les conflits avec des fichiers du même nom
-.PHONY: help setup install update start stop restart up down db-status db-create db-drop db-reset db-migrate db-fixtures db-recreate migration-generate migration-migrate assets-build assets-dev assets-watch assets-dev-server cache-clear tests lint grumphp-run grumphp-git prod-deploy prod-up mailpit-open mailpit-logs db-root db-secure
+.PHONY: help setup install update start stop restart up down db-status db-create db-drop db-reset db-migrate db-fixtures db-recreate migration-generate migration-migrate assets-build assets-dev assets-watch assets-dev-server cache-clear tests lint grumphp-run grumphp-git prod-deploy prod-up mailpit-open mailpit-logs db-root db-secure db-grant-test setup-db-test
 
 ## MySQL
 # Les identifiants sont lus dans l'environnement du conteneur (issus de .env.local au

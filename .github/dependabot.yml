@@ -17,6 +17,10 @@ updates:
       semver-major-days: 14
       semver-minor-days: 5
       semver-patch-days: 3
+    # On reste sur la LTS Symfony 7.4 : pas de PR vers 8.x.
+    ignore:
+      - dependency-name: "symfony/*"
+        update-types: ["version-update:semver-major"]
     groups:
       # Composants Symfony contraints à « 7.4.* » (extra.symfony.require) :
       # ils doivent bouger ensemble. Les paquets Symfony versionnés à part
@@ -32,19 +36,6 @@ updates:
           - "symfony/maker-bundle"
           - "symfony/flex"
         update-types: [minor, patch]
-      # Passage de Symfony 7.4 à 8.x : une seule PR, revue manuellement
-      # (nécessite aussi de modifier extra.symfony.require).
-      symfony-major:
-        patterns: ["symfony/*"]
-        exclude-patterns:
-          - "symfony/ux-*"
-          - "symfony/ai-*"
-          - "symfony/stimulus-bundle"
-          - "symfony/webpack-encore-bundle"
-          - "symfony/monolog-bundle"
-          - "symfony/maker-bundle"
-          - "symfony/flex"
-        update-types: [major]
       # Symfony UX : les paquets npm @symfony/ux-* sont liés en file:vendor/…,
       # la PR peut nécessiter un `npm install` pour rafraîchir package-lock.json.
       symfony-ux:
