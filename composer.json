@@ -19,7 +19,7 @@
         "doctrine/doctrine-bundle": "^2.18.2",
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.7.6",
-        "easycorp/easyadmin-bundle": "^4.29.16",
+        "easycorp/easyadmin-bundle": "^5.8.0",
         "gedmo/doctrine-extensions": "^3.22.2",
         "league/commonmark": "^2.10.4",
         "phpdocumentor/reflection-docblock": "^5.6.7",
