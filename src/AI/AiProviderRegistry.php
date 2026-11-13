@@ -8,7 +8,7 @@ use App\AI\Enum\AiProvider;
 use App\AI\Provider\AiProviderInterface;
 use Symfony\AI\Agent\AgentInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 final readonly class AiProviderRegistry
 {
@@ -19,7 +19,7 @@ final readonly class AiProviderRegistry
      * @param iterable<AiProviderInterface> $providers
      */
     public function __construct(
-        #[TaggedIterator('app.ai_provider')]
+        #[AutowireIterator('app.ai_provider')]
         iterable $providers,
         #[Autowire(service: 'ai.agent.article_generator_openrouter_web')]
         private AgentInterface $webSearchAgent,

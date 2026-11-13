@@ -49,7 +49,7 @@ class SkillCategory
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
-    #[ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\OrderBy(['name' => \SortDirection::Ascending])]
     private Collection $technologies;
 
     #[ORM\Column(length: 255, nullable: true)]

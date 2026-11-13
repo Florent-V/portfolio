@@ -86,7 +86,7 @@ class AboutMe
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
-    #[ORM\OrderBy(['sortOrder' => 'ASC', 'name' => 'ASC'])]
+    #[ORM\OrderBy(['sortOrder' => \SortDirection::Ascending, 'name' => \SortDirection::Ascending])]
     private Collection $socialLinks;
 
     public function __construct()

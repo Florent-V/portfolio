@@ -91,7 +91,7 @@ class Project implements DuplicatableInterface
      */
     #[ORM\ManyToMany(targetEntity: Technology::class, inversedBy: 'projects')]
     #[ORM\JoinTable(name: 'project_technology')]
-    #[ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\OrderBy(['name' => \SortDirection::Ascending])]
     private Collection $technologies;
 
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
@@ -102,7 +102,7 @@ class Project implements DuplicatableInterface
      */
     #[ORM\ManyToMany(targetEntity: Tag::class)]
     #[ORM\JoinTable(name: 'project_tag')]
-    #[ORM\OrderBy(['name' => 'ASC'])]
+    #[ORM\OrderBy(['name' => \SortDirection::Ascending])]
     private Collection $tags;
 
     /**
@@ -114,7 +114,7 @@ class Project implements DuplicatableInterface
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
-    #[ORM\OrderBy(['displayOrder' => 'ASC', 'id' => 'ASC'])]
+    #[ORM\OrderBy(['displayOrder' => \SortDirection::Ascending, 'id' => \SortDirection::Ascending])]
     private Collection $projectImages;
 
     public function __construct()

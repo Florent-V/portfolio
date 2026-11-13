@@ -46,7 +46,7 @@ class Article implements DuplicatableInterface
     private ?string $slug = null;
 
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeInterface $publishedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'articles')]
@@ -90,7 +90,7 @@ class Article implements DuplicatableInterface
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
-    #[ORM\OrderBy(['displayOrder' => 'ASC'])]
+    #[ORM\OrderBy(['displayOrder' => \SortDirection::Ascending])]
     private Collection $contentElements;
 
     public function __construct()
