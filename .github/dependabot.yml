@@ -5,8 +5,7 @@ updates:
   - package-ecosystem: composer
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "07:00"
       timezone: Europe/Paris
     open-pull-requests-limit: 5
@@ -14,9 +13,8 @@ updates:
       prefix: chore(deps)
       prefix-development: chore(deps-dev)
     cooldown:
-      semver-major-days: 14
-      semver-minor-days: 5
-      semver-patch-days: 3
+      default-days: 7
+      semver-major-days: 30
     # On reste sur la LTS Symfony 7.4 : pas de PR vers 8.x.
     ignore:
       - dependency-name: "symfony/*"
@@ -48,20 +46,21 @@ updates:
       doctrine:
         patterns: ["doctrine/*", "gedmo/*", "stof/*"]
         update-types: [minor, patch]
-      php-dev-tools:
-        patterns: ["*"]
-        dependency-type: development
-        update-types: [minor, patch]
-      php-minor-patch:
+      minor-and-patch:
         patterns: ["*"]
         update-types: [minor, patch]
+      major:
+        patterns: ["*"]
+        update-types: [major]
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
 
   # ---------------------------------------------------------------- npm
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "07:00"
       timezone: Europe/Paris
     open-pull-requests-limit: 5
@@ -69,9 +68,8 @@ updates:
       prefix: chore(deps)
       prefix-development: chore(deps-dev)
     cooldown:
-      semver-major-days: 14
-      semver-minor-days: 5
-      semver-patch-days: 3
+      default-days: 7
+      semver-major-days: 30
     groups:
       # Vue et son compilateur SFC doivent rester à la même version.
       vue:
@@ -98,28 +96,36 @@ updates:
       lint:
         patterns: ["eslint", "@eslint/*", "eslint-*", "prettier", "globals"]
         update-types: [minor, patch]
-      npm-minor-patch:
+      minor-and-patch:
         patterns: ["*"]
         update-types: [minor, patch]
+      major:
+        patterns: ["*"]
+        update-types: [major]
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
 
   # ---------------------------------------------------------------- GitHub Actions
   # Met à jour les SHA épinglés et le commentaire de version associé.
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "07:00"
       timezone: Europe/Paris
     open-pull-requests-limit: 3
     commit-message:
       prefix: chore(ci)
     cooldown:
-      default-days: 5
+      default-days: 7
     groups:
-      github-actions:
+      minor-and-patch:
         patterns: ["*"]
         update-types: [minor, patch]
+      major:
+        patterns: ["*"]
+        update-types: [major]
 
   # ---------------------------------------------------------------- Outils CI (pip)
   # zizmor installé avec --require-hashes depuis ce fichier généré par pip-compile.
@@ -127,16 +133,18 @@ updates:
     directories:
       - /.github/ci-tools/zizmor
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
       time: "07:00"
       timezone: Europe/Paris
     open-pull-requests-limit: 2
     commit-message:
       prefix: chore(ci)
     cooldown:
-      default-days: 5
+      default-days: 7
     groups:
-      ci-tools:
+      minor-and-patch:
         patterns: ["*"]
         update-types: [minor, patch]
+      major:
+        patterns: ["*"]
+        update-types: [major]

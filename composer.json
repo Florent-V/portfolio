@@ -19,7 +19,7 @@
         "doctrine/doctrine-bundle": "^2.18.2",
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.7.6",
-        "easycorp/easyadmin-bundle": "^4.29.16",
+        "easycorp/easyadmin-bundle": "^5.10.0",
         "gedmo/doctrine-extensions": "^3.22.2",
         "league/commonmark": "^2.10.4",
         "phpdocumentor/reflection-docblock": "^5.6.7",
@@ -74,7 +74,7 @@
         "twig/extra-bundle": "^3.29",
         "twig/string-extra": "^3.24",
         "twig/twig": "^3.30",
-        "vich/uploader-bundle": "^2.9.2"
+        "vich/uploader-bundle": "^3.0.0"
     },
     "config": {
         "allow-plugins": {
@@ -162,7 +162,7 @@
         "phpstan/phpstan": "^2.3.5",
         "phpstan/phpstan-symfony": "^2.1.1",
         "phpunit/phpunit": "^12.5.27",
-        "squizlabs/php_codesniffer": "^3.13.6",
+        "squizlabs/php_codesniffer": "^4.0.4",
         "symfony/browser-kit": "7.4.*",
         "symfony/css-selector": "7.4.*",
         "symfony/debug-bundle": "7.4.*",
