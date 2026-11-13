@@ -74,7 +74,7 @@
         "twig/extra-bundle": "^3.29",
         "twig/string-extra": "^3.24",
         "twig/twig": "^3.30",
-        "vich/uploader-bundle": "^2.9.2"
+        "vich/uploader-bundle": "^3.0.0"
     },
     "config": {
         "allow-plugins": {
