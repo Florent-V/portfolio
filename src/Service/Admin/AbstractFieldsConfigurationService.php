@@ -15,7 +15,7 @@ abstract class AbstractFieldsConfigurationService
     /**
      * Returns configured fields for a given EasyAdmin page.
      *
-     * @param AdminContext<object>|null $context
+     * @param AdminContext<covariant object>|null $context
      *
      * @return FieldInterface[]
      */
@@ -40,7 +40,7 @@ abstract class AbstractFieldsConfigurationService
     abstract protected function buildDetailFields(): array;
 
     /**
-     * @param AdminContext<object>|null $context
+     * @param AdminContext<covariant object>|null $context
      *
      * @return FieldInterface[]
      */

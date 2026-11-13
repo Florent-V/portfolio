@@ -18,7 +18,7 @@ env:
 jobs:
     deploy:
         name: Deploy to Production
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         timeout-minutes: 30
         # Créé automatiquement au premier run s'il n'existe pas ; y déplacer les
         # secrets SSH_* / DEPLOY_PATH et restreindre à la branche prod
@@ -73,29 +73,43 @@ jobs:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
             - name: Add server to known hosts
-              run: ssh-keyscan -H -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+              run: ssh-keyscan -H -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts
+              env:
+                  SSH_PORT: ${{ secrets.SSH_PORT }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+                  SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+                  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
 
             - name: Transfer built assets to server
               run: |
                   rsync -rlvzO --delete --no-perms \
-                    -e "ssh -p ${{ secrets.SSH_PORT }}" \
+                    -e "ssh -p $SSH_PORT" \
                     public/build/ \
-                    ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/public/build/
+                    "$SSH_USERNAME@$SSH_HOST:$DEPLOY_PATH/public/build/"
 
                   rsync -rlvzO --no-perms \
-                    -e "ssh -p ${{ secrets.SSH_PORT }}" \
+                    -e "ssh -p $SSH_PORT" \
                     public/manifest.json \
                     public/service-worker.js \
-                    ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/public/
+                    "$SSH_USERNAME@$SSH_HOST:$DEPLOY_PATH/public/"
 
                   rsync -rlvzO --delete --no-perms \
-                    -e "ssh -p ${{ secrets.SSH_PORT }}" \
+                    -e "ssh -p $SSH_PORT" \
                     public/pwa/ \
-                    ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/public/pwa/
+                    "$SSH_USERNAME@$SSH_HOST:$DEPLOY_PATH/public/pwa/"
+              env:
+                  SSH_PORT: ${{ secrets.SSH_PORT }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+                  SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+                  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
 
             - name: Run deploy script on server
               run: |
-                  ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "bash ~/deploy-portfolio.sh"
+                  ssh -p "$SSH_PORT" "$SSH_USERNAME@$SSH_HOST" "bash ~/deploy-portfolio.sh"
+              env:
+                  SSH_PORT: ${{ secrets.SSH_PORT }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+                  SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
 
             # Workers Messenger pas encore en production (voir MISE-EN-PROD-WORKER-MESSENGER.md) :
             # étapes actives seulement si la variable de dépôt ENABLE_MESSENGER_WORKER vaut "true".
@@ -103,15 +117,20 @@ jobs:
               if: vars.ENABLE_MESSENGER_WORKER == 'true'
               run: |
                   rsync -rlvzO --delete --no-perms \
-                    -e "ssh -p ${{ secrets.SSH_PORT }}" \
+                    -e "ssh -p $SSH_PORT" \
                     deploy/systemd/ \
-                    ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/deploy/systemd/
+                    "$SSH_USERNAME@$SSH_HOST:$DEPLOY_PATH/deploy/systemd/"
+              env:
+                  SSH_PORT: ${{ secrets.SSH_PORT }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+                  SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+                  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
 
             - name: Restart known Messenger workers
               if: vars.ENABLE_MESSENGER_WORKER == 'true'
               run: |
-                  ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} '
-                    for unit_file in ${{ secrets.DEPLOY_PATH }}/deploy/systemd/*.service; do
+                  ssh -p "$SSH_PORT" "$SSH_USERNAME@$SSH_HOST" bash -s -- "$DEPLOY_PATH" <<'REMOTE'
+                    for unit_file in "$1"/deploy/systemd/*.service; do
                       unit_name=$(basename "$unit_file")
                       if systemctl list-unit-files "$unit_name" --no-legend | grep -q "$unit_name"; then
                         echo "Restarting $unit_name"
@@ -120,7 +139,12 @@ jobs:
                         echo "Skipping $unit_name: not installed yet (see docs/contact-security-and-workers.md to install it)"
                       fi
                     done
-                  '
+                  REMOTE
+              env:
+                  SSH_PORT: ${{ secrets.SSH_PORT }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+                  SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+                  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
 
             - name: Notify success
               if: success()

@@ -29,11 +29,18 @@ final readonly class EntityRestoreService
      */
     public function restore(string $entityClass, mixed $id): object
     {
-        $this->entityManager->getFilters()->disable('softdeleteable');
+        $filters       = $this->entityManager->getFilters();
+        $filterEnabled = $filters->isEnabled('softdeleteable');
+
+        if ($filterEnabled) {
+            $filters->disable('softdeleteable');
+        }
 
         $entity = $this->entityManager->getRepository($entityClass)->find($id);
 
-        $this->entityManager->getFilters()->enable('softdeleteable');
+        if ($filterEnabled) {
+            $filters->enable('softdeleteable');
+        }
 
         if (!$entity instanceof $entityClass) {
             throw new \InvalidArgumentException(sprintf(

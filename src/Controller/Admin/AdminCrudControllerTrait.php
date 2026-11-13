@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Service\Admin\EntityDuplicateService;
 use App\Service\Admin\EntityRestoreService;
 use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
@@ -228,11 +229,12 @@ trait AdminCrudControllerTrait
      *
      * @param AdminContext<object> $context
      */
+    #[AdminRoute('/{entityId}/restore')]
     public function restoreEntity(
         AdminContext $context,
         EntityRestoreService $restoreService,
     ): Response {
-        $entityId = $context->getRequest()->query->get('entityId');
+        $entityId = $context->getRequest()->attributes->get('entityId');
 
         if (!$entityId) {
             $this->addFlash('danger', 'Impossible de restaurer : ID manquant.');
@@ -258,11 +260,12 @@ trait AdminCrudControllerTrait
      *
      * @param AdminContext<object> $context
      */
+    #[AdminRoute('/{entityId}/duplicate')]
     public function duplicateEntity(
         AdminContext $context,
         EntityDuplicateService $duplicateService,
     ): Response {
-        $entityId = $context->getRequest()->query->get('entityId');
+        $entityId = $context->getRequest()->attributes->get('entityId');
 
         if (!$entityId) {
             $this->addFlash('danger', 'Impossible de dupliquer : ID manquant.');
