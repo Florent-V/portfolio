@@ -73,8 +73,12 @@ jobs:
                   ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
             - name: Add server to known hosts
-              run: ssh-keyscan -H -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts
+              # Clé d'hôte épinglée : évite la confiance aveugle d'un ssh-keyscan (attaque de l'homme du milieu)
+              run: |
+                  mkdir -p ~/.ssh
+                  printf '%s\n' "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
               env:
+                  SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
                   SSH_PORT: ${{ secrets.SSH_PORT }}
                   SSH_HOST: ${{ secrets.SSH_HOST }}
                   SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
