@@ -148,3 +148,30 @@ updates:
       major:
         patterns: ["*"]
         update-types: [major]
+
+  # ---------------------------------------------------------------- Docker (compose)
+  # Met à jour tag + digest des images de compose*.yaml. Dependabot ne génère
+  # pas d'alertes de sécurité Docker : `make image-scan` permet un scan manuel (Trivy).
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Paris
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore(docker)
+    cooldown:
+      default-days: 7
+    # MySQL reste sur la LTS 8.4 : pas de PR vers une autre version majeure.
+    ignore:
+      - dependency-name: "mysql"
+        update-types: ["version-update:semver-major"]
+    groups:
+      minor-and-patch:
+        patterns: ["*"]
+        update-types: [minor, patch]
+      major:
+        patterns: ["*"]
+        update-types: [major]

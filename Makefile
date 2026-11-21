@@ -47,6 +47,7 @@ help:
 	@echo ""
 	@echo "  ${GREEN}install${RESET}            - Installer les dépendances PHP et NPM"
 	@echo "  ${GREEN}update${RESET}             - Mettre à jour les dépendances PHP et NPM"
+	@echo "  ${GREEN}image-scan${RESET}         - Scanner les images Docker avec Trivy"
 	@echo ""
 	@echo "  ${GREEN}db-create${RESET}          - Créer la base de données"
 	@echo "  ${GREEN}db-drop${RESET}            - Supprimer la base de données"
@@ -91,6 +92,14 @@ update:
 	$(COMPOSER) update
 	@echo "${BLUE}Mise à jour des dépendances NPM...${RESET}"
 	$(NPM) update
+
+# Scan Trivy manuel des images de compose*.yaml (HIGH/CRITICAL avec correctif dispo)
+image-scan:
+	@for img in $$(grep -hE '^\s+image:' compose*.yaml | awk '{print $$2}'); do \
+		echo "${BLUE}Scan $$img${RESET}"; \
+		docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$$PWD/.trivyignore:/.trivyignore" \
+			aquasec/trivy:latest image -q --severity HIGH,CRITICAL --ignore-unfixed --ignorefile /.trivyignore $$img || true; \
+	done
 
 # -------------- 🎯  Gestion du serveur 🎯  --------------
 
